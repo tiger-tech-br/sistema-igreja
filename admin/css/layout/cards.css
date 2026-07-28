@@ -1,0 +1,273 @@
+/* ===================================== */
+/* CARD BASE */
+/* ===================================== */
+
+.card {
+
+    background: var(--color-surface);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+    padding: var(--space-6);
+
+    transition:
+
+        transform var(--transition-fast),
+
+        box-shadow var(--transition-fast);
+
+}
+
+.card:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow: var(--shadow-md);
+
+}
+
+/* ===================================== */
+/* GRID DE CARDS */
+/* ===================================== */
+
+.cards {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: var(--space-5);
+
+    margin-bottom: var(--space-8);
+
+}
+
+/* ===================================== */
+/* CARD DASHBOARD */
+/* ===================================== */
+
+.card i {
+
+    font-size: 2rem;
+
+    color: var(--color-primary);
+
+    margin-bottom: var(--space-3);
+
+}
+
+.card h2 {
+
+    margin-bottom: var(--space-2);
+
+}
+
+.card span {
+
+    color: var(--color-text-light);
+
+    font-size: var(--font-size-sm);
+
+}
+
+/* ===================================== */
+/* CARD LOGIN */
+/* ===================================== */
+
+.login-card {
+
+    background: var(--color-surface);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-lg);
+
+    padding: var(--space-8);
+
+    width: 100%;
+
+    max-width: 430px;
+
+    text-align: center;
+
+}
+
+/* ===================================== */
+/* CARD PERFIL */
+/* ===================================== */
+
+.perfil-card {
+
+    background: var(--color-surface);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-md);
+
+    padding: var(--space-8);
+
+}
+
+/* ===================================== */
+/* CARD SCANNER */
+/* ===================================== */
+
+.scanner-card {
+
+    background: var(--color-surface);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-lg);
+
+    padding: var(--space-8);
+
+    max-width: 550px;
+
+    width: 100%;
+
+    text-align: center;
+
+}
+
+/* ===================================== */
+/* CARD VALIDAÇÃO */
+/* ===================================== */
+
+.validar-card {
+
+    background: var(--color-surface);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-lg);
+
+    padding: var(--space-8);
+
+    max-width: 500px;
+
+    width: 100%;
+
+    text-align: center;
+
+}
+
+/* ===================================== */
+/* CARD MEMBRO */
+/* ===================================== */
+
+.membro-card {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: var(--space-5);
+
+    background: var(--color-surface);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+    padding: var(--space-5);
+
+    transition:
+
+        transform var(--transition-fast),
+
+        box-shadow var(--transition-fast);
+
+}
+
+.membro-card:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow: var(--shadow-md);
+
+}
+
+/* ===================================== */
+/* INFORMAÇÕES DO MEMBRO */
+/* ===================================== */
+
+.membro-info {
+
+    flex: 1;
+
+}
+
+.membro-info h3 {
+
+    margin-bottom: var(--space-2);
+
+}
+
+.membro-info p {
+
+    margin-bottom: var(--space-2);
+
+}
+
+/* ===================================== */
+/* AÇÕES */
+/* ===================================== */
+
+.membro-acoes {
+
+    display: flex;
+
+    gap: var(--space-3);
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+}
+
+/* ===================================== */
+/* QR CODE */
+/* ===================================== */
+
+.perfil-qrcode {
+
+    text-align: center;
+
+}
+
+.perfil-qrcode img {
+
+    width: 180px;
+
+    margin: var(--space-5) auto;
+
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE */
+/* ===================================== */
+
+@media (max-width: 768px) {
+
+    .membro-card {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+    .membro-acoes {
+
+        width: 100%;
+
+        justify-content: flex-end;
+
+    }
+
+}

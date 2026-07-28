@@ -1,0 +1,246 @@
+/* ===================================== */
+/* CONTEÚDO */
+/* ===================================== */
+
+.content {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+/* ===================================== */
+/* TOPO */
+/* ===================================== */
+
+.topbar {
+
+    margin-bottom: var(--space-6);
+
+}
+
+/* ===================================== */
+/* BOTÃO NOVO MEMBRO */
+/* ===================================== */
+
+.novo-membro {
+
+    min-width: 180px;
+    color: var(--color-primary);
+
+}
+
+/* ===================================== */
+/* PESQUISA */
+/* ===================================== */
+
+.pesquisa {
+
+    margin-bottom: var(--space-8);
+
+}
+
+.btn-pesquisar {
+
+    background: var(--color-primary);
+
+    color: #111111;
+
+}
+
+.btn-pesquisar:hover {
+
+    background: var(--color-primary-dark);
+
+    color: var(--color-white);
+
+}
+
+
+/* ===================================== */
+/* LISTA DE MEMBROS */
+/* ===================================== */
+
+.lista-membros {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: var(--space-5);
+
+}
+
+/* ===================================== */
+/* CARD DO MEMBRO */
+/* ===================================== */
+
+.membro-card {
+
+    align-items: center;
+
+}
+
+/* ===================================== */
+/* INFORMAÇÕES */
+/* ===================================== */
+
+.membro-info h3 {
+
+    margin-bottom: var(--space-2);
+
+}
+
+.membro-info p {
+
+    margin-bottom: var(--space-2);
+
+}
+
+.membro-info strong {
+    color: var(--color-primary);
+}
+
+
+
+/* ===================================== */
+/* BOTÕES DAS AÇÕES */
+/* ===================================== */
+
+.membro-acoes {
+
+    display: flex;
+
+    gap: var(--space-2);
+
+    flex-wrap: wrap;
+
+}
+
+.membro-acoes .btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .5rem;
+
+    min-width: 42px;
+
+    height: 42px;
+
+    padding: 0 1rem;
+
+    border: none;
+
+    border-radius: var(--radius-md);
+
+    cursor: pointer;
+
+    font-size: var(--font-size-sm);
+
+    font-weight: var(--font-weight-medium);
+
+    transition: var(--transition-fast);
+
+}
+
+.membro-acoes .btn:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow-sm);
+
+}
+
+.btn-perfil {
+    background-color: var(--color-success);
+    color: var(--color-white);
+}
+
+.btn-editar {
+
+    background: var(--color-info);
+
+    color: #111;
+
+}
+
+.btn-editar:hover {
+
+    background: var(--color-primary-dark);
+
+}
+
+.btn-excluir {
+
+    background: var(--color-danger);
+
+    color: #FFF;
+
+}
+
+.btn-excluir:hover {
+
+    background: #BB2D3B;
+
+}
+
+
+.btn-credencial {
+    background-color: var(--color-primary);
+    color: #111;
+}
+
+.btn-qrcode {
+
+    background: #6f42c1;
+
+    color: #FFF;
+
+}
+
+.btn-qrcode:hover {
+
+    background: #5a32a3;
+
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE */
+/* ===================================== */
+
+@media (max-width: 768px) {
+
+    .topbar {
+
+        gap: var(--space-5);
+
+    }
+
+    .novo-membro {
+
+        width: 100%;
+
+    }
+
+    .membro-card {
+
+        align-items: flex-start;
+
+    }
+
+    .membro-acoes {
+
+        width: 100%;
+
+        justify-content: flex-end;
+
+        flex-wrap: wrap;
+
+    }
+
+}

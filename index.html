@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <!-- ===================================== -->
+    <!-- META TAGS -->
+    <!-- ===================================== -->
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Bem-vindo à Assembleia de Deus Lugar de Esperança. Um lugar para adorar a Deus, fortalecer sua fé e viver em comunhão.">
+
+    <meta
+        name="theme-color"
+        content="#0d0d0d">
+
+    <!-- ===================================== -->
+    <!-- TÍTULO -->
+    <!-- ===================================== -->
+
+    <title>
+
+        Assembleia de Deus | Lugar de Esperança
+
+    </title>
+
+    <!-- ===================================== -->
+    <!-- GOOGLE FONTS -->
+    <!-- ===================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- ===================================== -->
+    <!-- FONT AWESOME -->
+    <!-- ===================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- ===================================== -->
+    <!-- CSS -->
+    <!-- ===================================== -->
+
+    <link rel="stylesheet" href="/css/global/reset.css">
+    <link rel="stylesheet" href="/css/global/base.css">
+    <link rel="stylesheet" href="/css/global/variables.css">
+    <link rel="stylesheet" href="/css/global/global.css">
+
+    <link
+        rel="stylesheet"
+        href="css/index.css?v=2.0.1">
+
+</head>
+
+<body>
+
+        <!-- ===================================== -->
+    <!-- HEADER -->
+    <!-- ===================================== -->
+
+    <header id="header">
+
+        <div class="container">
+
+            <div class="navbar">
+
+                <!-- ===================================== -->
+                <!-- LOGO -->
+                <!-- ===================================== -->
+
+                <a
+                    href="#inicio"
+                    class="logo"
+                    aria-label="Página Inicial">
+
+                    <img
+                        src="images/assembleia-logo.png"
+                        alt="Logo da Assembleia de Deus Lugar de Esperança">
+
+                </a>
+
+                <!-- ===================================== -->
+                <!-- MENU -->
+                <!-- ===================================== -->
+
+                <nav
+                    class="nav-menu"
+                    aria-label="Menu Principal">
+
+                    <ul class="menu">
+
+                        <!-- ===================================== -->
+                            <!-- TOPO MENU MOBILE -->
+                            <!-- ===================================== -->
+
+                            <li class="menu-header">
+
+                                <button
+                                    id="btnCloseMenu"
+                                    class="menu-close"
+                                    type="button">
+
+                                    <i class="fa-solid fa-xmark"></i>
+
+                                </button>
+
+                            </li>
+
+                        <li>
+
+                            <a href="#inicio">
+
+                                Início
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a href="#sobre">
+
+                                Sobre
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a href="#ministerios">
+
+                                Ministérios
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a href="#cultos">
+
+                                Cultos
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a href="#eventos">
+
+                                Eventos
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a href="#galeria">
+
+                                Galeria
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a href="#contato">
+
+                                Contato
+
+                            </a>
+
+                        </li>
+
+                        <!-- ===================================== -->
+                        <!-- LOGIN MOBILE -->
+                        <!-- ===================================== -->
+
+                        <li
+                            id="mobileLogin"
+                            class="mobile-item">
+
+                            <a
+                                href="#"
+                                id="btnMobileLogin">
+
+                                <i class="fa-solid fa-right-to-bracket"></i>
+
+                                <span>
+
+                                    Login
+
+                                </span>
+
+                            </a>
+
+                        </li>
+
+                        <!-- ===================================== -->
+                        <!-- MENU DO MEMBRO (MOBILE) -->
+                        <!-- ===================================== -->
+
+                        <li
+                            id="mobileUser"
+                            class="mobile-user hidden">
+
+                            <div class="mobile-user-info">
+
+                                <i class="fa-solid fa-circle-user"></i>
+
+                                <span id="mobileNome">
+
+                                    Login
+
+                                </span>
+
+                            </div>
+
+                        </li>
+
+                        <li
+                            id="mobilePerfil"
+                            class="mobile-item hidden">
+
+                            <a href="/perfil">
+
+                                <i class="fa-solid fa-user"></i>
+
+                                <span>
+
+                                    Ver Perfil
+
+                                </span>
+
+                            </a>
+
+                        </li>
+
+                        <li
+                            id="mobileLogout"
+                            class="mobile-item hidden">
+
+                            <a
+                                href="#"
+                                id="mobileLogoutBtn">
+
+                                <i class="fa-solid fa-right-from-bracket"></i>
+
+                                <span>
+
+                                    Sair
+
+                                </span>
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+                        <!-- ===================================== -->
+                        <!-- LOGIN DESKTOP -->
+                        <!-- ===================================== -->
+
+                        <div class="desktop-login">
+
+                            <div class="login-dropdown">
+
+                                <button
+                                    id="btnLogin"
+                                    class="login-button"
+                                    type="button">
+
+                                    <i class="fa-solid fa-circle-user"></i>
+
+                                    <span>
+
+                                        Login
+
+                                    </span>
+
+                                    <i class="fa-solid fa-chevron-down"></i>
+
+                                </button>
+
+                                <div
+                                    id="loginMenu"
+                                    class="login-menu">
+
+                                    <form
+                                        action="/api/membros/login"
+                                        method="POST"
+                                        class="login-form member-login-form">
+
+                                        <label for="email">
+
+                                            E-mail
+
+                                        </label>
+
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            autocomplete="email"
+                                            required>
+
+                                        <label for="senha">
+
+                                            Senha
+
+                                        </label>
+
+                                        <input
+                                            type="password"
+                                            id="senha"
+                                            name="senha"
+                                            autocomplete="current-password"
+                                            required>
+
+                                        <button
+                                            type="submit"
+                                            class="btn-login">
+
+                                            <i class="fa-solid fa-right-to-bracket"></i>
+
+                                            Entrar
+
+                                        </button>
+
+                                        <a href="/esqueci-senha">
+
+                                            Esqueceu sua senha?
+
+                                        </a>
+
+                                        <a href="/cadastro">
+
+                                            Cadastre-se
+
+                                        </a>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ===================================== -->
+                        <!-- LOGIN MOBILE -->
+                        <!-- ===================================== -->
+
+                        <div
+                            id="mobileLoginForm"
+                            class="mobile-login-form hidden">
+
+                            <button
+                                type="button"
+                                id="btnVoltarLogin"
+                                class="btn-voltar-login">
+
+                                <i class="fa-solid fa-arrow-left"></i>
+
+                                Voltar
+
+                            </button>
+
+                            <div class="mobile-login-title">
+
+                                <i class="fa-solid fa-circle-user"></i>
+
+                                <div>
+
+                                    <h3>Acesso do membro</h3>
+
+                                    <p>Entre com seu e-mail e senha para acessar sua conta.</p>
+
+                                </div>
+
+                            </div>
+
+                            <form
+                                action="/api/membros/login"
+                                method="POST"
+                                class="login-form member-login-form">
+
+                                <label for="mobileEmail">
+
+                                    E-mail
+
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="mobileEmail"
+                                    name="email"
+                                    autocomplete="email"
+                                    required>
+
+                                <label for="mobileSenha">
+
+                                    Senha
+
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="mobileSenha"
+                                    name="senha"
+                                    autocomplete="current-password"
+                                    required>
+
+                                <button
+                                    type="submit"
+                                    class="btn-login">
+
+                                    Entrar
+
+                                </button>
+
+                                <div class="mobile-login-links">
+
+                                    <a href="/esqueci-senha">
+
+                                        Esqueci minha senha
+
+                                    </a>
+
+                                    <a href="/cadastro">
+
+                                        Cadastre-se
+
+                                    </a>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                <!-- ===================================== -->
+                <!-- BOTÃO MENU MOBILE -->
+                <!-- ===================================== -->
+
+                    <button
+                        type="button"
+                        class="menu-mobile"
+                        aria-label="Abrir Menu"
+                        aria-expanded="false">
+
+                        <i class="fa-solid fa-bars"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <!-- ===================================== -->
+        <!-- OVERLAY DO MENU MOBILE -->
+        <!-- ===================================== -->
+
+        <div class="menu-backdrop"></div>
+
+            <!-- ===================================== -->
+            <!-- MAIN -->
+            <!-- ===================================== -->
+
+            <main>
+
+            <!-- ===================================== -->
+            <!-- HERO -->
+            <!-- ===================================== -->
+
+                <section
+                    id="inicio"
+                    class="hero">
+
+                    <div class="container">
+
+                        <div class="hero-content">
+
+                            <!-- ===================================== -->
+                                <!-- TEXTO -->
+                                <!-- ===================================== -->
+
+                                <span class="hero-subtitle">
+
+                                    Bem-vindo à
+
+                                </span>
+
+                                <h1>
+
+                                    <span class="hero-title-gold">
+
+                                        Assembleia de Deus
+
+                                    </span>
+
+                                    <strong>
+
+                                        Lugar de Esperança
+
+                                    </strong>
+
+                                </h1>
+
+                                <p>
+
+                                    Um lugar para adorar a Deus,
+                                    fortalecer sua fé, crescer na Palavra
+                                    e viver em comunhão com irmãos que
+                                    compartilham o mesmo propósito:
+                                    servir ao Senhor Jesus Cristo.
+
+                                </p>
+
+                                <!-- ===================================== -->
+                                <!-- BOTÕES -->
+                                <!-- ===================================== -->
+
+                                <div class="hero-buttons">
+
+                                    <a
+                                        href="#cultos"
+                                        class="btn btn-primary">
+
+                                        Horários dos Cultos
+
+                                    </a>
+
+                                    <a
+                                        href="#contato"
+                                        class="btn btn-outline">
+
+                                        Fale Conosco
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                            <!-- ===================================== -->
+                            <!-- IMAGEM -->
+                            <!-- ===================================== -->
+
+                            <div class="hero-image">
+
+                                <img
+                                    src="images/banner.png"
+                                    alt="Templo da Assembleia de Deus Lugar de Esperança">
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                        <!-- ===================================== -->
+                        <!-- SOBRE -->
+                        <!-- ===================================== -->
+
+                    <section
+                        id="sobre"
+                        class="sobre">
+
+                        <div class="container">
+
+                            <!-- ===================================== -->
+                            <!-- TÍTULO -->
+                            <!-- ===================================== -->
+
+                            <div class="section-title">
+
+                                <span>
+
+                                    Nossa História
+
+                                </span>
+
+                                <h2>
+
+                                    Sobre a Igreja
+
+                                </h2>
+
+                            </div>
+
+                            <!-- ===================================== -->
+                            <!-- CONTEÚDO -->
+                            <!-- ===================================== -->
+
+                            <div class="sobre-content">
+
+                                <!-- TEXTO -->
+
+                                <div class="sobre-texto">
+
+                                    <p class="sobre-destaque">
+
+                                        A Assembleia de Deus Lugar de Esperança
+                                        é uma igreja comprometida com a Palavra
+                                        de Deus, dedicada à evangelização,
+                                        ao discipulado e ao cuidado espiritual
+                                        das famílias.
+
+                                    </p>
+
+                                    <p>
+
+                                        Nosso propósito é anunciar o Evangelho
+                                        de Jesus Cristo, promover comunhão entre
+                                        os irmãos e servir à comunidade com amor,
+                                        respeito e dedicação.
+
+                                    </p>
+
+                                    <p>
+
+                                        Acreditamos que Deus continua
+                                        transformando vidas através da fé,
+                                        da oração e da ação do Espírito Santo.
+
+                                    </p>
+
+                                </div>
+
+                                <!-- IMAGEM -->
+
+                                <div class="sobre-imagem">
+
+                                    <img
+                                        src="images/banner.png"
+                                        alt="Igreja Assembleia de Deus">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                        <!-- ===================================== -->
+                        <!-- MISSÃO, VISÃO E VALORES -->
+                        <!-- ===================================== -->
+
+                    <section
+                        id="ministerios"
+                        class="missao">
+
+                        <div class="container">
+
+                            <!-- ===================================== -->
+                            <!-- TÍTULO -->
+                            <!-- ===================================== -->
+
+                            <div class="section-title">
+
+                                <span>
+
+                                    Nossa Essência
+
+                                </span>
+
+                                <h2>
+
+                                    Missão, Visão e Valores
+
+                                </h2>
+
+                            </div>
+
+                            <!-- ===================================== -->
+                            <!-- CARDS -->
+                            <!-- ===================================== -->
+
+                            <div class="missao-grid">
+
+                                <!-- MISSÃO -->
+
+                                <article class="missao-card">
+
+                                    <div class="card-icon">
+
+                                        <i class="fa-solid fa-cross"></i>
+
+                                    </div>
+
+                                    <h3>
+
+                                        Missão
+
+                                    </h3>
+
+                                    <p>
+
+                                        Anunciar o Evangelho de Jesus Cristo,
+                                        fazer discípulos e servir a comunidade
+                                        com amor, fé e dedicação.
+
+                                    </p>
+
+                                </article>
+
+                                <!-- VISÃO -->
+
+                                <article class="missao-card">
+
+                                    <div class="card-icon">
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                    </div>
+
+                                    <h3>
+
+                                        Visão
+
+                                    </h3>
+
+                                    <p>
+
+                                        Ser uma igreja relevante,
+                                        comprometida com a Palavra de Deus
+                                        e instrumento de transformação
+                                        para toda a sociedade.
+
+                                    </p>
+
+                                </article>
+
+                                <!-- VALORES -->
+
+                                <article class="missao-card">
+
+                                    <div class="card-icon">
+
+                                        <i class="fa-solid fa-heart"></i>
+
+                                    </div>
+
+                                    <h3>
+
+                                        Valores
+
+                                    </h3>
+
+                                    <p>
+
+                                        Amor ao próximo,
+                                        integridade,
+                                        comunhão,
+                                        santidade,
+                                        serviço,
+                                        respeito e fidelidade
+                                        às Escrituras.
+
+                                    </p>
+
+                                </article>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                        <!-- ===================================== -->
+                        <!-- PASTOR PRESIDENTE -->
+                        <!-- ===================================== -->
+
+                    <section
+                        id="pastor"
+                        class="pastor">
+
+                        <div class="container">
+
+                            <!-- ===================================== -->
+                            <!-- TÍTULO -->
+                            <!-- ===================================== -->
+
+                            <div class="section-title">
+
+                                <span>
+
+                                    Liderança
+
+                                </span>
+
+                                <h2>
+
+                                    Pastor Presidente
+
+                                </h2>
+
+                            </div>
+
+                            <!-- ===================================== -->
+                            <!-- CONTEÚDO -->
+                            <!-- ===================================== -->
+
+                            <div class="pastor-content">
+
+                                <!-- FOTO -->
+
+                                <div class="pastor-image">
+
+                                    <img
+                                        src="images/pastor1.jpg"
+                                        alt="Pastor Presidente">
+
+                                </div>
+
+                                <!-- TEXTO -->
+
+                                <div class="pastor-text">
+
+                                    <h3>
+
+                                        Pr. Nome do Pastor
+
+                                    </h3>
+
+                                    <span>
+
+                                        Pastor Presidente
+
+                                    </span>
+
+                                    <p>
+
+                                        Recebemos você com alegria.
+
+                                        Nossa oração é que Deus fale
+                                        profundamente ao seu coração
+                                        através da Sua Palavra e que
+                                        esta igreja seja um lugar de
+                                        crescimento espiritual, comunhão
+                                        e transformação.
+
+                                    </p>
+
+                                    <p>
+
+                                        Estamos comprometidos em
+                                        servir ao Senhor Jesus Cristo
+                                        e ajudar cada pessoa a viver
+                                        uma vida firmada na fé,
+                                        no amor e na esperança.
+
+                                    </p>
+
+                                    <blockquote>
+
+                                        "Porque Deus amou o mundo de tal maneira
+                                        que deu o seu Filho unigênito,
+                                        para que todo aquele que nele crê
+                                        não pereça, mas tenha a vida eterna."
+
+                                        <strong>
+
+                                            João 3:16
+
+                                        </strong>
+
+                                    </blockquote>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                        <!-- ===================================== -->
+                        <!-- CULTOS -->
+                        <!-- ===================================== -->
+
+        <section
+            id="cultos"
+            class="cultos">
+
+            <div class="container">
+
+                <!-- ===================================== -->
+                <!-- TÍTULO -->
+                <!-- ===================================== -->
+
+                <div class="section-title">
+
+                    <span>
+
+                        Venha nos visitar
+
+                    </span>
+
+                    <h2>
+
+                        Horários dos Cultos
+
+                    </h2>
+
+                </div>
+
+                <!-- ===================================== -->
+                <!-- GRID -->
+                <!-- ===================================== -->
+
+                <div class="cultos-grid">
+
+                    <!-- DOMINGO -->
+
+                    <article class="culto-card">
+
+                        <div class="culto-icon">
+
+                            <i class="fa-solid fa-church"></i>
+
+                        </div>
+
+                        <h3>
+
+                            Domingo
+
+                        </h3>
+
+                        <p class="culto-horario">
+
+                            18:00
+
+                        </p>
+
+                        <p>
+
+                            Culto de Celebração
+                            e Adoração ao Senhor.
+
+                        </p>
+
+                    </article>
+
+                    <!-- TERÇA -->
+
+                    <article class="culto-card">
+
+                        <div class="culto-icon">
+
+                            <i class="fa-solid fa-book-bible"></i>
+
+                        </div>
+
+                        <h3>
+
+                            Terça-feira
+
+                        </h3>
+
+                        <p class="culto-horario">
+
+                            19:30
+
+                        </p>
+
+                        <p>
+
+                            Estudo da Palavra
+                            e crescimento espiritual.
+
+                        </p>
+
+                    </article>
+
+                    <!-- QUINTA -->
+
+                    <article class="culto-card">
+
+                        <div class="culto-icon">
+
+                            <i class="fa-solid fa-hands-praying"></i>
+
+                        </div>
+
+                        <h3>
+
+                            Quinta-feira
+
+                        </h3>
+
+                        <p class="culto-horario">
+
+                            19:30
+
+                        </p>
+
+                        <p>
+
+                            Culto de Oração
+                            e Busca pela presença de Deus.
+
+                        </p>
+
+                    </article>
+
+                    <!-- SÁBADO -->
+
+                    <article class="culto-card">
+
+                        <div class="culto-icon">
+
+                            <i class="fa-solid fa-users"></i>
+
+                        </div>
+
+                        <h3>
+
+                            Sábado
+
+                        </h3>
+
+                        <p class="culto-horario">
+
+                            19:00
+
+                        </p>
+
+                        <p>
+
+                            Reuniões especiais,
+                            jovens, adolescentes
+                            e programações diversas.
+
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ===================================== -->
+        <!-- EVENTOS -->
+        <!-- ===================================== -->
+
+        <section
+            id="eventos"
+            class="eventos">
+
+            <div class="container">
+
+                <!-- ===================================== -->
+                <!-- TÍTULO -->
+                <!-- ===================================== -->
+
+                <div class="section-title">
+
+                    <span>
+
+                        Participe
+
+                    </span>
+
+                    <h2>
+
+                        Próximos Eventos
+
+                    </h2>
+
+                </div>
+
+                <!-- ===================================== -->
+                <!-- GRID -->
+                <!-- ===================================== -->
+
+                <div class="eventos-grid">
+
+                    <!-- EVENTO 1 -->
+
+                    <article class="evento-card">
+
+                        <div class="evento-data">
+
+                            <span class="dia">
+
+                                18
+
+                            </span>
+
+                            <span class="mes">
+
+                                AGO
+
+                            </span>
+
+                        </div>
+
+                        <div class="evento-info">
+
+                            <h3>
+
+                                Congresso de Jovens
+
+                            </h3>
+
+                            <p>
+
+                                Uma noite especial de adoração,
+                                Palavra de Deus e comunhão.
+
+                            </p>
+
+                            <span>
+
+                                <i class="fa-solid fa-clock"></i>
+
+                                19:30
+
+                            </span>
+
+                        </div>
+
+                    </article>
+
+                    <!-- EVENTO 2 -->
+
+                    <article class="evento-card">
+
+                        <div class="evento-data">
+
+                            <span class="dia">
+
+                                25
+
+                            </span>
+
+                            <span class="mes">
+
+                                AGO
+
+                            </span>
+
+                        </div>
+
+                        <div class="evento-info">
+
+                            <h3>
+
+                                Batismo nas Águas
+
+                            </h3>
+
+                            <p>
+
+                                Celebração para os irmãos que
+                                decidiram seguir a Cristo.
+
+                            </p>
+
+                            <span>
+
+                                <i class="fa-solid fa-clock"></i>
+
+                                09:00
+
+                            </span>
+
+                        </div>
+
+                    </article>
+
+                    <!-- EVENTO 3 -->
+
+                    <article class="evento-card">
+
+                        <div class="evento-data">
+
+                            <span class="dia">
+
+                                02
+
+                            </span>
+
+                            <span class="mes">
+
+                                SET
+
+                            </span>
+
+                        </div>
+
+                        <div class="evento-info">
+
+                            <h3>
+
+                                Vigília de Oração
+
+                            </h3>
+
+                            <p>
+
+                                Uma madrugada buscando a presença
+                                de Deus em oração.
+
+                            </p>
+
+                            <span>
+
+                                <i class="fa-solid fa-clock"></i>
+
+                                22:00
+
+                            </span>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    <!-- ===================================== -->
+    <!-- GALERIA -->
+    <!-- ===================================== -->
+
+        <section
+            id="galeria"
+            class="galeria">
+
+            <div class="container">
+
+                <!-- ===================================== -->
+                <!-- TÍTULO -->
+                <!-- ===================================== -->
+
+                <div class="section-title">
+
+                    <span>
+
+                        Nossa Igreja
+
+                    </span>
+
+                    <h2>
+
+                        Galeria de Fotos
+
+                    </h2>
+
+                </div>
+
+                <!-- ===================================== -->
+                <!-- GRID -->
+                <!-- ===================================== -->
+
+                <div class="galeria-grid">
+
+                    <figure class="foto">
+
+                        <img
+                            src="images/galeria1.jpg"
+                            alt="Culto de Celebração">
+
+                    </figure>
+
+                    <figure class="foto">
+
+                        <img
+                            src="images/galeria2.jpg"
+                            alt="Louvor">
+
+                    </figure>
+
+                    <figure class="foto">
+
+                        <img
+                            src="images/galeria3.jpg"
+                            alt="Congregação">
+
+                    </figure>
+
+                    <figure class="foto">
+
+                        <img
+                            src="images/galeria4.jpg"
+                            alt="Batismo">
+
+                    </figure>
+
+                    <figure class="foto">
+
+                        <img
+                            src="images/galeria5.jpg"
+                            alt="Escola Bíblica">
+
+                    </figure>
+
+                    <figure class="foto">
+
+                        <img
+                            src="images/galeria6.jpg"
+                            alt="Evento Especial">
+
+                    </figure>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    <!-- ===================================== -->
+    <!-- CONTATO -->
+    <!-- ===================================== -->
+
+        <section
+            id="contato"
+            class="contato">
+
+            <div class="container">
+
+                <!-- ===================================== -->
+                <!-- TÍTULO -->
+                <!-- ===================================== -->
+
+                <div class="section-title">
+
+                    <span>
+
+                        Entre em Contato
+
+                    </span>
+
+                    <h2>
+
+                        Fale Conosco
+
+                    </h2>
+
+                </div>
+
+                <!-- ===================================== -->
+                <!-- CONTEÚDO -->
+                <!-- ===================================== -->
+
+                <div class="contato-content">
+
+                    <!-- ===================================== -->
+                    <!-- INFORMAÇÕES -->
+                    <!-- ===================================== -->
+
+                    <div class="contato-info">
+
+                        <div class="contato-card">
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            <div>
+
+                                <h3>
+
+                                    Endereço
+
+                                </h3>
+
+                                <p>
+
+                                    Rua Exemplo, 123<br>
+
+                                    Centro - São Paulo/SP
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="contato-card">
+
+                            <i class="fa-solid fa-phone"></i>
+
+                            <div>
+
+                                <h3>
+
+                                    Telefone
+
+                                </h3>
+
+                                <p>
+
+                                    (11) 99999-9999
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="contato-card">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            <div>
+
+                                <h3>
+
+                                    E-mail
+
+                                </h3>
+
+                                <p>
+
+                                    contato@assembleia.com.br
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="contato-card">
+
+                            <i class="fa-brands fa-whatsapp"></i>
+
+                            <div>
+
+                                <h3>
+
+                                    WhatsApp
+
+                                </h3>
+
+                                <p>
+
+                                    (11) 99999-9999
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ===================================== -->
+                    <!-- MAPA -->
+                    <!-- ===================================== -->
+
+                    <div class="mapa">
+
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb="
+                            loading="lazy"
+                            allowfullscreen
+                            referrerpolicy="no-referrer-when-downgrade">
+
+                        </iframe>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+                    <!-- ===================================== -->
+                    <!-- FOOTER -->
+                    <!-- ===================================== -->
+
+        <footer class="footer">
+
+            <div class="container">
+
+                <div class="footer-content">
+
+                    <!-- ===================================== -->
+                    <!-- LOGO -->
+                    <!-- ===================================== -->
+
+                    <div class="footer-col">
+
+                        <img
+                            src="images/assembleia-logo.png"
+                            alt="Logo Assembleia de Deus"
+                            class="footer-logo">
+
+                        <p>
+
+                            A Assembleia de Deus Lugar de Esperança
+                            é uma igreja comprometida com a Palavra
+                            de Deus, dedicada à evangelização,
+                            ao discipulado e ao fortalecimento
+                            da família cristã.
+
+                        </p>
+
+                    </div>
+
+                    <!-- ===================================== -->
+                    <!-- LINKS -->
+                    <!-- ===================================== -->
+
+                    <div class="footer-col">
+
+                        <h3>
+
+                            Links Rápidos
+
+                        </h3>
+
+                        <ul>
+
+                            <li>
+
+                                <a href="#inicio">
+
+                                    Início
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a href="#sobre">
+
+                                    Sobre
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a href="#ministerios">
+
+                                    Ministérios
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a href="#cultos">
+
+                                    Cultos
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a href="#eventos">
+
+                                    Eventos
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a href="#galeria">
+
+                                    Galeria
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a href="#contato">
+
+                                    Contato
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                    <!-- ===================================== -->
+                    <!-- CONTATO -->
+                    <!-- ===================================== -->
+
+                    <div class="footer-col">
+
+                        <h3>
+
+                            Contato
+
+                        </h3>
+
+                        <ul>
+
+                            <li>
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                                Rua Exemplo, 123
+
+                            </li>
+
+                            <li>
+
+                                <i class="fa-solid fa-phone"></i>
+
+                                (11) 99999-9999
+
+                            </li>
+
+                            <li>
+
+                                <i class="fa-solid fa-envelope"></i>
+
+                                contato@assembleia.com.br
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                    <!-- ===================================== -->
+                    <!-- REDES SOCIAIS -->
+                    <!-- ===================================== -->
+
+                    <div class="footer-col">
+
+                        <h3>
+
+                            Redes Sociais
+
+                        </h3>
+
+                        <div class="footer-social">
+
+                            <a
+                                href="#"
+                                aria-label="Facebook">
+
+                                <i class="fa-brands fa-facebook-f"></i>
+
+                            </a>
+
+                            <a
+                                href="#"
+                                aria-label="Instagram">
+
+                                <i class="fa-brands fa-instagram"></i>
+
+                            </a>
+
+                            <a
+                                href="#"
+                                aria-label="YouTube">
+
+                                <i class="fa-brands fa-youtube"></i>
+
+                            </a>
+
+                            <a
+                                href="#"
+                                aria-label="WhatsApp">
+
+                                <i class="fa-brands fa-whatsapp"></i>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ===================================== -->
+                <!-- COPYRIGHT -->
+                <!-- ===================================== -->
+
+                <div class="footer-bottom">
+
+                    <p>
+
+                        © 2026 Assembleia de Deus Lugar de Esperança.
+                        Todos os direitos reservados.
+
+                    </p>
+
+                    <p>
+
+                        Desenvolvido por
+
+                        <strong>
+
+                            Tiger Tech
+
+                        </strong>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </footer>
+
+    </main>
+
+<!-- ===================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================== -->
+
+<script src="js/index.js"></script>
+
+</body>
+
+</html>

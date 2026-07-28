@@ -1,0 +1,271 @@
+/* ===================================== */
+/* BOTÃO BASE */
+/* ===================================== */
+
+button,
+.btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: var(--space-2);
+
+    padding: .8rem 1.4rem;
+
+    border-radius: var(--radius-md);
+
+    border: none;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-size: var(--font-size-md);
+
+    font-weight: var(--font-weight-medium);
+
+    text-decoration: none;
+
+    transition: all var(--transition-fast);
+
+}
+
+/* ===================================== */
+/* ESTADO DISABLED */
+/* ===================================== */
+
+button:disabled,
+.btn:disabled {
+
+    opacity: .6;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+}
+
+/* ===================================== */
+/* BOTÃO PRIMÁRIO */
+/* ===================================== */
+
+.btn-primary,
+.btn-salvar,
+.btn-login {
+
+    background: var(--color-primary);
+
+    color: var(--color-white);
+
+}
+
+.btn-primary:hover,
+.btn-salvar:hover,
+.btn-login:hover {
+
+    background: var(--color-primary-dark);
+
+}
+
+/* ===================================== */
+/* BOTÃO SECUNDÁRIO */
+/* ===================================== */
+
+.btn-secondary {
+
+    background: var(--color-secondary);
+
+    color: var(--color-white);
+
+}
+
+.btn-secondary:hover {
+
+    filter: brightness(.95);
+
+}
+
+/* ===================================== */
+/* BOTÃO SUCESSO */
+/* ===================================== */
+
+.btn-success {
+
+    background: var(--color-success);
+
+    color: var(--color-white);
+
+}
+
+.btn-success:hover {
+
+    filter: brightness(.95);
+
+}
+
+/* ===================================== */
+/* BOTÃO PERIGO */
+/* ===================================== */
+
+.btn-danger,
+.btn-excluir {
+
+    background: var(--color-danger);
+
+    color: var(--color-white);
+
+}
+
+.btn-danger:hover,
+.btn-excluir:hover {
+
+    filter: brightness(.95);
+
+}
+
+/* ===================================== */
+/* BOTÃO CANCELAR */
+/* ===================================== */
+
+.btn-cancelar {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .6rem;
+
+    padding: .9rem 1.8rem;
+
+    width: auto;
+
+    min-width: 180px;
+
+    margin: var(--space-6) auto 0;
+
+}
+
+.btn-cancelar:hover {
+
+    background: var(--color-text);
+
+}
+
+/* ===================================== */
+/* BOTÃO VOLTAR */
+/* ===================================== */
+
+.btn-voltar {
+
+    background: transparent;
+
+    color: var(--color-primary);
+
+    border: 2px solid var(--color-primary);
+
+}
+
+.btn-voltar:hover {
+
+    background: var(--color-primary);
+
+    color: var(--color-white);
+
+}
+
+/* ===================================== */
+/* BOTÃO SCANNER */
+/* ===================================== */
+
+.btn-scanner {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .75rem;
+
+    padding: .9rem 2rem;
+
+    width: auto;
+
+    min-width: 260px;
+
+    border-radius: var(--radius-md);
+
+}
+
+.btn-scanner:hover {
+
+    background: var(--color-primary-dark);
+
+}
+
+
+/* ===================================== */
+/* BOTÃO TABELA */
+/* ===================================== */
+
+.btn-table {
+
+    padding: .5rem .9rem;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-primary);
+
+    color: var(--color-white);
+
+    font-size: var(--font-size-sm);
+
+}
+
+.btn-table:hover {
+
+    background: var(--color-primary-dark);
+
+}
+
+/* ===================================== */
+/* BOTÃO MENU */
+/* ===================================== */
+
+.menu-toggle {
+
+    display: none;
+
+    width: 46px;
+
+    height: 46px;
+
+    border-radius: 50%;
+
+    background: var(--color-primary);
+
+    color: var(--color-white);
+
+}
+
+.menu-toggle:hover {
+
+    background: var(--color-primary-dark);
+
+}
+
+/* ===================================== */
+/* ÍCONES */
+/* ===================================== */
+
+button i,
+.btn i {
+
+    font-size: 1rem;
+
+}

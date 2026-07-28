@@ -1,0 +1,148 @@
+/* ===================================== */
+/* OVERLAY */
+/* ===================================== */
+
+.overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, .45);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition:
+
+        opacity var(--transition-normal),
+
+        visibility var(--transition-normal);
+
+    z-index: 999;
+
+}
+
+.overlay.ativo {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+
+
+/* ===================================== */
+/* MENU HAMBÚRGUER */
+/* ===================================== */
+
+.menu-toggle {
+
+    display: none;
+
+    position: fixed;
+
+    top: 1rem;
+
+    right: 1rem;
+
+    left: auto;
+
+    width: 48px;
+
+    height: 48px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 1100;
+
+    box-shadow: var(--shadow-md);
+
+    background: var(--color-primary);
+
+    color: var(--color-text);
+
+}
+
+.menu-toggle:hover {
+
+    background: var(--color-primary-dark);
+
+}
+
+.menu-toggle i {
+
+    font-size: 1.2rem;
+    color: var(--color-text);
+
+}
+
+
+
+.menu-toggle:active {
+
+    transform: scale(.95);
+
+}
+
+/* ===================================== */
+/* BODY COM MENU ABERTO */
+/* ===================================== */
+
+body.menu-aberto {
+
+    overflow: hidden;
+
+}
+
+
+/* ===================================== */
+/* RESPONSIVIDADE */
+/* ===================================== */
+
+@media (max-width: 768px) {
+
+    /* ------------------------- */
+    /* BOTÃO MENU */
+    /* ------------------------- */
+
+    .menu-toggle {
+
+        display: flex;
+
+        position: fixed;
+
+        top: 1rem;
+
+        left: 1rem;
+
+        width: 48px;
+
+        height: 48px;
+
+        align-items: center;
+
+        justify-content: center;
+
+        z-index: 1100;
+
+        box-shadow: var(--shadow-md);
+
+    }
+
+    /* ------------------------- */
+    /* CONTEÚDO */
+    /* ------------------------- */
+
+    .content {
+
+        margin-left: 0;
+
+        padding-top: 5rem;
+
+    }
+
+}

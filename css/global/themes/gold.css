@@ -1,0 +1,43 @@
+:root {
+
+    --color-primary: #D4AF37;
+
+    --color-primary-dark: #B8860B;
+
+    --color-primary-light: #E5C96B;
+
+    --color-secondary: #C89B3C;
+
+    /* NOVAS */
+
+    --color-sidebar: #141414;
+
+    --color-topbar: #181818;
+
+    --color-card: #1C1C1C;
+
+    /* Estados */
+
+    --color-success: #28A745;
+
+    --color-danger: #DC3545;
+
+    --color-warning: #FFC107;
+
+    --color-info: #17A2B8;
+
+    --color-white: #FFFFFF;
+
+    --color-black: #000000;
+
+    --color-background: #0D0D0D;
+
+    --color-surface: #1A1A1A;
+
+    --color-border: #2E2E2E;
+
+    --color-text: #F5F5F5;
+
+    --color-text-light: #C7C7C7;
+
+}

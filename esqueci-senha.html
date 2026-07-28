@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <!-- ========================= -->
+    <!-- META -->
+    <!-- ========================= -->
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        Recuperação de Senha
+
+    </title>
+
+    <!-- ========================= -->
+    <!-- GOOGLE FONTS -->
+    <!-- ========================= -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- ========================= -->
+    <!-- FONT AWESOME -->
+    <!-- ========================= -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- ========================= -->
+    <!-- CSS GLOBAL -->
+    <!-- ========================= -->
+
+    <link
+        rel="stylesheet"
+        href="/css/global/reset.css">
+
+    <link
+        rel="stylesheet"
+        href="/css/global/variables.css">
+
+    <link
+        rel="stylesheet"
+        href="/css/global/base.css">
+
+    <!-- ========================= -->
+    <!-- CSS LAYOUT -->
+    <!-- ========================= -->
+
+    <link
+        rel="stylesheet"
+        href="/css/layout/buttons.css">
+
+    <link
+        rel="stylesheet"
+        href="/css/layout/forms.css">
+
+    <!-- ========================= -->
+    <!-- CSS DA PÁGINA -->
+    <!-- ========================= -->
+
+    <link
+        rel="stylesheet"
+        href="/css/pages/esqueci-senha.css?v=2.0.0">
+
+</head>
+
+<body>
+
+    <!-- ========================= -->
+    <!-- CONTAINER -->
+    <!-- ========================= -->
+
+    <main class="recuperar-container">
+
+        <!-- ========================= -->
+        <!-- CARD -->
+        <!-- ========================= -->
+
+        <section class="recuperar-card">
+
+            <img
+
+                src="/images/assembleia-logo.png"
+
+                alt="Logo da Igreja"
+
+                class="logo">
+
+            <h1>
+
+                Recuperação de Senha
+
+            </h1>
+
+            <p class="subtitulo">
+
+                Informe o e-mail cadastrado.
+
+            </p>
+
+            <p class="descricao">
+
+                Caso exista uma conta vinculada ao e-mail informado,
+                enviaremos um link para que você possa redefinir sua
+                senha com segurança.
+
+            </p>
+
+            <!-- ========================= -->
+            <!-- FORMULÁRIO -->
+            <!-- ========================= -->
+
+            <form
+
+                id="formRecuperar"
+
+                autocomplete="on"
+
+                aria-label="Recuperação de senha">
+
+                <div class="campo">
+
+                    <label for="email">
+
+                        E-mail
+
+                    </label>
+
+                    <div class="input">
+
+                        <i class="fa-solid fa-envelope"></i>
+
+                        <input
+
+                            type="email"
+
+                            id="email"
+
+                            name="email"
+
+                            placeholder="Digite seu e-mail"
+
+                            autocomplete="email"
+
+                            required>
+
+                    </div>
+
+                </div>
+
+                <button
+
+                    type="submit"
+
+                    class="btn-enviar">
+
+                    <i class="fa-solid fa-paper-plane"></i>
+
+                    Enviar
+
+                </button>
+
+            </form>
+
+            <!-- ========================= -->
+            <!-- VOLTAR -->
+            <!-- ========================= -->
+
+            <a
+
+                href="/"
+
+                class="voltar">
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                Voltar à página inicial
+
+            </a>
+
+        </section>
+
+    </main>
+
+    <!-- ========================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+
+    <script src="/js/esqueci-senha/esqueci-senha.js?v=2.0.0"></script>
+
+</body>
+
+</html>

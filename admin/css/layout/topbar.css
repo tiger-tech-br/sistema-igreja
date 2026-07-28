@@ -1,0 +1,151 @@
+/* ===================================== */
+/* DASHBOARD */
+/* ===================================== */
+
+.dashboard {
+
+    display: flex;
+
+    min-height: 100vh;
+
+    background: var(--color-background);
+
+}
+
+/* ===================================== */
+/* CONTEÚDO */
+/* ===================================== */
+
+.content {
+
+    flex: 1;
+
+    margin-left: var(--sidebar-width);
+
+    padding: var(--space-8);
+
+    background: var(--color-background);
+
+    transition:
+
+        margin-left var(--transition-normal);
+
+}
+
+/* ===================================== */
+/* TOPBAR */
+/* ===================================== */
+
+.topbar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: var(--space-4);
+
+    margin-bottom: var(--space-8);
+
+    padding: var(--space-5) var(--space-6);
+
+    background: var(--color-topbar);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+}
+
+/* ===================================== */
+/* TÍTULOS */
+/* ===================================== */
+
+.topbar h1 {
+
+    color: var(--color-primary);
+
+    margin-bottom: var(--space-2);
+
+}
+
+.topbar p {
+
+    color: var(--color-white);
+
+    margin-bottom: 0;
+
+}
+
+/* ===================================== */
+/* AÇÕES */
+/* ===================================== */
+
+.topbar-actions,
+
+.topbar-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: var(--space-4);
+
+}
+
+/* ===================================== */
+/* BOTÕES */
+/* ===================================== */
+
+.topbar-actions .btn,
+
+.topbar-right .btn {
+
+    white-space: nowrap;
+
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE */
+/* ===================================== */
+
+@media (max-width: 768px) {
+
+    .content {
+
+        margin-left: 0;
+
+        padding: var(--space-5);
+
+    }
+
+    .topbar {
+
+        flex-wrap: wrap;
+
+        align-items: flex-start;
+
+        padding: var(--space-4);
+
+    }
+
+    .topbar-actions,
+
+    .topbar-right {
+
+        width: 100%;
+
+        justify-content: space-between;
+
+    }
+
+}
+
+.menu-toggle {
+
+    margin-left: auto;
+
+}

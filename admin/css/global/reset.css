@@ -1,0 +1,117 @@
+/* ===================================== */
+/* RESET CSS */
+/* ===================================== */
+
+*,
+*::before,
+*::after {
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+}
+
+/* ===================================== */
+/* HTML E BODY */
+/* ===================================== */
+
+html {
+
+    scroll-behavior: smooth;
+
+}
+
+body {
+
+    min-height: 100vh;
+
+    text-rendering: optimizeLegibility;
+
+    -webkit-font-smoothing: antialiased;
+
+}
+
+/* ===================================== */
+/* IMAGENS */
+/* ===================================== */
+
+img,
+picture,
+svg,
+video,
+canvas {
+
+    display: block;
+
+    max-width: 100%;
+
+}
+
+/* ===================================== */
+/* FORMULÁRIOS */
+/* ===================================== */
+
+input,
+button,
+textarea,
+select {
+
+    font: inherit;
+
+    border: none;
+
+    outline: none;
+
+    background: none;
+
+}
+
+/* ===================================== */
+/* BOTÕES */
+/* ===================================== */
+
+button {
+
+    cursor: pointer;
+
+}
+
+/* ===================================== */
+/* LINKS */
+/* ===================================== */
+
+a {
+
+    text-decoration: none;
+
+    color: inherit;
+
+}
+
+/* ===================================== */
+/* LISTAS */
+/* ===================================== */
+
+ul,
+ol {
+
+    list-style: none;
+
+}
+
+/* ===================================== */
+/* TABELAS */
+/* ===================================== */
+
+table {
+
+    border-collapse: collapse;
+
+    border-spacing: 0;
+
+    width: 100%;
+
+}

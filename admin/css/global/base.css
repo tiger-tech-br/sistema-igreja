@@ -1,0 +1,245 @@
+/* ===================================== */
+/* BODY */
+/* ===================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+
+    font-family: var(--font-family);
+
+    font-size: var(--font-size-md);
+
+    font-weight: var(--font-weight-regular);
+
+    color: var(--color-text);
+
+    background-color: var(--color-background);
+
+    line-height: 1.5;
+
+}
+
+/* ===================================== */
+/* TÍTULOS */
+/* ===================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+
+    font-weight: var(--font-weight-bold);
+
+    color: var(--color-white);
+
+    line-height: 1.2;
+
+}
+
+h1 {
+
+    font-size: var(--font-size-2xl);
+
+}
+
+h2 {
+
+    font-size: var(--font-size-xl);
+
+}
+
+h3 {
+
+    font-size: var(--font-size-lg);
+
+}
+
+/* ===================================== */
+/* PARÁGRAFOS */
+/* ===================================== */
+
+p {
+
+    color: var(--color-white);
+
+    margin-bottom: var(--space-4);
+
+}
+
+/* ===================================== */
+/* LINKS */
+/* ===================================== */
+
+a {
+
+    transition: color var(--transition-fast);
+
+}
+
+a:hover {
+
+    color: var(--color-primary);
+
+}
+
+/* ===================================== */
+/* IMAGENS */
+/* ===================================== */
+
+img {
+
+    user-select: none;
+
+}
+
+/* ===================================== */
+/* FORMULÁRIOS */
+/* ===================================== */
+
+label {
+
+    display: block;
+
+    margin-bottom: var(--space-2);
+
+    font-weight: var(--font-weight-medium);
+    
+    color: var(--color-white);
+
+}
+
+input,
+textarea,
+select {
+
+    width: 100%;
+
+}
+
+textarea {
+
+    resize: vertical;
+
+    min-height: 120px;
+
+}
+
+/* ===================================== */
+/* BOTÕES */
+/* ===================================== */
+
+button {
+
+    transition:
+
+        background-color var(--transition-fast),
+
+        color var(--transition-fast),
+
+        transform var(--transition-fast);
+
+}
+
+button:hover {
+
+    transform: translateY(-2px);
+
+}
+
+button:active {
+
+    transform: scale(.98);
+
+}
+
+/* ===================================== */
+/* TABELAS */
+/* ===================================== */
+
+th {
+
+    text-align: left;
+    color: var(--color-text);
+
+}
+
+td,
+th {
+
+    padding: var(--space-3);
+
+}
+
+
+td {
+    color: var(--color-white);
+}
+
+/* ===================================== */
+/* LINHAS */
+/* ===================================== */
+
+hr {
+
+    border: none;
+
+    border-top: 1px solid var(--color-border);
+
+    margin: var(--space-6) 0;
+
+}
+
+/* ===================================== */
+/* UTILITÁRIOS */
+/* ===================================== */
+
+.hidden {
+
+    display: none !important;
+
+}
+
+.container {
+
+    width: min(
+
+        100% - 2rem,
+
+        var(--container-width)
+
+    );
+
+    margin-inline: auto;
+
+}
+
+.text-center {
+
+    text-align: center;
+
+}
+
+.text-right {
+
+    text-align: right;
+
+}
+
+.text-left {
+
+    text-align: left;
+
+}
+
+.w-100 {
+
+    width: 100%;
+
+}

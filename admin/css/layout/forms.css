@@ -1,0 +1,309 @@
+/* ===================================== */
+/* FORMULÁRIO */
+/* ===================================== */
+
+form {
+
+    width: 100%;
+
+}
+
+/* ===================================== */
+/* GRID */
+/* ===================================== */
+
+.form-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: var(--space-5);
+
+    margin-bottom: var(--space-5);
+
+}
+
+/* ===================================== */
+/* GRUPO */
+/* ===================================== */
+
+.form-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+/* ===================================== */
+/* LABEL */
+/* ===================================== */
+
+.form-group label {
+
+    margin-bottom: var(--space-2);
+
+    font-size: var(--font-size-sm);
+
+    font-weight: var(--font-weight-medium);
+
+    color: var(--color-white);
+
+}
+
+/* ===================================== */
+/* INPUT */
+/* ===================================== */
+
+.form-group input,
+
+.form-group select,
+
+.form-group textarea {
+
+    width: 100%;
+
+    padding: .9rem 1rem;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-md);
+
+    background: var(--color-white);
+
+    color: var(--color-text);
+
+    font-size: var(--font-size-md);
+
+    transition:
+
+        border-color var(--transition-fast),
+
+        box-shadow var(--transition-fast);
+
+}
+
+/* ===================================== */
+/* FOCUS */
+/* ===================================== */
+
+.form-group input:focus,
+
+.form-group select:focus,
+
+.form-group textarea:focus {
+
+    border-color: var(--color-primary);
+
+    box-shadow:
+
+        0 0 0 3px rgba(15, 76, 129, .15);
+
+}
+
+/* ===================================== */
+/* PLACEHOLDER */
+/* ===================================== */
+
+.form-group input::placeholder,
+
+.form-group textarea::placeholder {
+
+    color: var(--color-text-light);
+
+}
+
+/* ===================================== */
+/* TEXTAREA */
+/* ===================================== */
+
+.form-group textarea {
+
+    resize: vertical;
+
+    min-height: 140px;
+
+}
+
+/* ===================================== */
+/* SELECT */
+/* ===================================== */
+
+.form-group select {
+
+    cursor: pointer;
+
+}
+
+/* ===================================== */
+/* INPUT COM ÍCONE */
+/* ===================================== */
+
+.input {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: var(--space-3);
+
+    padding: 0 .9rem;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-md);
+
+    background: var(--color-white);
+
+    transition:
+
+        border-color var(--transition-fast),
+
+        box-shadow var(--transition-fast);
+
+}
+
+.input:focus-within {
+
+    border-color: var(--color-primary);
+
+    box-shadow:
+
+        0 0 0 3px rgba(15, 76, 129, .15);
+
+}
+
+.input i {
+
+    color: var(--color-text-light);
+
+    font-size: 1rem;
+
+}
+
+.input input {
+
+    flex: 1;
+
+    border: none;
+
+    padding: .9rem 0;
+
+    background: transparent;
+
+}
+
+/* ===================================== */
+/* MENSAGEM DE ERRO */
+/* ===================================== */
+
+.erro-campo {
+
+    margin-top: var(--space-2);
+
+    font-size: var(--font-size-sm);
+
+    color: var(--color-danger);
+
+}
+
+/* ===================================== */
+/* BOTÕES DO FORMULÁRIO */
+/* ===================================== */
+
+.form-buttons {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: var(--space-4);
+
+    margin-top: var(--space-6);
+
+}
+
+/* ===================================== */
+/* CAMPO PESQUISA */
+/* ===================================== */
+
+.pesquisa {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: var(--space-3);
+
+    margin-bottom: var(--space-6);
+
+}
+
+.pesquisa input {
+
+    flex: 1;
+
+    padding: .9rem 1rem;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-md);
+
+    background: var(--color-white);
+
+}
+
+.pesquisa input:focus {
+
+    border-color: var(--color-primary);
+
+    box-shadow:
+
+        0 0 0 3px rgba(15, 76, 129, .15);
+
+}
+
+.pesquisa button {
+
+    min-width: 52px;
+
+}
+
+/* ===================================== */
+/* LOGIN */
+/* ===================================== */
+
+.campo {
+
+    margin-bottom: var(--space-5);
+
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE */
+/* ===================================== */
+
+@media (max-width: 768px) {
+
+    .form-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .form-buttons {
+
+        flex-direction: column;
+
+    }
+
+    .form-buttons button,
+
+    .form-buttons .btn {
+
+        width: 100%;
+
+    }
+
+}

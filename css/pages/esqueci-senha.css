@@ -1,0 +1,199 @@
+/* ===================================== */
+/* CONTAINER */
+/* ===================================== */
+
+.recuperar-container {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: var(--space-6);
+
+    background: #111111;
+
+}
+
+/* ===================================== */
+/* CARD */
+/* ===================================== */
+
+.recuperar-card {
+
+    width: 100%;
+
+    max-width: 450px;
+
+    background: #1b1b1b;
+
+    border: 1px solid #d4af37;
+
+    border-radius: var(--radius-xl);
+
+    padding: 2rem;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, .45),
+        0 0 20px rgba(212, 175, 55, .08);
+
+    transition: .3s ease;
+
+}
+
+.recuperar-card:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.55),
+        0 0 25px rgba(212,175,55,.15);
+
+}
+
+/* ===================================== */
+/* LOGO */
+/* ===================================== */
+
+.logo {
+
+    width: 100px;
+
+    display: block;
+
+    margin: 0 auto var(--space-4);
+
+}
+
+/* ===================================== */
+/* TÍTULOS */
+/* ===================================== */
+
+.recuperar-card h1 {
+
+    text-align: center;
+
+    margin-bottom: var(--space-2);
+
+    color: #ffffff;
+
+}
+
+.subtitulo {
+
+    text-align: center;
+
+    color: #d6d6d6;
+
+    margin-bottom: var(--space-3);
+
+}
+
+.descricao {
+
+    text-align: center;
+
+    color: var(--color-text-light);
+
+    line-height: 1.6;
+
+    margin-bottom: var(--space-6);
+
+}
+
+/* ===================================== */
+/* FORMULÁRIO */
+/* ===================================== */
+
+#formRecuperar {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+#email {
+    color: #1b1b1b;
+}
+/* ===================================== */
+/* BOTÃO */
+/* ===================================== */
+
+.btn-enviar {
+
+    width: 100%;
+
+    margin-top: var(--space-4);
+
+    color:#c29b24;
+
+}
+
+/* ===================================== */
+/* LINK VOLTAR */
+/* ===================================== */
+
+.voltar {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: var(--space-2);
+
+    margin-top: var(--space-5);
+
+    color: #d4af37;
+
+    font-weight: var(--font-weight-medium);
+
+    transition:
+        color var(--transition-fast);
+
+}
+
+.voltar:hover {
+
+    color: #c29b24;
+
+    text-decoration: underline;
+
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE */
+/* ===================================== */
+
+@media (max-width: 576px) {
+
+    .recuperar-container {
+
+        padding: var(--space-4);
+
+    }
+
+    .recuperar-card {
+
+        padding: var(--space-6);
+
+    }
+
+    .logo {
+
+        width: 90px;
+
+    }
+
+    .recuperar-card h1 {
+
+        font-size: var(--font-size-xl);
+
+    }
+
+}

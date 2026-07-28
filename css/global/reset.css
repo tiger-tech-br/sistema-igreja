@@ -1,0 +1,163 @@
+/* ===================================== */
+/* RESET CSS */
+/* ===================================== */
+
+*,
+*::before,
+*::after {
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+}
+
+/* ===================================== */
+/* HTML */
+/* ===================================== */
+
+html {
+
+    scroll-behavior: smooth;
+
+    -webkit-text-size-adjust: 100%;
+
+}
+
+/* ===================================== */
+/* BODY */
+/* ===================================== */
+
+body {
+
+    min-height: 100vh;
+
+    text-rendering: optimizeLegibility;
+
+    -webkit-font-smoothing: antialiased;
+
+    -moz-osx-font-smoothing: grayscale;
+
+}
+
+/* ===================================== */
+/* IMAGENS */
+/* ===================================== */
+
+img,
+picture,
+svg,
+canvas,
+video {
+
+    display: block;
+
+    max-width: 100%;
+
+    height: auto;
+
+}
+
+/* ===================================== */
+/* FORMULÁRIOS */
+/* ===================================== */
+
+input,
+button,
+textarea,
+select {
+
+    font: inherit;
+
+    color: inherit;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+}
+
+textarea {
+
+    resize: vertical;
+
+}
+
+/* ===================================== */
+/* BOTÕES */
+/* ===================================== */
+
+button {
+
+    cursor: pointer;
+
+}
+
+/* ===================================== */
+/* LINKS */
+/* ===================================== */
+
+a {
+
+    color: inherit;
+
+    text-decoration: none;
+
+}
+
+/* ===================================== */
+/* LISTAS */
+/* ===================================== */
+
+ul,
+ol {
+
+    list-style: none;
+
+}
+
+/* ===================================== */
+/* TABELAS */
+/* ===================================== */
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    border-spacing: 0;
+
+}
+
+/* ===================================== */
+/* ELEMENTOS EMBUTIDOS */
+/* ===================================== */
+
+strong,
+b {
+
+    font-weight: bolder;
+
+}
+
+em,
+i {
+
+    font-style: italic;
+
+}
+
+/* ===================================== */
+/* ELEMENTOS OCULTOS */
+/* ===================================== */
+
+[hidden] {
+
+    display: none !important;
+
+}

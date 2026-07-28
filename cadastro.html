@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <!-- ========================= -->
+    <!-- META -->
+    <!-- ========================= -->
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        Cadastro de Membro
+
+    </title>
+
+    <!-- ========================= -->
+    <!-- GOOGLE FONTS -->
+    <!-- ========================= -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- ========================= -->
+    <!-- FONT AWESOME -->
+    <!-- ========================= -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- ========================= -->
+    <!-- CSS -->
+    <!-- ========================= -->
+
+    <link
+        rel="stylesheet"
+        href="/css/global/reset.css">
+
+    <link
+        rel="stylesheet"
+        href="/css/global/variables.css">
+
+    <link
+        rel="stylesheet"
+        href="/css/global/base.css">
+
+    <link
+        rel="stylesheet"
+        href="/css/pages/cadastro.css">
+
+</head>
+
+<body>
+
+    <!-- ========================= -->
+    <!-- CONTAINER -->
+    <!-- ========================= -->
+
+    <main class="cadastro-container">
+
+        <!-- ========================= -->
+        <!-- CARD -->
+        <!-- ========================= -->
+
+        <section class="cadastro-card">
+
+            <!-- ========================= -->
+            <!-- CABEÇALHO -->
+            <!-- ========================= -->
+
+            <header class="cadastro-header">
+
+                <h1>
+
+                    Cadastro de Membro
+
+                </h1>
+
+                <p>
+
+                    Preencha seus dados para solicitar seu cadastro na igreja.
+
+                </p>
+
+            </header>
+
+            <!-- ========================= -->
+            <!-- FORMULÁRIO -->
+            <!-- ========================= -->
+
+            <form
+
+                id="formCadastro"
+
+                class="cadastro-form"
+
+                autocomplete="on">
+
+
+                            <!-- ========================= -->
+                <!-- DADOS PESSOAIS -->
+                <!-- ========================= -->
+
+                <section class="form-section">
+
+                    <h2>
+
+                        <i class="fa-solid fa-user"></i>
+
+                        Dados Pessoais
+
+                    </h2>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="nome">
+
+                                Nome Completo <span>*</span>
+
+                            </label>
+
+                            <input
+
+                                type="text"
+
+                                id="nome"
+
+                                name="nome"
+
+                                placeholder="Digite seu nome completo"
+
+                                autocomplete="name"
+
+                                required>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="dataNascimento">
+
+                                Data de Nascimento <span>*</span>
+
+                            </label>
+
+                            <input
+
+                                type="text"
+
+                                id="dataNascimento"
+
+                                name="dataNascimento"
+
+                                maxlength="10"
+
+                                inputmode="numeric"
+
+                                autocomplete="bday"
+
+                                placeholder="dd/mm/aaaa"
+
+                                required>
+
+                            <small
+
+                                id="erroData"
+
+                                class="erro-campo">
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="sexo">
+
+                                Sexo <span>*</span>
+
+                            </label>
+
+                            <select
+
+                                id="sexo"
+
+                                name="sexo"
+
+                                required>
+
+                                <option value="">
+
+                                    Selecione
+
+                                </option>
+
+                                <option value="Masculino">
+
+                                    Masculino
+
+                                </option>
+
+                                <option value="Feminino">
+
+                                    Feminino
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="estadoCivil">
+
+                                Estado Civil <span>*</span>
+
+                            </label>
+
+                            <select
+
+                                id="estadoCivil"
+
+                                name="estadoCivil"
+
+                                required>
+
+                                <option value="">
+
+                                    Selecione
+
+                                </option>
+
+                                <option value="Solteiro(a)">
+
+                                    Solteiro(a)
+
+                                </option>
+
+                                <option value="Casado(a)">
+
+                                    Casado(a)
+
+                                </option>
+
+                                <option value="Divorciado(a)">
+
+                                    Divorciado(a)
+
+                                </option>
+
+                                <option value="Viúvo(a)">
+
+                                    Viúvo(a)
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                                <!-- ========================= -->
+                <!-- CONTATO -->
+                <!-- ========================= -->
+
+                <section class="form-section">
+
+                    <h2>
+
+                        <i class="fa-solid fa-address-book"></i>
+
+                        Contato
+
+                    </h2>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="telefone">
+
+                                Telefone Fixo (Opcional) <span>*</span>
+
+                            </label>
+
+                            <input
+
+                                type="tel"
+
+                                id="telefone"
+
+                                name="telefone"
+
+                                placeholder="(11) 9999-9999"
+
+                                autocomplete="tel"
+
+                                >
+
+                        </div>
+
+                          <div class="form-group">
+
+                            <label for="celular">
+
+                                Celular <span>*</span>
+
+                            </label>
+
+                            <input
+
+                                type="tel"
+
+                                id="celular"
+
+                                name="celular"
+
+                                placeholder="(11) 99999-9999"
+
+                                autocomplete="tel"
+
+                                required>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="email">
+
+                                E-mail <span>*</span>
+
+                            </label>
+
+                            <input
+
+                                type="email"
+
+                                id="email"
+
+                                name="email"
+
+                                placeholder="email@exemplo.com"
+
+                                autocomplete="email"
+
+                                required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="senha">
+
+                                Senha <span>*</span>
+
+                            </label>
+
+                            <input
+
+                                type="password"
+
+                                id="senha"
+
+                                name="senha"
+
+                                placeholder="Crie uma senha"
+
+                                autocomplete="new-password"
+
+                                minlength="8"
+
+                                required>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="confirmarSenha">
+
+                                Confirmar Senha <span>*</span>
+
+                            </label>
+
+                            <input
+
+                                type="password"
+
+                                id="confirmarSenha"
+
+                                name="confirmarSenha"
+
+                                placeholder="Confirme sua senha"
+
+                                autocomplete="new-password"
+
+                                minlength="8"
+
+                                required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="endereco">
+
+                            Endereço <span>*</span>
+
+                        </label>
+
+                        <input
+
+                            type="text"
+
+                            id="endereco"
+
+                            name="endereco"
+
+                            placeholder="Rua, número, bairro, cidade..."
+
+                            autocomplete="street-address"
+
+                            required>
+
+                    </div>
+
+                </section>
+
+
+                                <!-- ========================= -->
+                <!-- OBSERVAÇÕES -->
+                <!-- ========================= -->
+
+                <section class="form-section">
+
+                    <h2>
+
+                        <i class="fa-solid fa-note-sticky"></i>
+
+                        Observações
+
+                    </h2>
+
+                    <div class="form-group">
+
+                        <textarea
+
+                            id="observacoes"
+
+                            name="observacoes"
+
+                            rows="5"
+
+                            placeholder="Caso queira informar alguma observação, escreva aqui (Opcional).">
+
+                        </textarea>
+
+                    </div>
+
+                </section>
+
+                <!-- ========================= -->
+                <!-- AVISO -->
+                <!-- ========================= -->
+
+                <div class="cadastro-info">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <p>
+
+                        Após o envio, seu cadastro será analisado pela administração da igreja.
+                        Você será liberado para acessar o sistema após a aprovação.
+
+                    </p>
+
+                </div>
+
+                <!-- ========================= -->
+                <!-- BOTÕES -->
+                <!-- ========================= -->
+
+                <div class="form-buttons">
+
+                    <button
+
+                        type="reset"
+
+                        class="btn-cancelar">
+
+                        <i class="fa-solid fa-eraser"></i>
+
+                        Limpar
+
+                    </button>
+
+                    <button
+
+                        type="submit"
+
+                        class="btn-salvar">
+
+                        <i class="fa-solid fa-paper-plane"></i>
+
+                        Enviar Cadastro
+
+                    </button>
+
+                </div>
+
+            </form>
+
+            <!-- ========================= -->
+            <!-- RODAPÉ -->
+            <!-- ========================= -->
+
+            <footer class="cadastro-footer">
+
+                <a
+
+                    href="/"
+
+                    class="voltar-site">
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Voltar ao site
+
+                </a>
+
+            </footer>
+
+        </section>
+
+    </main>
+
+    <!-- ========================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+
+    <script src="/js/cadastro/cadastro.js"></script>
+
+</body>
+
+</html>

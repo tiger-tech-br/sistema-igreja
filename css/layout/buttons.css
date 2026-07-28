@@ -1,0 +1,205 @@
+/* ===================================== */
+/* BOTÃO BASE */
+/* ===================================== */
+
+button,
+.btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: var(--space-2);
+
+    padding: .8rem 1.4rem;
+
+    border: none;
+
+    border-radius: var(--radius-md);
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-size: var(--font-size-md);
+
+    font-weight: var(--font-weight-medium);
+
+    text-decoration: none;
+
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+
+}
+
+/* ===================================== */
+/* ESTADO DESABILITADO */
+/* ===================================== */
+
+button:disabled,
+.btn:disabled {
+
+    opacity: .6;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+}
+
+/* ===================================== */
+/* BOTÃO PRIMÁRIO */
+/* ===================================== */
+
+.btn-primary,
+.btn-login {
+
+    background: var(--color-primary);
+
+    color: var(--color-white);
+
+}
+
+.btn-primary:hover,
+.btn-login:hover {
+
+    background: var(--color-primary-dark);
+
+}
+
+/* ===================================== */
+/* BOTÃO SECUNDÁRIO */
+/* ===================================== */
+
+.btn-secondary {
+
+    background: var(--color-secondary);
+
+    color: var(--color-white);
+
+}
+
+.btn-secondary:hover {
+
+    filter: brightness(.95);
+
+}
+
+/* ===================================== */
+/* BOTÃO SUCESSO */
+/* ===================================== */
+
+.btn-success {
+
+    background: var(--color-success);
+
+    color: var(--color-white);
+
+}
+
+.btn-success:hover {
+
+    filter: brightness(.95);
+
+}
+
+/* ===================================== */
+/* BOTÃO PERIGO */
+/* ===================================== */
+
+.btn-danger {
+
+    background: var(--color-danger);
+
+    color: var(--color-white);
+
+}
+
+.btn-danger:hover {
+
+    filter: brightness(.95);
+
+}
+
+/* ===================================== */
+/* BOTÃO CANCELAR */
+/* ===================================== */
+
+.btn-cancelar {
+
+    background: var(--color-text-muted);
+
+    color: var(--color-white);
+
+}
+
+.btn-cancelar:hover {
+
+    background: var(--color-text);
+
+}
+
+/* ===================================== */
+/* BOTÃO VOLTAR */
+/* ===================================== */
+
+.btn-voltar {
+
+    background: transparent;
+
+    color: var(--color-primary);
+
+    border: 2px solid var(--color-primary);
+
+}
+
+.btn-voltar:hover {
+
+    background: var(--color-primary);
+
+    color: var(--color-white);
+
+}
+
+/* ===================================== */
+/* BOTÃO MENU MOBILE */
+/* ===================================== */
+
+.menu-toggle {
+
+    display: none;
+
+    width: 46px;
+
+    height: 46px;
+
+    border-radius: 50%;
+
+    background: var(--color-primary);
+
+    color: var(--color-white);
+
+}
+
+.menu-toggle:hover {
+
+    background: var(--color-primary-dark);
+
+}
+
+/* ===================================== */
+/* ÍCONES DOS BOTÕES */
+/* ===================================== */
+
+button i,
+.btn i {
+
+    font-size: 1rem;
+
+}

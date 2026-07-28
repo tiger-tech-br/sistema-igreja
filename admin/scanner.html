@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <!-- ========================= -->
+    <!-- META -->
+    <!-- ========================= -->
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        Scanner | Painel Administrativo
+
+    </title>
+
+    <!-- ========================= -->
+    <!-- GOOGLE FONTS -->
+    <!-- ========================= -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- ========================= -->
+    <!-- FONT AWESOME -->
+    <!-- ========================= -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- ========================= -->
+    <!-- CSS -->
+    <!-- ========================= -->
+
+    <link
+        rel="stylesheet"
+        href="/admin/css/global/global.css">
+
+    <link
+        rel="stylesheet"
+        href="/admin/css/layout/layout.css">
+
+    <link
+        rel="stylesheet"
+        href="/admin/css/pages/scanner.css?v=2.0.0">
+
+</head>
+
+<body>
+
+    <!-- ========================= -->
+    <!-- CONTAINER -->
+    <!-- ========================= -->
+
+    <main class="scanner-container">
+
+        <!-- ========================= -->
+        <!-- CARD -->
+        <!-- ========================= -->
+
+        <section class="scanner-card">
+
+            <img
+
+                src="/images/assembleia-logo.png"
+
+                alt="Logo da Igreja"
+
+                class="logo">
+
+            <h1>
+
+                Escanear QR Code
+
+            </h1>
+
+            <p>
+
+                Aponte a câmera para o QR Code do membro.
+
+            </p>
+
+            <!-- ========================= -->
+            <!-- LEITOR -->
+            <!-- ========================= -->
+
+            <div
+
+                id="reader"
+
+                aria-label="Leitor de QR Code">
+
+            </div>
+
+            <!-- ========================= -->
+            <!-- BOTÃO -->
+            <!-- ========================= -->
+
+            <button
+
+                id="btnCancelar"
+
+                type="button"
+
+                class="btn-cancelar">
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                Voltar
+
+            </button>
+
+        </section>
+
+    </main>
+
+    <!-- ========================= -->
+    <!-- HTML5 QR CODE -->
+    <!-- ========================= -->
+
+    <script
+
+        src="https://unpkg.com/html5-qrcode">
+
+    </script>
+
+    <!-- ========================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+
+    <script
+
+        src="/admin/js/scanner/scanner.js?v=2.0.0">
+
+    </script>
+
+</body>
+
+</html>

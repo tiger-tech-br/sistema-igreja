@@ -1,0 +1,37 @@
+/* ===================================== */
+/* CORES */
+/* ===================================== */
+
+:root {
+
+    --color-primary: #0F4C81;
+
+    --color-primary-dark: #0B3A63;
+
+    --color-primary-light: #2E6EA6;
+
+    --color-secondary: #D4AF37;
+
+    --color-success: #28A745;
+
+    --color-danger: #DC3545;
+
+    --color-warning: #FFC107;
+
+    --color-info: #17A2B8;
+
+    --color-white: #FFFFFF;
+
+    --color-black: #000000;
+
+    --color-background: #F5F7FA;
+
+    --color-surface: #FFFFFF;
+
+    --color-border: #E3E6EA;
+
+    --color-text: #2C3E50;
+
+    --color-text-light: #6C757D;
+
+}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+    <head>
+
+        <!-- ========================= -->
+        <!-- META -->
+        <!-- ========================= -->
+
+        <meta charset="UTF-8">
+
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0">
+
+        <title>
+
+            Login | Área Administrativa
+
+        </title>
+
+        <!-- ========================= -->
+        <!-- GOOGLE FONTS -->
+        <!-- ========================= -->
+
+        <link
+            rel="preconnect"
+            href="https://fonts.googleapis.com">
+
+        <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossorigin>
+
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet">
+
+        <!-- ========================= -->
+        <!-- FONT AWESOME -->
+        <!-- ========================= -->
+
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+        <!-- ========================= -->
+        <!-- CSS GLOBAL -->
+        <!-- ========================= -->
+
+        <link
+            rel="stylesheet"
+            href="/admin/css/global/reset.css">
+
+        <link
+            rel="stylesheet"
+            href="/admin/css/global/variables.css">
+
+        <link
+            rel="stylesheet"
+            href="/admin/css/global/base.css">
+
+        <!-- ========================= -->
+        <!-- CSS LAYOUT -->
+        <!-- ========================= -->
+
+        <link
+            rel="stylesheet"
+            href="/admin/css/layout/buttons.css">
+
+        <link
+            rel="stylesheet"
+            href="/admin/css/layout/forms.css">
+
+        <!-- ========================= -->
+        <!-- CSS DA PÁGINA -->
+        <!-- ========================= -->
+
+        <link
+            rel="stylesheet"
+            href="/admin/css/pages/login-admin.css?v=2.0.0">
+
+    </head>
+
+    <body>
+
+    <!-- ========================= -->
+    <!-- CONTAINER -->
+    <!-- ========================= -->
+
+    <main class="login-container">
+
+        <!-- ========================= -->
+        <!-- CARD -->
+        <!-- ========================= -->
+
+        <section class="login-card">
+
+            <img
+
+                src="/images/assembleia-logo.png"
+
+                alt="Logo da Igreja"
+
+                class="logo">
+
+            <h1>
+
+                Assembleia de Deus
+
+            </h1>
+
+            <p class="subtitulo">
+
+                Área Administrativa
+
+            </p>
+
+            <!-- ========================= -->
+            <!-- FORMULÁRIO -->
+            <!-- ========================= -->
+
+            <form
+
+                id="formLogin"
+
+                autocomplete="on" aria-label="Formulário de login">
+
+                <div class="campo">
+
+                    <label for="email">
+
+                        E-mail
+
+                    </label>
+
+                    <div class="input">
+
+                        <i class="fa-solid fa-envelope"></i>
+
+                        <input
+
+                            type="email"
+
+                            id="email"
+
+                            placeholder="Digite seu e-mail"
+
+                            autocomplete="email"
+
+                            required>
+
+                    </div>
+
+                </div>
+
+                <div class="campo">
+
+                    <label for="senha">
+
+                        Senha
+
+                    </label>
+
+                    <div class="input">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <input
+
+                            type="password"
+
+                            id="senha"
+
+                            placeholder="Digite sua senha"
+
+                            autocomplete="current-password"
+
+                            required>
+
+                    </div>
+
+                </div>
+
+                <button
+
+                    type="submit"
+
+                    class="btn-login">
+
+                    <i class="fa-solid fa-right-to-bracket"></i>
+
+                    Entrar
+
+                </button>
+
+                <a
+
+                    href="/esqueci-senha"
+
+                    id="esqueceuSenha"
+
+                    class="esqueceu-senha">
+
+                    Esqueceu sua senha?
+
+                </a>
+
+            </form>
+
+
+        </section>
+
+    </main>
+
+    <!-- ========================= -->
+    <!-- MODAL -->
+    <!-- ========================= -->
+
+   
+
+    <!-- ========================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+
+    <script src="/admin/js/login-admin/login-admin.js?v=2.0.0"></script>
+
+</body>
+
+
+
+</html>

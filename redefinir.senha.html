@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        Redefinir Senha
+
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/css/pages/redefinir-senha.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+    <main class="redefinir-container">
+
+        <section class="redefinir-card">
+
+            <img
+
+                src="/images/assembleia-logo.png"
+
+                alt="Logo"
+
+                class="logo"
+
+            >
+
+            <h1>
+
+                Redefinir senha
+
+            </h1>
+
+            <p>
+
+                Digite uma nova senha para acessar sua conta.
+
+            </p>
+
+            <form
+
+                id="formRedefinirSenha"
+
+                autocomplete="off"
+
+            >
+
+                            <div class="campo">
+
+                    <label for="senha">
+
+                        Nova senha
+
+                    </label>
+
+                    <div class="input-senha">
+
+                        <input
+
+                            type="password"
+
+                            id="senha"
+
+                            name="senha"
+
+                            required
+
+                            minlength="8"
+
+                        >
+
+                        <button
+
+                            type="button"
+
+                            id="mostrarSenha"
+
+                            class="btn-olho"
+
+                        >
+
+                            <i
+
+                                class="fa-solid fa-eye"
+
+                            ></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                                <div class="campo">
+
+                    <label for="confirmarSenha">
+
+                        Confirmar senha
+
+                    </label>
+
+                    <div class="input-senha">
+
+                        <input
+
+                            type="password"
+
+                            id="confirmarSenha"
+
+                            name="confirmarSenha"
+
+                            required
+
+                            minlength="8"
+
+                        >
+
+                        <button
+
+                            type="button"
+
+                            id="mostrarConfirmacao"
+
+                            class="btn-olho"
+
+                        >
+
+                            <i
+
+                                class="fa-solid fa-eye"
+
+                            ></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                                <button
+
+                    type="submit"
+
+                    class="btn-redefinir"
+
+                >
+
+                    Redefinir senha
+
+                </button>
+
+            </form>
+
+            <a
+
+                href="/"
+
+                class="voltar"
+
+            >
+
+                Voltar para a página inicial
+
+            </a>
+
+        </section>
+
+    </main>
+
+    <script src="/js/auth/redefinir-senha.js"></script>
+
+</body>
+
+</html>

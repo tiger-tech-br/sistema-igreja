@@ -1,0 +1,157 @@
+/* ===================================== */
+/* CONTAINER */
+/* ===================================== */
+
+.scanner-container {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: var(--space-6);
+
+    background: var(--color-background);
+
+}
+
+/* ===================================== */
+/* CARD */
+/* ===================================== */
+
+.scanner-card {
+
+    width: 100%;
+
+    max-width: 600px;
+
+}
+
+/* ===================================== */
+/* LOGO */
+/* ===================================== */
+
+.logo {
+
+    display: block;
+
+    width: 200px;
+
+    margin: 0 auto var(--space-5);
+
+}
+
+/* ===================================== */
+/* TÍTULO */
+/* ===================================== */
+
+.scanner-card h1 {
+
+    text-align: center;
+
+    margin-bottom: var(--space-3);
+
+}
+
+/* ===================================== */
+/* DESCRIÇÃO */
+/* ===================================== */
+
+.scanner-card p {
+
+    text-align: center;
+
+    margin-bottom: var(--space-6);
+
+}
+
+/* ===================================== */
+/* LEITOR QR CODE */
+/* ===================================== */
+
+#reader {
+
+    width: 100%;
+
+    max-width: 420px;
+
+    margin: 0 auto var(--space-6);
+
+    border-radius: var(--radius-lg);
+
+    overflow: hidden;
+
+    box-shadow: var(--shadow-sm);
+
+}
+
+/* ===================================== */
+/* CÂMERA */
+/* ===================================== */
+
+#reader video {
+
+    border-radius: var(--radius-lg);
+
+}
+
+/* ===================================== */
+/* CANVAS */
+/* ===================================== */
+
+#reader canvas {
+
+    border-radius: var(--radius-lg);
+
+}
+
+/* ===================================== */
+/* BOTÃO */
+/* ===================================== */
+
+#btnCancelar {
+
+    width: 100%;
+    background-color: var(--color-primary);
+    color: var(--color-text);
+
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE */
+/* ===================================== */
+
+@media (max-width: 768px) {
+
+    .scanner-container {
+
+        padding: var(--space-4);
+
+    }
+
+    .scanner-card {
+
+        padding: var(--space-6);
+
+    }
+
+    .logo {
+
+        width: 90px;
+
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    #reader {
+
+        max-width: 100%;
+
+    }
+
+}

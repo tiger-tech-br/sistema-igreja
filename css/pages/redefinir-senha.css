@@ -1,0 +1,299 @@
+/* =====================================
+   RESET
+===================================== */
+
+* {
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+}
+
+/* =====================================
+   BODY
+===================================== */
+
+body {
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #111;
+
+    color: #fff;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    min-height: 100vh;
+
+    padding: 20px;
+
+}
+
+/* =====================================
+   CONTAINER
+===================================== */
+
+.redefinir-container {
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+/* =====================================
+   CARD
+===================================== */
+
+.redefinir-card {
+
+    width: 100%;
+
+    max-width: 470px;
+
+    background: #1b1b1b;
+
+    border: 1px solid #d4af37;
+
+    border-radius: 10px;
+
+    padding: 35px;
+
+    box-shadow: 0 0 20px rgba(212,175,55,.15);
+
+}
+
+/* =====================================
+   LOGO
+===================================== */
+
+.logo {
+
+    width: 120px;
+
+    display: block;
+
+    margin: 0 auto 25px;
+
+}
+
+/* =====================================
+   TÍTULO
+===================================== */
+
+.redefinir-card h1 {
+
+    text-align: center;
+
+    color: #d4af37;
+
+    margin-bottom: 15px;
+
+}
+
+/* =====================================
+   TEXTO
+===================================== */
+
+.redefinir-card p {
+
+    text-align: center;
+
+    color: #ddd;
+
+    margin-bottom: 30px;
+
+    line-height: 1.6;
+
+}
+
+/* =====================================
+   FORMULÁRIO
+===================================== */
+
+form {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+
+}
+
+/* =====================================
+   CAMPO
+===================================== */
+
+.campo {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+/* =====================================
+   LABEL
+===================================== */
+
+.campo label {
+
+    margin-bottom: 8px;
+
+    color: #f2f2f2;
+
+    font-weight: bold;
+
+}
+
+/* =====================================
+   INPUT + BOTÃO
+===================================== */
+
+.input-senha {
+
+    position: relative;
+
+}
+
+/* =====================================
+   INPUT
+===================================== */
+
+.input-senha input {
+
+    width: 100%;
+
+    height: 50px;
+
+    padding: 0 50px 0 15px;
+
+    border: 1px solid #555;
+
+    border-radius: 8px;
+
+    background: #262626;
+
+    color: #fff;
+
+    font-size: 16px;
+
+    outline: none;
+
+    transition: .3s;
+
+}
+
+.input-senha input:focus {
+
+    border-color: #d4af37;
+
+}
+
+/* =====================================
+   BOTÃO OLHO
+===================================== */
+
+.btn-olho {
+
+    position: absolute;
+
+    right: 10px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    background: transparent;
+
+    border: none;
+
+    color: #d4af37;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+}
+
+/* =====================================
+   BOTÃO
+===================================== */
+
+.btn-redefinir {
+
+    height: 50px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #d4af37;
+
+    color: #111;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: .3s;
+
+}
+
+.btn-redefinir:hover {
+
+    background: #c29b24;
+
+}
+
+/* =====================================
+   LINK
+===================================== */
+
+.voltar {
+
+    display: block;
+
+    text-align: center;
+
+    margin-top: 25px;
+
+    color: #d4af37;
+
+    text-decoration: none;
+
+}
+
+.voltar:hover {
+
+    text-decoration: underline;
+
+}
+
+/* =====================================
+   RESPONSIVO
+===================================== */
+
+@media (max-width: 480px) {
+
+    .redefinir-card {
+
+        padding: 25px;
+
+    }
+
+}

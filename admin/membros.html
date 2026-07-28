@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <!-- ========================= -->
+    <!-- META -->
+    <!-- ========================= -->
+
+    <meta charset="UTF-8">
+
+    <meta
+
+        name="viewport"
+
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        Membros | Painel Administrativo
+
+    </title>
+
+    <!-- ========================= -->
+    <!-- GOOGLE FONTS -->
+    <!-- ========================= -->
+
+    <link
+
+        rel="preconnect"
+
+        href="https://fonts.googleapis.com">
+
+    <link
+
+        rel="preconnect"
+
+        href="https://fonts.gstatic.com"
+
+        crossorigin>
+
+    <link
+
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+
+        rel="stylesheet">
+
+    <!-- ========================= -->
+    <!-- FONT AWESOME -->
+    <!-- ========================= -->
+
+    <link
+
+        rel="stylesheet"
+
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- ========================= -->
+    <!-- CSS GLOBAL -->
+    <!-- ========================= -->
+
+    <link rel="stylesheet" href="/admin/css/global/reset.css">
+
+    <link rel="stylesheet" href="/admin/css/global/variables.css">
+
+    <link rel="stylesheet" href="/admin/css/global/base.css">
+
+    <link rel="stylesheet" href="/admin/css/layout/layout.css">
+
+    <link rel="stylesheet" href="/admin/css/pages/membros.css?v=2.0.0">
+
+</head>
+
+<body>
+
+    <!-- ========================= -->
+    <!-- OVERLAY -->
+    <!-- ========================= -->
+
+    <div class="overlay"></div>
+
+        <button
+
+            id="btnMenu"
+
+            class="menu-toggle"
+
+            aria-label="Abrir menu">
+
+            <i class="fa-solid fa-bars"></i>
+
+        </button>
+
+    <!-- ========================= -->
+    <!-- DASHBOARD -->
+    <!-- ========================= -->
+
+    <div class="dashboard">
+
+        <!-- ========================= -->
+        <!-- SIDEBAR -->
+        <!-- ========================= -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+
+                <img
+
+                    src="/images/assembleia-logo.png"
+
+                    alt="Logo da Igreja">
+
+            </div>
+
+            <nav>
+
+                <ul class="menu">
+
+                    <li>
+
+                        <a href="/dashboard">
+
+                            <i class="fa-solid fa-chart-line"></i>
+
+                            Dashboard
+
+                        </a>
+
+                    </li>
+
+                    <li class="active">
+
+                        <a href="/admin/membros">
+
+                            <i class="fa-solid fa-users"></i>
+
+                            Membros
+
+                        </a>
+
+                    </li>
+
+                    <li class="logout">
+
+                        <a href="/logout">
+
+                            <i class="fa-solid fa-right-from-bracket"></i>
+
+                            Sair
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </nav>
+
+        </aside>
+
+        <!-- ========================= -->
+        <!-- CONTEÚDO -->
+        <!-- ========================= -->
+
+        <main class="content">
+
+            <!-- ========================= -->
+            <!-- TOPBAR -->
+            <!-- ========================= -->
+
+            <header class="topbar">
+
+                <div>
+
+                    <h1>
+
+                        Membros
+
+                    </h1>
+
+                    <p>
+
+                        Gerencie todos os membros cadastrados.
+
+                    </p>
+
+                </div>
+
+                <div class="topbar-actions">
+
+                    <a
+
+                        href="/cadastro"
+
+                        class="novo-membro">
+
+                        <i class="fa-solid fa-plus"></i>
+
+                        Novo Membro
+
+                    </a>
+
+  
+
+                </div>
+
+            </header>
+
+            <!-- ========================= -->
+            <!-- PESQUISA -->
+            <!-- ========================= -->
+
+            <section class="pesquisa">
+
+                <input
+
+                    type="text"
+
+                    id="pesquisa"
+
+                    placeholder="Pesquisar membro...">
+
+                <button
+
+                    type="button"
+
+                    aria-label="Pesquisar" class="btn-pesquisar">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                </button>
+
+            </section>
+
+            <!-- ========================= -->
+            <!-- LISTA DE MEMBROS -->
+            <!-- ========================= -->
+
+            <section
+
+                class="lista-membros"
+
+                id="lista-membros">
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+
+    <script
+
+        src="/admin/js/layout/menu.js?v=2.0.0">
+
+    </script>
+
+    <script
+
+        src="/admin/js/membros/membros.js?v=2.0.0">
+
+    </script>
+
+</body>
+
+</html>
