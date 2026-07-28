@@ -1,4 +1,4 @@
--- =====================================
+﻿-- =====================================
 -- TABELA DE ADMINISTRADORES
 -- =====================================
 
@@ -51,9 +51,6 @@ CREATE TABLE membros (
     sexo VARCHAR(20),
 
     estado_civil VARCHAR(30),
-
-    observacoes TEXT,
-
     matricula VARCHAR(30) NOT NULL UNIQUE,
 
     validade DATE NOT NULL,

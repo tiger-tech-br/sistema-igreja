@@ -1,5 +1,5 @@
-// =====================================
-// IMPORTAÇÃO
+﻿// =====================================
+// IMPORTAÃ‡ÃƒO
 // =====================================
 
 const pool =
@@ -33,7 +33,6 @@ class MembroModel {
             ministerio,
             sexo,
             estadoCivil,
-            observacoes,
             matricula,
             validade
 
@@ -67,7 +66,6 @@ class MembroModel {
                 ministerio,
                 sexo,
                 estado_civil,
-                observacoes,
                 matricula,
                 validade
 
@@ -75,7 +73,7 @@ class MembroModel {
 
             VALUES (
 
-                $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15
+                $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14
 
             )
 
@@ -92,7 +90,6 @@ class MembroModel {
                 ministerio,
                 sexo,
                 estado_civil,
-                observacoes,
                 matricula,
                 validade,
                 qr_code,
@@ -125,9 +122,6 @@ class MembroModel {
                     sexo,
 
                     estadoCivil,
-
-                    observacoes,
-
                     matricula,
 
                     validade
@@ -194,10 +188,7 @@ class MembroModel {
             sexo,
 
             estado_civil,
-
-            observacoes,
-
-            matricula,
+                matricula,
 
             TO_CHAR(
 
@@ -338,7 +329,7 @@ async buscarPorEmail(email) {
 }
 
 // =====================================
-// SALVAR TOKEN DE RECUPERAÇÃO
+// SALVAR TOKEN DE RECUPERAÃ‡ÃƒO
 // =====================================
 
 async salvarTokenRecuperacao(
@@ -618,9 +609,6 @@ async limparTokenRecuperacao(
                 sexo,
 
                 estado_civil,
-
-                observacoes,
-
                 matricula,
 
                 TO_CHAR(
@@ -673,7 +661,7 @@ async limparTokenRecuperacao(
     }
 
     // =====================================
-    // BUSCAR POR MATRÍCULA
+    // BUSCAR POR MATRÃCULA
     // =====================================
 
     async buscarPorMatricula(matricula) {
@@ -737,8 +725,6 @@ async limparTokenRecuperacao(
             ministerio,
             sexo,
             estadoCivil,
-            observacoes
-
         } = dados;
 
         const sql = `
@@ -756,11 +742,8 @@ async limparTokenRecuperacao(
                 cargo = $7,
                 ministerio = $8,
                 sexo = $9,
-                estado_civil = $10,
-                observacoes = $11
-                
-
-            WHERE id = $12
+                estado_civil = $10
+            WHERE id = $11
 
             RETURNING
                 id,
@@ -775,7 +758,6 @@ async limparTokenRecuperacao(
                 ministerio,
                 sexo,
                 estado_civil,
-                observacoes,
                 matricula,
                 validade,
                 qr_code,
@@ -804,9 +786,6 @@ async limparTokenRecuperacao(
             sexo,
 
             estadoCivil,
-
-            observacoes,
-
             id
 
         ];
@@ -940,7 +919,7 @@ async limparTokenRecuperacao(
     }
 
     // =====================================
-    // LISTAR SEM MATRÍCULA
+    // LISTAR SEM MATRÃCULA
     // =====================================
 
     async listarSemMatricula() {
@@ -981,7 +960,7 @@ async limparTokenRecuperacao(
     }
 
     // =====================================
-    // ATUALIZAR MATRÍCULA E VALIDADE
+    // ATUALIZAR MATRÃCULA E VALIDADE
     // =====================================
 
     async atualizarMatriculaValidade(
@@ -1043,7 +1022,7 @@ async limparTokenRecuperacao(
     }
 
     // =====================================
-    // ÚLTIMOS MEMBROS
+    // ÃšLTIMOS MEMBROS
     // =====================================
 
     async listarUltimos(limit = 5) {
@@ -1168,7 +1147,7 @@ async registrarAcesso(
 }
 
 // =====================================
-// LISTAR ÚLTIMOS ACESSOS
+// LISTAR ÃšLTIMOS ACESSOS
 // =====================================
 
 async listarUltimosAcessos(
@@ -1290,7 +1269,7 @@ async dashboard() {
 }
 
 // =====================================
-// EXPORTAÇÃO
+// EXPORTAÃ‡ÃƒO
 // =====================================
 
 module.exports = new MembroModel();

@@ -1,4 +1,4 @@
-// =====================================
+﻿// =====================================
 // CADASTRO DE MEMBROS
 // =====================================
 
@@ -48,14 +48,11 @@ const campoDataNascimento =
 const campoSenha =
     document.getElementById("senha");
 
-const campoObservacoes =
-    document.getElementById("observacoes");
-
 const erroData =
     document.getElementById("erroData");
 
 // =====================================
-// UTILITÁRIOS
+// UTILITÃRIOS
 // =====================================
 
 function estaEditando() {
@@ -113,7 +110,7 @@ function marcarDataValida() {
 }
 
 // =====================================
-// MÁSCARA CELULAR
+// MÃSCARA CELULAR
 // =====================================
 
 function aplicarMascaraCelular() {
@@ -167,7 +164,7 @@ function aplicarMascaraCelular() {
 }
 
 // =====================================
-// MÁSCARA TELEFONE
+// MÃSCARA TELEFONE
 // =====================================
 
 function aplicarMascaraTelefone() {
@@ -209,7 +206,7 @@ function aplicarMascaraTelefone() {
 }
 
 // =====================================
-// MÁSCARA DATA
+// MÃSCARA DATA
 // =====================================
 
 function aplicarMascaraData() {
@@ -344,7 +341,7 @@ function validarDataNascimento() {
 
         mostrarErroData(
 
-            "Formato inválido. Utilize DD/MM/AAAA."
+            "Formato invÃ¡lido. Utilize DD/MM/AAAA."
 
         );
 
@@ -380,7 +377,7 @@ function validarDataNascimento() {
 
         mostrarErroData(
 
-            "Mês inválido."
+            "MÃªs invÃ¡lido."
 
         );
 
@@ -432,7 +429,7 @@ function validarDataNascimento() {
 
         mostrarErroData(
 
-            "Dia inválido."
+            "Dia invÃ¡lido."
 
         );
 
@@ -447,7 +444,7 @@ function validarDataNascimento() {
 }
 
 // =====================================
-// VALIDAR FORMULÁRIO
+// VALIDAR FORMULÃRIO
 // =====================================
 
 function validarFormulario() {
@@ -456,7 +453,7 @@ function validarFormulario() {
 
         alert(
 
-            "Informe um nome válido."
+            "Informe um nome vÃ¡lido."
 
         );
 
@@ -470,7 +467,7 @@ function validarFormulario() {
 
         alert(
 
-            "Informe um celular válido."
+            "Informe um celular vÃ¡lido."
 
         );
 
@@ -484,7 +481,7 @@ function validarFormulario() {
 
         alert(
 
-            "Informe um telefone fixo válido ou deixe em branco."
+            "Informe um telefone fixo vÃ¡lido ou deixe em branco."
 
         );
 
@@ -498,7 +495,7 @@ function validarFormulario() {
 
         alert(
 
-            "Informe um e-mail válido."
+            "Informe um e-mail vÃ¡lido."
 
         );
 
@@ -535,23 +532,10 @@ function validarFormulario() {
 }
 
 // =====================================
-// OBTER DADOS DO FORMULÁRIO
+// OBTER DADOS DO FORMULÃRIO
 // =====================================
 
 function obterDadosFormulario() {
-
-    console.log({
-    campoNome,
-    campoCelular,
-    campoTelefone,
-    campoEmail,
-    campoEndereco,
-    campoSexo,
-    campoEstadoCivil,
-    campoDataNascimento,
-    campoSenha,
-    campoObservacoes
-});
 
     return {
 
@@ -589,18 +573,14 @@ function obterDadosFormulario() {
 
         senha:
 
-            campoSenha.value,
-
-        observacoes:
-
-            campoObservacoes.value.trim()
+            campoSenha.value
 
     };
 
 }
 
 // =====================================
-// PREENCHER FORMULÁRIO
+// PREENCHER FORMULÃRIO
 // =====================================
 
 function preencherFormulario(membro) {
@@ -619,13 +599,6 @@ function preencherFormulario(membro) {
 
     campoEndereco.value =
         membro.endereco || "";
-
-    campoCargo.value =
-        membro.cargo || "";
-
-    campoMinisterio.value =
-        membro.ministerio || "";
-
     campoSexo.value =
         membro.sexo || "";
 
@@ -634,10 +607,6 @@ function preencherFormulario(membro) {
 
     campoDataNascimento.value =
         membro.data_nascimento || "";
-
-    campoObservacoes.value =
-        membro.observacoes || "";
-
 }
 
 // =====================================
@@ -861,7 +830,7 @@ formulario.addEventListener(
 );
 
 // =====================================
-// INICIALIZAÇÃO
+// INICIALIZAÃ‡ÃƒO
 // =====================================
 
 document.addEventListener(

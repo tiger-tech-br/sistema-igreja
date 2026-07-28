@@ -1,4 +1,4 @@
-// =====================================
+﻿// =====================================
 // PERFIL DO MEMBRO
 // =====================================
 
@@ -42,9 +42,6 @@ const campoEstadoCivil =
 const campoNascimento =
     document.getElementById("nascimento");
 
-const campoObservacoes =
-    document.getElementById("observacoes");
-
 const campoIdMembro =
     document.getElementById("idMembro");
 
@@ -54,7 +51,7 @@ const qrCode =
 
 
 // =====================================
-// UTILITÁRIOS
+// UTILITÃRIOS
 // =====================================
 
 function textoOuPadrao(valor) {
@@ -69,7 +66,7 @@ function textoOuPadrao(valor) {
 
     ) {
 
-        return "Não informado";
+        return "NÃ£o informado";
 
     }
 
@@ -195,14 +192,6 @@ function renderizarPerfil(membro) {
 
     mostrarCampo(
 
-        campoObservacoes,
-
-        membro.observacoes
-
-    );
-
-    mostrarCampo(
-
         campoIdMembro,
 
         membro.id
@@ -292,7 +281,7 @@ async function carregarPerfil() {
 
 
 // =====================================
-// INICIALIZAÇÃO
+// INICIALIZAÃ‡ÃƒO
 // =====================================
 
 document.addEventListener(
