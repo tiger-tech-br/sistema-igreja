@@ -2,10 +2,51 @@ require("dotenv").config({ quiet: true });
 
 const { Pool } = require("pg");
 
+function getDatabaseHost() {
+    const candidates = [
+        ["PGHOST", process.env.PGHOST],
+        ["DB_HOST", process.env.DB_HOST],
+    ];
+
+    for (const [name, rawHost] of candidates) {
+        if (!rawHost) {
+            continue;
+        }
+
+        const host = rawHost.trim();
+
+        if (
+            host.includes("${{") ||
+            host.includes("}}")
+        ) {
+            console.warn(
+                `[DATABASE] Host do banco invalido ignorado: ${name}="${host}".`
+            );
+            continue;
+        }
+
+        const railwayInternalHost = "postgres.railway.internal";
+
+        if (
+            host.includes(railwayInternalHost) &&
+            host !== railwayInternalHost
+        ) {
+            console.warn(
+                `[DATABASE] Host do banco corrigido: ${name}="${host}" -> "${railwayInternalHost}".`
+            );
+            return railwayInternalHost;
+        }
+
+        return host;
+    }
+
+    return undefined;
+}
+
 function getDatabasePort() {
     const candidates = [
-        ["DB_PORT", process.env.DB_PORT],
         ["PGPORT", process.env.PGPORT],
+        ["DB_PORT", process.env.DB_PORT],
     ];
 
     const invalidPorts = [];
@@ -42,11 +83,11 @@ const poolConfig = process.env.DATABASE_URL
         connectionString: process.env.DATABASE_URL,
     }
     : {
-        host: process.env.DB_HOST || process.env.PGHOST,
+        host: getDatabaseHost(),
         port: getDatabasePort(),
-        user: process.env.DB_USER || process.env.PGUSER,
-        password: process.env.DB_PASSWORD || process.env.PGPASSWORD,
-        database: process.env.DB_NAME || process.env.PGDATABASE,
+        user: process.env.PGUSER || process.env.DB_USER,
+        password: process.env.PGPASSWORD || process.env.DB_PASSWORD,
+        database: process.env.PGDATABASE || process.env.DB_NAME,
     };
 
 const pool = new Pool(poolConfig);
