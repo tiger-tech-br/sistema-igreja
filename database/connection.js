@@ -29,12 +29,12 @@ function getDatabasePort() {
     }
 
     if (invalidPorts.length > 0) {
-        throw new Error(
-            `Porta do banco invalida: ${invalidPorts.join(", ")}. Configure DB_PORT ou PGPORT com um numero entre 0 e 65535.`
+        console.warn(
+            `[DATABASE] Porta do banco invalida ignorada: ${invalidPorts.join(", ")}. Usando porta padrao 5432.`
         );
     }
 
-    return undefined;
+    return 5432;
 }
 
 const poolConfig = process.env.DATABASE_URL
