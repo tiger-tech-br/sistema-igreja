@@ -37,6 +37,18 @@ function getDatabaseHost() {
             return railwayInternalHost;
         }
 
+        if (
+            host.endsWith("localhost") &&
+            host !== "localhost"
+        ) {
+            const fixedHost = host.slice(0, -"localhost".length);
+
+            console.warn(
+                `[DATABASE] Host do banco corrigido: ${name}="${host}" -> "${fixedHost}".`
+            );
+            return fixedHost;
+        }
+
         return host;
     }
 
