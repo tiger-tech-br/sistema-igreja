@@ -3,25 +3,38 @@ require("dotenv").config({ quiet: true });
 const { Pool } = require("pg");
 
 function getDatabasePort() {
-    const rawPort = process.env.DB_PORT || process.env.PGPORT;
+    const candidates = [
+        ["DB_PORT", process.env.DB_PORT],
+        ["PGPORT", process.env.PGPORT],
+    ];
 
-    if (!rawPort) {
-        return undefined;
+    const invalidPorts = [];
+
+    for (const [name, rawPort] of candidates) {
+        if (!rawPort) {
+            continue;
+        }
+
+        const port = Number(rawPort);
+
+        if (
+            Number.isInteger(port) &&
+            port >= 0 &&
+            port < 65536
+        ) {
+            return port;
+        }
+
+        invalidPorts.push(`${name}="${rawPort}"`);
     }
 
-    const port = Number(rawPort);
-
-    if (
-        !Number.isInteger(port) ||
-        port < 0 ||
-        port >= 65536
-    ) {
+    if (invalidPorts.length > 0) {
         throw new Error(
-            `Porta do banco invalida: "${rawPort}". Configure DB_PORT ou PGPORT com um numero entre 0 e 65535.`
+            `Porta do banco invalida: ${invalidPorts.join(", ")}. Configure DB_PORT ou PGPORT com um numero entre 0 e 65535.`
         );
     }
 
-    return port;
+    return undefined;
 }
 
 const poolConfig = process.env.DATABASE_URL
