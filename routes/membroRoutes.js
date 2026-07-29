@@ -65,6 +65,21 @@ router.post(
 
 );
 
+router.get(
+    "/redefinir-senha",
+    (req, res) => {
+        const token =
+            req.query.token;
+
+        const destino =
+            token
+                ? `/redefinir-senha?token=${encodeURIComponent(token)}`
+                : "/redefinir-senha";
+
+        res.redirect(destino);
+    }
+);
+
 router.post(
     "/redefinir-senha",
     membroController.redefinirSenha
