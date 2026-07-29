@@ -82,7 +82,7 @@ function configurarVoltarPerfil() {
         if (texto) {
 
             texto.textContent =
-                "Voltar para dashboard";
+                "Voltar";
 
         }
 
