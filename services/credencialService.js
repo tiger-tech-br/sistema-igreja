@@ -44,8 +44,25 @@ function formatarData(data) {
 
     }
 
-    return new Date(data)
-        .toLocaleDateString("pt-BR");
+    if (String(data).includes("/")) {
+
+        return String(data);
+
+    }
+
+    const dataFormatada =
+        new Date(data);
+
+    if (Number.isNaN(dataFormatada.getTime())) {
+
+        return "-";
+
+    }
+
+    return dataFormatada
+        .toLocaleDateString("pt-BR", {
+            timeZone: "America/Sao_Paulo"
+        });
 
 }
 
