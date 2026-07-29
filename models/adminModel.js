@@ -1,5 +1,5 @@
 // =====================================
-// IMPORTAÇÃO
+// IMPORTACAO
 // =====================================
 
 const pool =
@@ -189,7 +189,7 @@ async function criarAdministrador(
 }
 
 // =====================================
-// EXPORTAÇÃO
+// EXPORTACAO
 // =====================================
 
 module.exports = {

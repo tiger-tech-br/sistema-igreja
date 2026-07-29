@@ -75,6 +75,18 @@ async function login(req, res) {
 
         }
 
+        if (email !== "admin@igreja.com") {
+
+            return res.status(401).json({
+
+                success: false,
+
+                message: "E-mail ou senha inválidos."
+
+            });
+
+        }
+
         if (senha.length < 8 || senha.length > 100) {
 
             return res.status(400).json({

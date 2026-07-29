@@ -1623,9 +1623,11 @@ header.header-scroll{
 
     .hero{
 
-        padding-top:92px;
+        min-height:100svh;
 
-        padding-bottom:42px;
+        padding-top:88px;
+
+        padding-bottom:32px;
 
         text-align:left;
 
@@ -1651,21 +1653,31 @@ header.header-scroll{
 
     .hero h1{
 
-        font-size:2rem;
+        max-width:12ch;
+
+        font-size:clamp(2rem, 10.4vw, 2.72rem);
+
+        line-height:1.02;
 
     }
 
     .hero-subtitle{
 
-        font-size:.86rem;
+        font-size:clamp(.72rem, 3.2vw, .86rem);
+
+        letter-spacing:.13em;
+
+        line-height:1.25;
 
     }
 
     .hero p{
 
-        font-size:1rem;
+        max-width:31ch;
 
-        line-height:1.55;
+        font-size:clamp(.94rem, 4vw, 1.08rem);
+
+        line-height:1.42;
 
     }
 
@@ -1674,6 +1686,8 @@ header.header-scroll{
         width:100%;
 
         align-items:flex-start;
+
+        gap:12px;
 
     }
 
@@ -1699,7 +1713,9 @@ header.header-scroll{
 
         flex-direction:column;
 
-        gap:12px;
+        gap:10px;
+
+        margin-top:10px;
 
     }
 
@@ -1708,6 +1724,55 @@ header.header-scroll{
     .hero-buttons .btn-outline{
 
         width:100%;
+
+        min-height:58px;
+
+        padding:0 1.25rem;
+
+        border-radius:999px;
+
+        font-size:clamp(.98rem, 4.1vw, 1.08rem);
+
+        line-height:1.2;
+
+    }
+
+}
+
+@media (max-width:380px){
+
+    .hero{
+
+        padding-top:82px;
+
+    }
+
+    .hero .container{
+
+        min-height:calc(100svh - 114px);
+
+    }
+
+    .hero h1{
+
+        font-size:clamp(1.86rem, 10vw, 2.28rem);
+
+    }
+
+    .hero p{
+
+        max-width:30ch;
+
+        font-size:.92rem;
+
+        line-height:1.38;
+
+    }
+
+    .hero-buttons .btn,
+    .hero-buttons .btn-outline{
+
+        min-height:54px;
 
     }
 
