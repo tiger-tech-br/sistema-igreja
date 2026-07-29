@@ -548,3 +548,70 @@ hr {
     color: #111;
 
 }
+
+.hidden {
+
+    display: none !important;
+
+}
+
+.perfil-excluir {
+
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+
+}
+
+.btn-acao-perfil {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .7rem;
+    min-height: 46px;
+    padding: 0 1.4rem;
+    border: none;
+    border-radius: 999px;
+    color: #ffffff;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+    transition: .25s ease;
+
+}
+
+.btn-acao-perfil i,
+.btn-acao-perfil span {
+
+    color: #ffffff;
+
+}
+
+.btn-editar-admin {
+
+    background: #0f766e;
+
+}
+
+.btn-editar-admin:hover {
+
+    background: #115e59;
+    transform: translateY(-2px);
+
+}
+
+.btn-excluir-cadastro {
+
+    background: var(--color-danger);
+
+}
+
+.btn-excluir-cadastro:hover {
+
+    background: #bb2d3b;
+    transform: translateY(-2px);
+
+}

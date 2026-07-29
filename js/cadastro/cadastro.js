@@ -108,7 +108,7 @@ function configurarModoEdicao() {
             linkVoltarCadastro;
 
         texto.textContent =
-            "Voltar ao dashboard";
+            "Voltar";
 
     }
 
