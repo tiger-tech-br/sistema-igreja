@@ -28,6 +28,9 @@ const compression =
 const pool =
     require("./database/connection");
 
+const PgSession =
+    require("connect-pg-simple")(session);
+
 const membroRoutes =
     require("./routes/membroRoutes");
 
@@ -53,6 +56,10 @@ const errorMiddleware =
 const app = express();
 
 app.set("trust proxy", 1);
+
+const isProduction =
+    process.env.NODE_ENV === "production" ||
+    Boolean(process.env.RAILWAY_ENVIRONMENT);
 
 const PORT =
     process.env.PORT || 3000;
@@ -93,12 +100,17 @@ app.use(
                     "'self'",
                     "data:",
                     "blob:"
+                ],
+
+                connectSrc: [
+                    "'self'",
+                    "https://viacep.com.br"
                 ]
             }
         },
 
         crossOriginEmbedderPolicy: false,
-        hsts: false
+        hsts: isProduction
     })
 );
 
@@ -121,7 +133,9 @@ app.use(
 
 app.use(
 
-    express.json()
+    express.json({
+        limit: "100kb"
+    })
 
 );
 
@@ -129,7 +143,9 @@ app.use(
 
     express.urlencoded({
 
-        extended: true
+        extended: true,
+
+        limit: "100kb"
 
     })
 
@@ -145,6 +161,12 @@ app.use(
 
         name: "igreja.sid",
 
+        store: new PgSession({
+            pool,
+            tableName: "user_sessions",
+            createTableIfMissing: true
+        }),
+
         secret:
 
             process.env.SESSION_SECRET,
@@ -157,7 +179,7 @@ app.use(
 
             httpOnly: true,
 
-            secure: false,
+            secure: isProduction,
 
             sameSite: "lax",
 
@@ -197,6 +219,31 @@ app.use(
 // =====================================
 // ARQUIVOS ESTÁTICOS
 // =====================================
+
+app.use(
+
+    (req, res, next) => {
+
+        const paginasAdminProtegidas = new Set([
+            "/admin/dashboard.html",
+            "/admin/membros.html",
+            "/admin/scanner.html"
+        ]);
+
+        if (
+            paginasAdminProtegidas.has(req.path) &&
+            !req.session.admin
+        ) {
+
+            return res.redirect("/login-admin");
+
+        }
+
+        next();
+
+    }
+
+);
 
 app.use(
 

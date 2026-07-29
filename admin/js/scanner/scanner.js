@@ -6,7 +6,7 @@ const btnCancelar =
     document.getElementById("btnCancelar");
 
 // =====================================
-// CONFIGURAÇÕES
+// CONFIGURACOES
 // =====================================
 
 const html5QrCode =
@@ -27,12 +27,93 @@ const config = {
 };
 
 // =====================================
-// UTILITÁRIOS
+// UTILITARIOS
 // =====================================
 
 function abrirPagina(url) {
 
     window.location.href = url;
+
+}
+
+function pararScanner() {
+
+    if (html5QrCode.isScanning) {
+
+        return html5QrCode.stop();
+
+    }
+
+    return Promise.resolve();
+
+}
+
+function abrirCredencialValidada(textoLido) {
+
+    if (
+
+        textoLido.startsWith("http://") ||
+
+        textoLido.startsWith("https://")
+
+    ) {
+
+        const url = new URL(textoLido);
+
+        const id =
+            url.searchParams.get("id");
+
+        if (
+
+            url.pathname === "/validar" &&
+
+            /^\d+$/.test(id || "")
+
+        ) {
+
+            abrirPagina(`/validar?id=${id}`);
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+    if (textoLido.startsWith("/validar?")) {
+
+        const url = new URL(textoLido, window.location.origin);
+
+        const id =
+            url.searchParams.get("id");
+
+        if (/^\d+$/.test(id || "")) {
+
+            abrirPagina(`/validar?id=${id}`);
+
+            return true;
+
+        }
+
+    }
+
+    if (textoLido.startsWith("MEMBRO:")) {
+
+        const id =
+            textoLido.replace("MEMBRO:", "").trim();
+
+        if (/^\d+$/.test(id)) {
+
+            abrirPagina(`/validar?id=${id}`);
+
+            return true;
+
+        }
+
+    }
+
+    return false;
 
 }
 
@@ -42,58 +123,27 @@ function abrirPagina(url) {
 
 function sucesso(textoLido) {
 
-    html5QrCode.stop().then(() => {
+    pararScanner().then(() => {
 
-        // QR Code contém uma URL
-        if (
+        if (!abrirCredencialValidada(textoLido)) {
 
-            textoLido.startsWith("http://") ||
+            alert("QR Code invalido.");
 
-            textoLido.startsWith("https://")
-
-        ) {
-
-            abrirPagina(textoLido);
-
-            return;
+            iniciarScanner();
 
         }
-
-        // QR Code contém o ID do membro
-        if (textoLido.startsWith("MEMBRO:")) {
-
-            const id = textoLido.replace(
-
-                "MEMBRO:",
-
-                ""
-
-            );
-
-            abrirPagina(
-
-                `/validar?id=${id}`
-
-            );
-
-            return;
-
-        }
-
-        alert("QR Code inválido.");
 
     });
 
 }
 
 // =====================================
-// LEITURA INVÁLIDA
+// LEITURA INVALIDA
 // =====================================
 
 function erro() {
 
-    // Não faz nada.
-    // Evita milhares de mensagens no console.
+    // Evita milhares de mensagens no console durante a leitura.
 
 }
 
@@ -110,7 +160,7 @@ async function iniciarScanner() {
 
         if (!cameras.length) {
 
-            alert("Nenhuma câmera encontrada.");
+            alert("Nenhuma camera encontrada.");
 
             return;
 
@@ -118,25 +168,19 @@ async function iniciarScanner() {
 
         let camera = cameras[0].id;
 
-        const traseira = cameras.find((camera) =>
+        const traseira = cameras.find((item) => {
 
-            camera.label
-                .toLowerCase()
-                .includes("back")
+            const label =
+                item.label.toLowerCase();
 
-            ||
+            return (
+                label.includes("back") ||
+                label.includes("rear") ||
+                label.includes("environment") ||
+                label.includes("traseira")
+            );
 
-            camera.label
-                .toLowerCase()
-                .includes("rear")
-
-            ||
-
-            camera.label
-                .toLowerCase()
-                .includes("environment")
-
-        );
+        });
 
         if (traseira) {
 
@@ -156,11 +200,11 @@ async function iniciarScanner() {
 
         );
 
-    } catch (erro) {
+    } catch (erroScanner) {
 
-        console.error("[SCANNER]", erro);
+        console.error("[SCANNER]", erroScanner);
 
-        alert("Não foi possível acessar a câmera.");
+        alert("Nao foi possivel acessar a camera.");
 
     }
 
@@ -176,14 +220,24 @@ btnCancelar.addEventListener(
 
     () => {
 
-        abrirPagina("/dashboard");
+        pararScanner().finally(() => {
+
+            abrirPagina("/dashboard");
+
+        });
 
     }
 
 );
 
+window.addEventListener("beforeunload", () => {
+
+    pararScanner();
+
+});
+
 // =====================================
-// INICIALIZAÇÃO
+// INICIALIZACAO
 // =====================================
 
 document.addEventListener("DOMContentLoaded", () => {

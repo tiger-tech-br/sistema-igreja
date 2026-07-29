@@ -1,5 +1,5 @@
 ﻿// =====================================
-// IMPORTAÃ‡Ã•ES
+// IMPORTAÇÕES
 // =====================================
 
 const fs = require("fs");
@@ -29,6 +29,92 @@ const gerarMatricula =
 
 const gerarValidade =
     require("../utils/validade");
+
+const estadosCivisPermitidos = new Set([
+    "Solteiro(a)",
+    "Casado(a)",
+    "Divorciado(a)",
+    "Viúvo(a)"
+]);
+
+const sexosPermitidos = new Set([
+    "Masculino",
+    "Feminino"
+]);
+
+function validarDataNascimentoTexto(valor) {
+    if (!/^(\d{2})\/(\d{2})\/(\d{4})$/.test(valor)) {
+        return false;
+    }
+
+    const [diaTexto, mesTexto, anoTexto] = valor.split("/");
+    const dia = Number(diaTexto);
+    const mes = Number(mesTexto);
+    const ano = Number(anoTexto);
+    const data = new Date(ano, mes - 1, dia);
+
+    return (
+        data.getFullYear() === ano &&
+        data.getMonth() === mes - 1 &&
+        data.getDate() === dia
+    );
+}
+
+function validarCadastroMembro(dados) {
+    const nome = dados.nome?.trim();
+    const celular = dados.celular?.replace(/\D/g, "");
+    const telefone = dados.telefone?.replace(/\D/g, "") || "";
+    const email = dados.email?.trim().toLowerCase();
+    const senha = dados.senha || "";
+    const endereco = dados.endereco?.trim();
+    const sexo = dados.sexo;
+    const estadoCivil = dados.estadoCivil;
+    const dataNascimento = dados.dataNascimento?.trim();
+
+    if (!nome || !/^[A-Za-zÀ-ÿ\s]{3,150}$/.test(nome)) {
+        return "Informe um nome válido.";
+    }
+
+    if (!celular || celular.length !== 11) {
+        return "Informe um celular válido.";
+    }
+
+    if (telefone && telefone.length !== 10) {
+        return "Informe um telefone fixo válido ou deixe em branco.";
+    }
+
+    if (!validarEmail(email)) {
+        return "Informe um e-mail válido.";
+    }
+
+    if (!senha || senha.length < 8 || senha.length > 100) {
+        return "A senha deve possuir pelo menos 8 caracteres.";
+    }
+
+    if (!dataNascimento || !validarDataNascimentoTexto(dataNascimento)) {
+        return "Informe uma data de nascimento válida.";
+    }
+
+    if (!sexo || !sexosPermitidos.has(sexo)) {
+        return "Informe o sexo.";
+    }
+
+    if (!estadoCivil || !estadosCivisPermitidos.has(estadoCivil)) {
+        return "Informe o estado civil.";
+    }
+
+    if (!endereco || endereco.length < 10 || endereco.length > 300) {
+        return "Informe um endereço válido.";
+    }
+
+    dados.nome = nome;
+    dados.celular = celular;
+    dados.telefone = telefone || null;
+    dados.email = email;
+    dados.endereco = endereco;
+
+    return null;
+}
 
 
     async function gerarMatriculaUnica() {
@@ -98,7 +184,13 @@ const gerarValidade =
 
         );
 
-        if (!fs.existsSync(caminhoArquivo)) {
+        const caminhoQRCodeEsperado =
+            `/qrcodes/membro-${membro.id}.png`;
+
+        if (
+            membro.qr_code !== caminhoQRCodeEsperado ||
+            !fs.existsSync(caminhoArquivo)
+        ) {
 
             const caminhoQRCode =
 
@@ -154,13 +246,16 @@ function removerDadosSensiveis(membro) {
 
     try {
 
-        if (!req.body.nome) {
+        const erroValidacao =
+            validarCadastroMembro(req.body);
+
+        if (erroValidacao) {
 
             return res.status(400).json({
 
                 success: false,
 
-                message: "O nome do membro Ã© obrigatÃ³rio."
+                message: erroValidacao
 
             });
 
@@ -284,7 +379,7 @@ async function login(req, res) {
 
                 success: false,
 
-                message: "E-mail invÃ¡lido."
+                message: "E-mail inválido."
 
             });
 
@@ -304,7 +399,7 @@ async function login(req, res) {
 
                 success: false,
 
-                message: "E-mail ou senha invÃ¡lidos."
+                message: "E-mail ou senha inválidos."
 
             });
 
@@ -326,7 +421,7 @@ async function login(req, res) {
 
                 success: false,
 
-                message: "E-mail ou senha invÃ¡lidos."
+                message: "E-mail ou senha inválidos."
 
             });
 
@@ -361,7 +456,7 @@ req.session.regenerate((erro) => {
 
             success: false,
 
-            message: "Erro ao iniciar a sessÃ£o."
+            message: "Erro ao iniciar a sessão."
 
         });
 
@@ -455,7 +550,7 @@ async function esqueciSenha(req, res) {
 
                 success: false,
 
-                message: "E-mail invÃ¡lido."
+                message: "E-mail inválido."
 
             });
 
@@ -540,7 +635,7 @@ async function esqueciSenha(req, res) {
 
             message:
 
-                "Se existir uma conta vinculada a este e-mail, vocÃª receberÃ¡ um link para redefinir sua senha."
+                "Se existir uma conta vinculada a este e-mail, você receberá um link para redefinir sua senha."
 
         });
 
@@ -558,7 +653,7 @@ async function esqueciSenha(req, res) {
 
             success: false,
 
-            message: "Erro interno ao processar a solicitaÃ§Ã£o."
+            message: "Erro interno ao processar a solicitação."
 
         });
 
@@ -594,7 +689,7 @@ async function redefinirSenha(req, res) {
 
                 success: false,
 
-                message: "Dados invÃ¡lidos."
+                message: "Dados inválidos."
 
             });
 
@@ -614,7 +709,7 @@ async function redefinirSenha(req, res) {
 
                 success: false,
 
-                message: "Token invÃ¡lido."
+                message: "Token inválido."
 
             });
 
@@ -778,11 +873,31 @@ async function perfil(req, res) {
 
             );
 
+        if (!membro) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Membro não encontrado."
+
+            });
+
+        }
+
+        const membroAtualizado =
+
+            await garantirQRCode(
+
+                membro
+
+            );
+
         return res.json({
 
             success: true,
 
-            data: removerDadosSensiveis(membro)
+            data: removerDadosSensiveis(membroAtualizado)
 
         });
 
@@ -922,7 +1037,7 @@ async function listarNomes(req, res) {
 
                         success: false,
 
-                        message: "Membro nÃ£o encontrado."
+                        message: "Membro não encontrado."
 
                     });
 
@@ -989,7 +1104,7 @@ async function listarNomes(req, res) {
 
                     success: false,
 
-                    message: "Membro nÃ£o encontrado."
+                    message: "Membro não encontrado."
 
                 });
 
@@ -1054,7 +1169,7 @@ async function listarNomes(req, res) {
 
                     success: false,
 
-                    message: "Membro nÃ£o encontrado."
+                    message: "Membro não encontrado."
 
                 });
 
@@ -1064,7 +1179,7 @@ async function listarNomes(req, res) {
 
                 success: true,
 
-                message: "Membro excluÃ­do com sucesso."
+                message: "Membro excluído com sucesso."
 
             });
 
@@ -1101,6 +1216,18 @@ async function listarNomes(req, res) {
 
             const { id } = req.params;
 
+            if (!/^\d+$/.test(id)) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    message: "Credencial inválida."
+
+                });
+
+            }
+
             const membro =
             await membroModel.buscarPorId(id);
 
@@ -1110,7 +1237,7 @@ async function listarNomes(req, res) {
 
                     success: false,
 
-                    message: "Membro nÃ£o encontrado."
+                    message: "Membro não encontrado."
 
                 });
 
@@ -1165,7 +1292,7 @@ async function listarNomes(req, res) {
     }
 
     // =====================================
-    // ÃšLTIMOS MEMBROS
+    // ÚLTIMOS MEMBROS
     // =====================================
 
     async function ultimos(req, res) {
@@ -1197,7 +1324,7 @@ async function listarNomes(req, res) {
 
                 success: false,
 
-                message: "Erro ao buscar os Ãºltimos membros."
+                message: "Erro ao buscar os Últimos membros."
 
             });
 
@@ -1258,6 +1385,18 @@ async function baixarQRCode(req, res) {
 
         const { id } = req.params;
 
+        if (!/^\d+$/.test(id)) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "ID inválido."
+
+            });
+
+        }
+
         const membro =
             await membroModel.buscarPorId(id);
 
@@ -1267,7 +1406,7 @@ async function baixarQRCode(req, res) {
 
                 success: false,
 
-                message: "Membro nÃ£o encontrado."
+                message: "Membro não encontrado."
 
             });
 

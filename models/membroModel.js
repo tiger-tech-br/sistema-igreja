@@ -1,5 +1,5 @@
 ﻿// =====================================
-// IMPORTAÃ‡ÃƒO
+// IMPORTA?ÃƒO
 // =====================================
 
 const pool =
@@ -329,7 +329,7 @@ async buscarPorEmail(email) {
 }
 
 // =====================================
-// SALVAR TOKEN DE RECUPERAÃ‡ÃƒO
+// SALVAR TOKEN DE RECUPERA?ÃƒO
 // =====================================
 
 async salvarTokenRecuperacao(
@@ -661,7 +661,7 @@ async limparTokenRecuperacao(
     }
 
     // =====================================
-    // BUSCAR POR MATRÃCULA
+    // BUSCAR POR MATR?CULA
     // =====================================
 
     async buscarPorMatricula(matricula) {
@@ -919,7 +919,7 @@ async limparTokenRecuperacao(
     }
 
     // =====================================
-    // LISTAR SEM MATRÃCULA
+    // LISTAR SEM MATR?CULA
     // =====================================
 
     async listarSemMatricula() {
@@ -960,7 +960,7 @@ async limparTokenRecuperacao(
     }
 
     // =====================================
-    // ATUALIZAR MATRÃCULA E VALIDADE
+    // ATUALIZAR MATR?CULA E VALIDADE
     // =====================================
 
     async atualizarMatriculaValidade(
@@ -1022,7 +1022,7 @@ async limparTokenRecuperacao(
     }
 
     // =====================================
-    // ÃšLTIMOS MEMBROS
+    // ÚLTIMOS MEMBROS
     // =====================================
 
     async listarUltimos(limit = 5) {
@@ -1147,7 +1147,7 @@ async registrarAcesso(
 }
 
 // =====================================
-// LISTAR ÃšLTIMOS ACESSOS
+// LISTAR ÚLTIMOS ACESSOS
 // =====================================
 
 async listarUltimosAcessos(
@@ -1269,7 +1269,7 @@ async dashboard() {
 }
 
 // =====================================
-// EXPORTAÃ‡ÃƒO
+// EXPORTA?ÃƒO
 // =====================================
 
 module.exports = new MembroModel();

@@ -42,16 +42,13 @@ const campoEstadoCivil =
 const campoNascimento =
     document.getElementById("nascimento");
 
-const campoIdMembro =
-    document.getElementById("idMembro");
-
 const qrCode =
     document.getElementById("qrCode");
 
 
 
 // =====================================
-// UTILITÃRIOS
+// UTILITÁRIOS
 // =====================================
 
 function textoOuPadrao(valor) {
@@ -66,7 +63,7 @@ function textoOuPadrao(valor) {
 
     ) {
 
-        return "NÃ£o informado";
+        return "Não informado";
 
     }
 
@@ -81,6 +78,37 @@ function mostrarCampo(
     valor
 
 ) {
+
+    const info =
+        elemento.closest(".info");
+
+    if (
+
+        valor === null ||
+
+        valor === undefined ||
+
+        valor === ""
+
+    ) {
+
+        if (info) {
+
+            info.hidden = true;
+
+        }
+
+        elemento.textContent = "";
+
+        return;
+
+    }
+
+    if (info) {
+
+        info.hidden = false;
+
+    }
 
     elemento.textContent =
 
@@ -190,14 +218,6 @@ function renderizarPerfil(membro) {
 
     );
 
-    mostrarCampo(
-
-        campoIdMembro,
-
-        membro.id
-
-    );
-
     if (
 
         membro.qr_code &&
@@ -281,7 +301,7 @@ async function carregarPerfil() {
 
 
 // =====================================
-// INICIALIZAÃ‡ÃƒO
+// INICIALIZACAO
 // =====================================
 
 document.addEventListener(

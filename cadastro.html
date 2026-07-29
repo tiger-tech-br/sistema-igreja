@@ -82,7 +82,7 @@
         <section class="cadastro-card">
 
             <!-- ========================= -->
-            <!-- CABEÃ‡ALHO -->
+            <!-- CABEÇALHO -->
             <!-- ========================= -->
 
             <header class="cadastro-header">
@@ -102,7 +102,7 @@
             </header>
 
             <!-- ========================= -->
-            <!-- FORMULÃRIO -->
+            <!-- FORMULÁRIO -->
             <!-- ========================= -->
 
             <form
@@ -272,9 +272,9 @@
 
                                 </option>
 
-                                <option value="ViÃºvo(a)">
+                                <option value="Viúvo(a)">
 
-                                    ViÃºvo(a)
+                                    Viúvo(a)
 
                                 </option>
 
@@ -433,11 +433,67 @@
 
                     </div>
 
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="cep">
+
+                                CEP <span>*</span>
+
+                            </label>
+
+                            <input
+
+                                type="text"
+
+                                id="cep"
+
+                                name="cep"
+
+                                placeholder="00000-000"
+
+                                autocomplete="postal-code"
+
+                                inputmode="numeric"
+
+                                maxlength="9"
+
+                                required>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="numero">
+
+                                N° <span>*</span>
+
+                            </label>
+
+                            <input
+
+                                type="text"
+
+                                id="numero"
+
+                                name="numero"
+
+                                placeholder="Número da casa"
+
+                                autocomplete="address-line2"
+
+                                required>
+
+                        </div>
+
+                    </div>
+
                     <div class="form-group">
 
                         <label for="endereco">
 
-                            Endereço <span>*</span>
+                            Endereço
 
                         </label>
 
@@ -449,11 +505,35 @@
 
                             name="endereco"
 
-                            placeholder="Rua, número, bairro, cidade..."
+                            placeholder="Preenchido automaticamente pelo CEP"
 
                             autocomplete="street-address"
 
+                            readonly
+
                             required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="complemento">
+
+                            Complemento ou bloco (apartamento)
+
+                        </label>
+
+                        <input
+
+                            type="text"
+
+                            id="complemento"
+
+                            name="complemento"
+
+                            placeholder="Apartamento, bloco, casa, referência..."
+
+                            autocomplete="address-line2">
 
                     </div>
 
@@ -476,7 +556,7 @@
                 </div>
 
                 <!-- ========================= -->
-                <!-- BOTÃ•ES -->
+                <!-- BOTÕES -->
                 <!-- ========================= -->
 
                 <div class="form-buttons">
@@ -510,7 +590,7 @@
             </form>
 
             <!-- ========================= -->
-            <!-- RODAPÃ‰ -->
+            <!-- RODAPÉ -->
             <!-- ========================= -->
 
             <footer class="cadastro-footer">

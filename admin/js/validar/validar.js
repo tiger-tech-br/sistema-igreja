@@ -2,8 +2,11 @@
 // ELEMENTOS
 // =====================================
 
-const campoNome = 
+const campoNome =
     document.getElementById("nome");
+
+const areaCargo =
+    document.getElementById("areaCargo");
 
 const campoCargo =
     document.getElementById("cargo");
@@ -15,7 +18,7 @@ const campoValidade =
     document.getElementById("validade");
 
 // =====================================
-// VARIÁVEIS
+// VARIAVEIS
 // =====================================
 
 const params =
@@ -25,14 +28,14 @@ const id =
     params.get("id");
 
 // =====================================
-// UTILITÁRIOS
+// UTILITARIOS
 // =====================================
 
 function formatarData(data) {
 
     if (!data) {
 
-        return "Não informada";
+        return "Nao informada";
 
     }
 
@@ -47,20 +50,47 @@ function formatarData(data) {
 
 }
 
+function mostrarTexto(elemento, valor, padrao = "") {
+
+    elemento.textContent =
+        valor || padrao;
+
+}
+
 // =====================================
 // RENDERIZAR MEMBRO
 // =====================================
 
 function renderizarMembro(membro) {
 
-    campoNome.textContent = 
-        membro.nome || "Não informado";
+    mostrarTexto(
+        campoNome,
+        membro.nome,
+        "Membro nao informado"
+    );
 
-    campoCargo.textContent =
-        membro.cargo || "Não informado";
+    if (membro.cargo) {
 
-    campoMatricula.textContent =
-        membro.matricula || "Não informada";
+        areaCargo.hidden = false;
+
+        mostrarTexto(
+            campoCargo,
+            membro.cargo
+        );
+
+    } else {
+
+        areaCargo.hidden = true;
+
+        campoCargo.textContent = "";
+
+    }
+
+    mostrarTexto(
+        campoMatricula,
+        membro.matricula,
+        "Nao informada"
+    );
 
     campoValidade.textContent =
         formatarData(membro.validade);
@@ -73,9 +103,9 @@ function renderizarMembro(membro) {
 
 async function carregarMembro() {
 
-    if (!id) {
+    if (!/^\d+$/.test(id || "")) {
 
-        alert("Membro não informado.");
+        alert("Credencial invalida.");
 
         return;
 
@@ -124,7 +154,7 @@ async function carregarMembro() {
 }
 
 // =====================================
-// INICIALIZAÇÃO
+// INICIALIZACAO
 // =====================================
 
 document.addEventListener(

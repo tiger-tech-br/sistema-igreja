@@ -33,8 +33,17 @@ const campoTelefone =
 const campoEmail =
     document.getElementById("email");
 
+const campoCep =
+    document.getElementById("cep");
+
 const campoEndereco =
     document.getElementById("endereco");
+
+const campoNumero =
+    document.getElementById("numero");
+
+const campoComplemento =
+    document.getElementById("complemento");
 
 const campoSexo =
     document.getElementById("sexo");
@@ -52,7 +61,7 @@ const erroData =
     document.getElementById("erroData");
 
 // =====================================
-// UTILITÃRIOS
+// UTILITÁRIOS
 // =====================================
 
 function estaEditando() {
@@ -66,6 +75,26 @@ function limparFormulario() {
     formulario.reset();
 
     limparErroData();
+
+}
+
+function montarEnderecoCompleto() {
+
+    const partes = [
+
+        campoEndereco.value.trim(),
+
+        campoNumero.value.trim()
+            ? `N° ${campoNumero.value.trim()}`
+            : "",
+
+        campoComplemento.value.trim()
+
+    ];
+
+    return partes
+        .filter(Boolean)
+        .join(", ");
 
 }
 
@@ -110,7 +139,7 @@ function marcarDataValida() {
 }
 
 // =====================================
-// MÃSCARA CELULAR
+// MASCARA CELULAR
 // =====================================
 
 function aplicarMascaraCelular() {
@@ -164,7 +193,7 @@ function aplicarMascaraCelular() {
 }
 
 // =====================================
-// MÃSCARA TELEFONE
+// MASCARA TELEFONE
 // =====================================
 
 function aplicarMascaraTelefone() {
@@ -206,7 +235,7 @@ function aplicarMascaraTelefone() {
 }
 
 // =====================================
-// MÃSCARA DATA
+// MASCARA DATA
 // =====================================
 
 function aplicarMascaraData() {
@@ -236,6 +265,96 @@ function aplicarMascaraData() {
     }
 
     campoDataNascimento.value = valor;
+
+}
+
+// =====================================
+// MASCARA CEP
+// =====================================
+
+function aplicarMascaraCep() {
+
+    let valor =
+
+        campoCep.value
+
+            .replace(/\D/g, "")
+
+            .slice(0, 8);
+
+    if (valor.length > 5) {
+
+        valor =
+
+            `${valor.slice(0, 5)}-${valor.slice(5)}`;
+
+    }
+
+    campoCep.value = valor;
+
+}
+
+// =====================================
+// BUSCAR CEP
+// =====================================
+
+async function buscarCep() {
+
+    const cep =
+
+        campoCep.value.replace(/\D/g, "");
+
+    campoEndereco.value = "";
+
+    if (cep.length !== 8) {
+
+        return;
+
+    }
+
+    try {
+
+        const resposta =
+
+            await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+
+        const dados =
+
+            await resposta.json();
+
+        if (!resposta.ok || dados.erro) {
+
+            alert("CEP não encontrado.");
+
+            campoCep.focus();
+
+            return;
+
+        }
+
+        campoEndereco.value = [
+
+            dados.logradouro,
+
+            dados.bairro,
+
+            dados.localidade && dados.uf
+                ? `${dados.localidade} - ${dados.uf}`
+                : dados.localidade
+
+        ]
+            .filter(Boolean)
+            .join(", ");
+
+        campoNumero.focus();
+
+    } catch (erro) {
+
+        console.error("[CEP]", erro);
+
+        alert("Não foi possível buscar o CEP.");
+
+    }
 
 }
 
@@ -341,7 +460,7 @@ function validarDataNascimento() {
 
         mostrarErroData(
 
-            "Formato invÃ¡lido. Utilize DD/MM/AAAA."
+            "Formato inválido. Utilize DD/MM/AAAA."
 
         );
 
@@ -377,7 +496,7 @@ function validarDataNascimento() {
 
         mostrarErroData(
 
-            "MÃªs invÃ¡lido."
+            "Mês inválido."
 
         );
 
@@ -429,7 +548,7 @@ function validarDataNascimento() {
 
         mostrarErroData(
 
-            "Dia invÃ¡lido."
+            "Dia inválido."
 
         );
 
@@ -444,7 +563,7 @@ function validarDataNascimento() {
 }
 
 // =====================================
-// VALIDAR FORMULÃRIO
+// VALIDAR FORMULÁRIO
 // =====================================
 
 function validarFormulario() {
@@ -453,7 +572,7 @@ function validarFormulario() {
 
         alert(
 
-            "Informe um nome vÃ¡lido."
+            "Informe um nome válido."
 
         );
 
@@ -467,7 +586,7 @@ function validarFormulario() {
 
         alert(
 
-            "Informe um celular vÃ¡lido."
+            "Informe um celular válido."
 
         );
 
@@ -481,7 +600,7 @@ function validarFormulario() {
 
         alert(
 
-            "Informe um telefone fixo vÃ¡lido ou deixe em branco."
+            "Informe um telefone fixo válido ou deixe em branco."
 
         );
 
@@ -495,7 +614,7 @@ function validarFormulario() {
 
         alert(
 
-            "Informe um e-mail vÃ¡lido."
+            "Informe um e-mail válido."
 
         );
 
@@ -527,12 +646,48 @@ function validarFormulario() {
 
     }
 
+    if (
+
+        !estaEditando() &&
+
+        campoCep.value.replace(/\D/g, "").length !== 8
+
+    ) {
+
+        alert("Informe um CEP válido.");
+
+        campoCep.focus();
+
+        return false;
+
+    }
+
+    if (!campoEndereco.value.trim()) {
+
+        alert("Informe um CEP válido para preencher o endereço.");
+
+        campoCep.focus();
+
+        return false;
+
+    }
+
+    if (!estaEditando() && !campoNumero.value.trim()) {
+
+        alert("Informe o N° da casa.");
+
+        campoNumero.focus();
+
+        return false;
+
+    }
+
     return true;
 
 }
 
 // =====================================
-// OBTER DADOS DO FORMULÃRIO
+// OBTER DADOS DO FORMULÁRIO
 // =====================================
 
 function obterDadosFormulario() {
@@ -557,7 +712,7 @@ function obterDadosFormulario() {
 
         endereco:
 
-            campoEndereco.value.trim(),
+            montarEnderecoCompleto(),
 
         sexo:
 
@@ -580,7 +735,7 @@ function obterDadosFormulario() {
 }
 
 // =====================================
-// PREENCHER FORMULÃRIO
+// PREENCHER FORMULÁRIO
 // =====================================
 
 function preencherFormulario(membro) {
@@ -599,6 +754,13 @@ function preencherFormulario(membro) {
 
     campoEndereco.value =
         membro.endereco || "";
+
+    campoCep.value = "";
+
+    campoNumero.value = "";
+
+    campoComplemento.value = "";
+
     campoSexo.value =
         membro.sexo || "";
 
@@ -821,6 +983,22 @@ campoDataNascimento.addEventListener(
 
 );
 
+campoCep.addEventListener(
+
+    "input",
+
+    aplicarMascaraCep
+
+);
+
+campoCep.addEventListener(
+
+    "blur",
+
+    buscarCep
+
+);
+
 formulario.addEventListener(
 
     "submit",
@@ -830,7 +1008,7 @@ formulario.addEventListener(
 );
 
 // =====================================
-// INICIALIZAÃ‡ÃƒO
+// INICIALIZACAO
 // =====================================
 
 document.addEventListener(

@@ -32,7 +32,7 @@ const pastaQRCode = path.join(
 );
 
 const appUrl =
-    process.env.APP_URL || "http://localhost:3000";
+    (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
 
 // =====================================
 // GARANTIR PASTA
