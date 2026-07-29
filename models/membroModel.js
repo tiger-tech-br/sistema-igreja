@@ -1177,9 +1177,9 @@ async registrarAcesso(
 
             $1,
 
-            CURRENT_DATE,
+            (NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE,
 
-            CURRENT_TIME
+            (NOW() AT TIME ZONE 'America/Sao_Paulo')::TIME
 
         )
 
@@ -1259,6 +1259,8 @@ async listarUltimosAcessos(
         INNER JOIN membros m
 
             ON m.id = a.membro_id
+
+        WHERE a.data = (NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE
 
         ORDER BY a.id DESC
 
