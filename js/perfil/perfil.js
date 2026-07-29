@@ -45,6 +45,21 @@ const campoNascimento =
 const qrCode =
     document.getElementById("qrCode");
 
+const areaExcluirCadastro =
+    document.getElementById("areaExcluirCadastro");
+
+const btnExcluirCadastro =
+    document.getElementById("btnExcluirCadastro");
+
+const btnEditarAdministrativo =
+    document.getElementById("btnEditarAdministrativo");
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const membroId =
+    params.get("id");
+
 
 
 // =====================================
@@ -251,11 +266,17 @@ async function carregarPerfil() {
 
     try {
 
+        const url =
+
+            membroId
+                ? `/api/membros/${membroId}`
+                : "/api/membros/perfil";
+
         const resposta =
 
             await fetch(
 
-                "/api/membros/perfil"
+                url
 
             );
 
@@ -281,6 +302,18 @@ async function carregarPerfil() {
 
         );
 
+        if (
+
+            membroId &&
+
+            areaExcluirCadastro
+
+        ) {
+
+            areaExcluirCadastro.classList.remove("hidden");
+
+        }
+
     } catch (erro) {
 
         console.error(erro);
@@ -299,6 +332,66 @@ async function carregarPerfil() {
 
 }
 
+async function excluirCadastro() {
+
+    if (!membroId) {
+
+        return;
+
+    }
+
+    const confirmar =
+        confirm("Tem certeza que deseja excluir este cadastro?");
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+    try {
+
+        const resposta =
+            await fetch(
+
+                `/api/membros/${membroId}`,
+
+                {
+
+                    method: "DELETE"
+
+                }
+
+            );
+
+        const resultado =
+            await resposta.json();
+
+        alert(
+
+            resultado.message ||
+            "Cadastro excluido."
+
+        );
+
+        if (resultado.success) {
+
+            window.location.href = "/admin/membros";
+
+        }
+
+    }
+
+    catch (erro) {
+
+        console.error("[PERFIL][EXCLUIR]", erro);
+
+        alert("Erro ao excluir o cadastro.");
+
+    }
+
+}
+
 
 // =====================================
 // INICIALIZACAO
@@ -311,6 +404,35 @@ document.addEventListener(
     () => {
 
         carregarPerfil();
+
+        if (btnExcluirCadastro) {
+
+            btnExcluirCadastro.addEventListener(
+
+                "click",
+
+                excluirCadastro
+
+            );
+
+        }
+
+        if (btnEditarAdministrativo && membroId) {
+
+            btnEditarAdministrativo.addEventListener(
+
+                "click",
+
+                () => {
+
+                    window.location.href =
+                        `/cadastro?id=${membroId}`;
+
+                }
+
+            );
+
+        }
 
     }
 

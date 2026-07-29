@@ -1098,11 +1098,17 @@ async function listarNomes(req, res) {
 
             const membro =
 
-                await membroModel.atualizar(
+                await membroModel.atualizarDadosAdministrativos(
 
                     id,
 
-                    req.body
+                    {
+                        cargo:
+                            req.body.cargo?.trim() || null,
+
+                        ministerio:
+                            req.body.ministerio?.trim() || null
+                    }
 
                 );
 
@@ -1130,7 +1136,7 @@ async function listarNomes(req, res) {
 
                 success: true,
 
-                message: "Membro atualizado com sucesso.",
+                message: "Dados administrativos atualizados com sucesso.",
 
                 data: removerDadosSensiveis(membroAtualizado)
 

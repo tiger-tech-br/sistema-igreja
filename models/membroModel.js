@@ -919,6 +919,83 @@ async limparTokenRecuperacao(
     }
 
     // =====================================
+    // ATUALIZAR DADOS ADMINISTRATIVOS
+    // =====================================
+
+    async atualizarDadosAdministrativos(id, dados) {
+
+        const {
+
+            cargo,
+            ministerio
+
+        } = dados;
+
+        const sql = `
+
+            UPDATE membros
+
+            SET
+
+                cargo = $1,
+                ministerio = $2
+
+            WHERE id = $3
+
+            RETURNING
+                id,
+                nome,
+                data_nascimento,
+                telefone,
+                celular,
+                email,
+                email_verificado,
+                endereco,
+                cargo,
+                ministerio,
+                sexo,
+                estado_civil,
+                matricula,
+                validade,
+                qr_code,
+                criado_em;
+
+        `;
+
+        const valores = [
+
+            cargo || null,
+
+            ministerio || null,
+
+            id
+
+        ];
+
+        try {
+
+            const resultado =
+                await pool.query(sql, valores);
+
+            return resultado.rows[0];
+
+        } catch (erro) {
+
+            console.error(
+
+                "[MEMBRO_MODEL][ATUALIZAR_ADMIN]",
+
+                erro
+
+            );
+
+            throw erro;
+
+        }
+
+    }
+
+        // =====================================
     // LISTAR SEM MATR?CULA
     // =====================================
 

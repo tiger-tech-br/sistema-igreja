@@ -45,6 +45,15 @@ const campoNumero =
 const campoComplemento =
     document.getElementById("complemento");
 
+const secaoAdministrativa =
+    document.getElementById("secaoAdministrativa");
+
+const campoCargo =
+    document.getElementById("cargo");
+
+const campoMinisterio =
+    document.getElementById("ministerio");
+
 const campoSexo =
     document.getElementById("sexo");
 
@@ -56,6 +65,9 @@ const campoDataNascimento =
 
 const campoSenha =
     document.getElementById("senha");
+
+const campoConfirmarSenha =
+    document.getElementById("confirmarSenha");
 
 const erroData =
     document.getElementById("erroData");
@@ -75,6 +87,75 @@ function limparFormulario() {
     formulario.reset();
 
     limparErroData();
+
+}
+
+function configurarModoEdicao() {
+
+    const editando =
+        estaEditando();
+
+    if (secaoAdministrativa) {
+
+        secaoAdministrativa.hidden =
+            !editando;
+
+    }
+
+    [
+        campoNome,
+        campoCelular,
+        campoTelefone,
+        campoEmail,
+        campoCep,
+        campoNumero,
+        campoEndereco,
+        campoComplemento,
+        campoSexo,
+        campoEstadoCivil,
+        campoDataNascimento,
+        campoCep,
+        campoNumero,
+        campoSenha,
+        campoConfirmarSenha
+    ].forEach((campo) => {
+
+        if (campo) {
+
+            campo.required =
+                !editando;
+
+        }
+
+    });
+
+    [
+        campoNome,
+        campoCelular,
+        campoTelefone,
+        campoEmail,
+        campoCep,
+        campoNumero,
+        campoEndereco,
+        campoComplemento,
+        campoSexo,
+        campoEstadoCivil,
+        campoDataNascimento,
+        campoSenha,
+        campoConfirmarSenha
+    ].forEach((campo) => {
+
+        const grupo =
+            campo?.closest(".form-group");
+
+        if (grupo) {
+
+            grupo.hidden =
+                editando;
+
+        }
+
+    });
 
 }
 
@@ -568,6 +649,12 @@ function validarDataNascimento() {
 
 function validarFormulario() {
 
+    if (estaEditando()) {
+
+        return true;
+
+    }
+
     if (!validarNome()) {
 
         alert(
@@ -624,7 +711,7 @@ function validarFormulario() {
 
     }
 
-    if (!validarSenha()) {
+    if (!estaEditando() && !validarSenha()) {
 
         alert(
 
@@ -692,6 +779,22 @@ function validarFormulario() {
 
 function obterDadosFormulario() {
 
+    if (estaEditando()) {
+
+        return {
+
+            cargo:
+
+                campoCargo.value.trim(),
+
+            ministerio:
+
+                campoMinisterio.value.trim()
+
+        };
+
+    }
+
     return {
 
         nome:
@@ -725,6 +828,14 @@ function obterDadosFormulario() {
         dataNascimento:
 
             campoDataNascimento.value.trim(),
+
+        cargo:
+
+            campoCargo.value.trim(),
+
+        ministerio:
+
+            campoMinisterio.value.trim(),
 
         senha:
 
@@ -760,6 +871,12 @@ function preencherFormulario(membro) {
     campoNumero.value = "";
 
     campoComplemento.value = "";
+
+    campoCargo.value =
+        membro.cargo || "";
+
+    campoMinisterio.value =
+        membro.ministerio || "";
 
     campoSexo.value =
         membro.sexo || "";
@@ -1016,6 +1133,8 @@ document.addEventListener(
     "DOMContentLoaded",
 
     () => {
+
+        configurarModoEdicao();
 
         carregarMembro();
 
