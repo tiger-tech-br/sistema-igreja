@@ -607,7 +607,7 @@ app.get(
 
     "/perfil",
 
-    verificarPerfil,
+    verificarMembro,
 
     (req, res) => {
 
@@ -616,6 +616,32 @@ app.get(
             path.join(
 
                 __dirname,
+
+                "perfil.html"
+
+            )
+
+        );
+
+    }
+
+);
+
+app.get(
+
+    "/admin/perfil",
+
+    verificarAutenticacao,
+
+    (req, res) => {
+
+        res.sendFile(
+
+            path.join(
+
+                __dirname,
+
+                "admin",
 
                 "perfil.html"
 

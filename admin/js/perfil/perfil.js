@@ -48,6 +48,21 @@ const campoNascimento =
 const qrCode =
     document.getElementById("qrCode");
 
+const areaExcluirCadastro =
+    document.getElementById("areaExcluirCadastro");
+
+const btnExcluirCadastro =
+    document.getElementById("btnExcluirCadastro");
+
+const btnEditarAdministrativo =
+    document.getElementById("btnEditarAdministrativo");
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const membroId =
+    params.get("id");
+
 function configurarVoltarPerfil() {
 
     if (!linkVoltarPerfil) {
@@ -57,7 +72,17 @@ function configurarVoltarPerfil() {
     }
 
     linkVoltarPerfil.href =
-        "/";
+        "/dashboard";
+
+    const texto =
+        linkVoltarPerfil.querySelector("span");
+
+    if (texto) {
+
+        texto.textContent =
+            "Voltar";
+
+    }
 
 }
 
@@ -269,7 +294,9 @@ async function carregarPerfil() {
 
         const url =
 
-            "/api/membros/perfil";
+            membroId
+                ? `/api/membros/${membroId}`
+                : "/api/membros/perfil";
 
         const resposta =
 
@@ -301,6 +328,18 @@ async function carregarPerfil() {
 
         );
 
+        if (
+
+            membroId &&
+
+            areaExcluirCadastro
+
+        ) {
+
+            areaExcluirCadastro.classList.remove("hidden");
+
+        }
+
     } catch (erro) {
 
         console.error(erro);
@@ -314,11 +353,72 @@ async function carregarPerfil() {
         );
 
         window.location.href =
-            "/";
+            "/dashboard";
 
     }
 
 }
+
+async function excluirCadastro() {
+
+    if (!membroId) {
+
+        return;
+
+    }
+
+    const confirmar =
+        confirm("Tem certeza que deseja excluir este cadastro?");
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+    try {
+
+        const resposta =
+            await fetch(
+
+                `/api/membros/${membroId}`,
+
+                {
+
+                    method: "DELETE"
+
+                }
+
+            );
+
+        const resultado =
+            await resposta.json();
+
+        alert(
+
+            resultado.message ||
+            "Cadastro excluido."
+
+        );
+
+        if (resultado.success) {
+
+            window.location.href = "/admin/membros";
+
+        }
+
+    }
+
+    catch (erro) {
+
+        console.error("[PERFIL][EXCLUIR]", erro);
+
+        alert("Erro ao excluir o cadastro.");
+
+    }
+
+}
+
 
 // =====================================
 // INICIALIZACAO
@@ -333,6 +433,35 @@ document.addEventListener(
         configurarVoltarPerfil();
 
         carregarPerfil();
+
+        if (btnExcluirCadastro) {
+
+            btnExcluirCadastro.addEventListener(
+
+                "click",
+
+                excluirCadastro
+
+            );
+
+        }
+
+        if (btnEditarAdministrativo && membroId) {
+
+            btnEditarAdministrativo.addEventListener(
+
+                "click",
+
+                () => {
+
+                    window.location.href =
+                        `/cadastro?id=${membroId}`;
+
+                }
+
+            );
+
+        }
 
     }
 

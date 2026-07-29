@@ -244,7 +244,7 @@ function abrirPagina(url) {
 
 function abrirPerfil(id) {
 
-    abrirPagina(`/perfil?id=${id}`);
+    abrirPagina(`/admin/perfil?id=${id}`);
 
 }
 
