@@ -295,6 +295,33 @@ app.use(
 
 );
 
+function redirecionarParaRedefinirSenha(req, res) {
+
+    const token =
+        req.query.token ||
+        req.params.token;
+
+    const destino =
+        token
+            ? `/redefinir-senha?token=${encodeURIComponent(token)}`
+            : "/redefinir-senha";
+
+    return res.redirect(destino);
+
+}
+
+app.get(
+    [
+        "/api/membros/redefinir-senha",
+        "/api/membros/redefinir-senha/:token",
+        "/api/redefinir-senha",
+        "/api/redefinir-senha/:token",
+        "/redefinir-senha/:token",
+        "/redefinir.senha"
+    ],
+    redirecionarParaRedefinirSenha
+);
+
 // =====================================
 // ROTAS DA API
 // =====================================

@@ -606,9 +606,13 @@ async function esqueciSenha(req, res) {
 
             );
 
+                const appUrl =
+                    (process.env.APP_URL || "http://localhost:3000")
+                        .replace(/\/$/, "");
+
                 const link =
 
-                    `${process.env.APP_URL || "http://localhost:3000"}/redefinir-senha?token=${token}`;
+                    `${appUrl}/redefinir-senha?token=${token}`;
                 await enviarTemplate({
 
                     para:
