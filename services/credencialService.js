@@ -18,11 +18,6 @@ const path =
 // CONFIGURAÇÃO
 // =====================================
 
-const mostrarNome =
-
-    process.env
-        .MOSTRAR_NOME_CREDENCIAL === "true";
-
 const dourado = "#D4AF37";
 
 const preto = "#111111";
@@ -304,35 +299,31 @@ async function gerarCredencial(
 
     doc.fontSize(7.5);
 
-    if (mostrarNome) {
+    doc.fillColor(dourado);
 
-        doc.fillColor(dourado);
+    doc.text(
 
-        doc.text(
+        "Nome:",
 
-            "Nome:",
+        12,
 
-            12,
+        y
 
-            y
+    );
 
-        );
+    doc.fillColor(branco);
 
-        doc.fillColor(branco);
+    doc.text(
 
-        doc.text(
+        membro.nome || "-",
 
-            membro.nome || "-",
+        60,
 
-            60,
+        y
 
-            y
+    );
 
-        );
-
-        y += 14;
-
-    }
+    y += 14;
 
     doc.fillColor(dourado);
 

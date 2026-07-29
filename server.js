@@ -381,7 +381,7 @@ app.get(
 
                 res.clearCookie("igreja.sid");
 
-                res.redirect("/");
+                res.redirect("/login-admin");
 
             });
 
@@ -389,7 +389,7 @@ app.get(
 
         }
 
-        res.redirect("/");
+        res.redirect("/login-admin");
 
     }
 
