@@ -30,6 +30,9 @@ const gerarMatricula =
 const gerarValidade =
     require("../utils/validade");
 
+const inicioProcesso =
+    new Date();
+
 const estadosCivisPermitidos = new Set([
     "Solteiro(a)",
     "Casado(a)",
@@ -187,9 +190,14 @@ function validarCadastroMembro(dados) {
         const caminhoQRCodeEsperado =
             `/qrcodes/membro-${membro.id}.png`;
 
+        const arquivoAntigo =
+            fs.existsSync(caminhoArquivo) &&
+            fs.statSync(caminhoArquivo).mtime < inicioProcesso;
+
         if (
             membro.qr_code !== caminhoQRCodeEsperado ||
-            !fs.existsSync(caminhoArquivo)
+            !fs.existsSync(caminhoArquivo) ||
+            arquivoAntigo
         ) {
 
             const caminhoQRCode =
