@@ -53,6 +53,32 @@ const errorMiddleware =
 // CONFIGURAÇÕES
 // =====================================
 
+function verificarPerfil(
+
+    req,
+
+    res,
+
+    next
+
+) {
+
+    if (
+
+        !req.session.membro &&
+
+        !req.session.admin
+
+    ) {
+
+        return res.redirect("/");
+
+    }
+
+    next();
+
+}
+
 const app = express();
 
 app.set("trust proxy", 1);
@@ -581,7 +607,7 @@ app.get(
 
     "/perfil",
 
-    verificarMembro,
+    verificarPerfil,
 
     (req, res) => {
 

@@ -361,7 +361,8 @@ async function carregarPerfil() {
 
         );
 
-        window.location.href = "/";
+        window.location.href =
+            membroId ? "/dashboard" : "/";
 
     }
 

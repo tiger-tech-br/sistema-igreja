@@ -209,6 +209,83 @@
 
 }
 
+.modal-exclusao.hidden {
+
+    display: none;
+
+}
+
+.modal-exclusao {
+
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-5);
+    background: rgba(0, 0, 0, .55);
+
+}
+
+.modal-exclusao__caixa {
+
+    width: min(420px, 100%);
+    padding: var(--space-6);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    box-shadow: var(--shadow-lg);
+
+}
+
+.modal-exclusao__caixa h3 {
+
+    margin-bottom: var(--space-3);
+    color: #111111;
+
+}
+
+.modal-exclusao__caixa p {
+
+    margin-bottom: var(--space-5);
+    color: #333333;
+
+}
+
+.modal-exclusao__acoes {
+
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+
+}
+
+.btn-cancelar-exclusao,
+.btn-confirmar-exclusao {
+
+    min-height: 42px;
+    padding: 0 var(--space-4);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: var(--font-weight-medium);
+
+}
+
+.btn-cancelar-exclusao {
+
+    background: #e9ecef;
+    color: #111111;
+
+}
+
+.btn-confirmar-exclusao {
+
+    background: var(--color-danger);
+    color: #ffffff;
+
+}
+
 /* ===================================== */
 /* RESPONSIVIDADE */
 /* ===================================== */

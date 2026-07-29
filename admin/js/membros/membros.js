@@ -12,6 +12,8 @@ const pesquisa = document.getElementById("pesquisa");
 
 let todosMembros = [];
 
+let membroParaExcluir = null;
+
 
 
 // =========================
@@ -167,7 +169,7 @@ function adicionarEventosCard(card, membro) {
     card.querySelector(".btn-excluir")
         .addEventListener("click", () => {
 
-            excluirMembro(membro.id);
+            abrirConfirmacaoExclusao(membro);
 
         });
 
@@ -293,13 +295,85 @@ function baixarQRCode(membro) {
 // CONFIRMAR EXCLUSÃO
 // =========================
 
-function confirmarExclusao() {
+function obterModalExclusao() {
 
-    return confirm(
+    let modal = document.getElementById("modal-exclusao-membro");
 
-        "Tem certeza que deseja excluir este membro?"
+    if (modal) {
 
-    );
+        return modal;
+
+    }
+
+    modal = document.createElement("div");
+
+    modal.id = "modal-exclusao-membro";
+    modal.className = "modal-exclusao hidden";
+    modal.innerHTML = `
+        <div class="modal-exclusao__caixa" role="dialog" aria-modal="true" aria-labelledby="titulo-exclusao-membro">
+            <h3 id="titulo-exclusao-membro">Excluir membro?</h3>
+            <p id="texto-exclusao-membro"></p>
+            <div class="modal-exclusao__acoes">
+                <button type="button" class="btn-cancelar-exclusao">Cancelar</button>
+                <button type="button" class="btn-confirmar-exclusao">Sim, excluir</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    modal.addEventListener("click", (evento) => {
+
+        if (evento.target === modal) {
+
+            fecharConfirmacaoExclusao();
+
+        }
+
+    });
+
+    modal.querySelector(".btn-cancelar-exclusao")
+        .addEventListener("click", fecharConfirmacaoExclusao);
+
+    modal.querySelector(".btn-confirmar-exclusao")
+        .addEventListener("click", () => {
+
+            if (membroParaExcluir) {
+
+                excluirMembro(membroParaExcluir.id);
+
+            }
+
+        });
+
+    return modal;
+
+}
+
+function abrirConfirmacaoExclusao(membro) {
+
+    membroParaExcluir = membro;
+
+    const modal = obterModalExclusao();
+
+    modal.querySelector("#texto-exclusao-membro").textContent =
+        `Deseja excluir ${membro.nome}? Esta acao nao pode ser desfeita.`;
+
+    modal.classList.remove("hidden");
+
+}
+
+function fecharConfirmacaoExclusao() {
+
+    const modal = document.getElementById("modal-exclusao-membro");
+
+    if (modal) {
+
+        modal.classList.add("hidden");
+
+    }
+
+    membroParaExcluir = null;
 
 }
 
@@ -310,12 +384,6 @@ function confirmarExclusao() {
 
 
 async function excluirMembro(id) {
-
-    if (!confirmarExclusao()) {
-
-        return;
-
-    }
 
     try {
 
@@ -336,6 +404,8 @@ async function excluirMembro(id) {
         alert(resultado.message);
 
         if (resultado.success) {
+
+            fecharConfirmacaoExclusao();
 
             carregarMembros();
 
