@@ -9,6 +9,9 @@
 const formulario =
     document.getElementById("formCadastro");
 
+const linkVoltarCadastro =
+    document.getElementById("linkVoltarCadastro");
+
 const params =
     new URLSearchParams(
         window.location.search
@@ -94,6 +97,20 @@ function configurarModoEdicao() {
 
     const editando =
         estaEditando();
+
+    if (linkVoltarCadastro && editando) {
+
+        linkVoltarCadastro.href =
+            "/dashboard";
+
+        const texto =
+            linkVoltarCadastro.querySelector("span") ||
+            linkVoltarCadastro;
+
+        texto.textContent =
+            "Voltar ao dashboard";
+
+    }
 
     if (secaoAdministrativa) {
 

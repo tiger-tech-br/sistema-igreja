@@ -9,6 +9,9 @@
 const campoNome =
     document.getElementById("nome");
 
+const linkVoltarPerfil =
+    document.getElementById("linkVoltarPerfil");
+
 const campoCargo =
     document.getElementById("cargo");
 
@@ -59,6 +62,38 @@ const params =
 
 const membroId =
     params.get("id");
+
+function configurarVoltarPerfil() {
+
+    if (!linkVoltarPerfil) {
+
+        return;
+
+    }
+
+    if (membroId) {
+
+        linkVoltarPerfil.href =
+            "/dashboard";
+
+        const texto =
+            linkVoltarPerfil.querySelector("span");
+
+        if (texto) {
+
+            texto.textContent =
+                "Voltar para dashboard";
+
+        }
+
+        return;
+
+    }
+
+    linkVoltarPerfil.href =
+        "/";
+
+}
 
 
 
@@ -402,6 +437,8 @@ document.addEventListener(
     "DOMContentLoaded",
 
     () => {
+
+        configurarVoltarPerfil();
 
         carregarPerfil();
 
