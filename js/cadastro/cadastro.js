@@ -528,6 +528,12 @@ function validarSenha() {
 
 }
 
+function validarConfirmacaoSenha() {
+
+    return campoConfirmarSenha.value === campoSenha.value;
+
+}
+
 // =====================================
 // VALIDAR DATA
 // =====================================
@@ -728,6 +734,34 @@ function validarFormulario() {
 
     }
 
+    if (!campoSexo.value) {
+
+        alert(
+
+            "Selecione o sexo."
+
+        );
+
+        campoSexo.focus();
+
+        return false;
+
+    }
+
+    if (!campoEstadoCivil.value) {
+
+        alert(
+
+            "Selecione o estado civil."
+
+        );
+
+        campoEstadoCivil.focus();
+
+        return false;
+
+    }
+
     if (!estaEditando() && !validarSenha()) {
 
         alert(
@@ -745,6 +779,20 @@ function validarFormulario() {
     if (!validarDataNascimento()) {
 
         campoDataNascimento.focus();
+
+        return false;
+
+    }
+
+    if (!estaEditando() && !validarConfirmacaoSenha()) {
+
+        alert(
+
+            "A confirmação da senha deve ser igual à senha."
+
+        );
+
+        campoConfirmarSenha.focus();
 
         return false;
 
@@ -981,7 +1029,11 @@ async function salvarMembro(event) {
 
     event.preventDefault();
 
+    console.log("[CADASTRO] Enviando formulário de cadastro.");
+
     if (!validarFormulario()) {
+
+        console.log("[CADASTRO] Validação impediu o envio.");
 
         return;
 
@@ -1032,6 +1084,8 @@ async function salvarMembro(event) {
         const resultado =
 
             await resposta.json();
+
+        console.log("[CADASTRO] Resposta da API:", resposta.status, resultado);
 
         if (!resposta.ok) {
 
