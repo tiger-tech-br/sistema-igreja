@@ -1,6 +1,6 @@
 // ======================================
 // SITE INSTITUCIONAL
-// Assembleia de Deus
+// Assembléia de Deus
 // index.js
 // ======================================
 

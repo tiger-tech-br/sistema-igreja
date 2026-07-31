@@ -275,7 +275,7 @@ async function gerarCredencial(
 
         .text(
 
-            "ASSEMBLEIA DE DEUS",
+            "ASSEMBLÉIA DE DEUS",
 
             0,
 

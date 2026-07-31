@@ -1250,7 +1250,7 @@ async listarUltimosAcessos(
 
                 a.horario,
 
-                'HH24:MI:SS'
+                'HH24:MI'
 
             ) AS horario
 

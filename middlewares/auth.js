@@ -26,7 +26,7 @@ function verificarAutenticacao(
 
         }
 
-        return res.redirect("/");
+        return res.redirect("/login-admin");
 
     }
 
