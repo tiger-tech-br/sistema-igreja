@@ -672,6 +672,40 @@ function validarDataNascimento() {
 
 function validarFormulario() {
 
+    const cargo =
+        campoCargo.value.trim();
+
+    const ministerio =
+        campoMinisterio.value.trim();
+
+    if (cargo.length > 100) {
+
+        alert(
+
+            "O cargo deve ter no máximo 100 caracteres."
+
+        );
+
+        campoCargo.focus();
+
+        return false;
+
+    }
+
+    if (ministerio.length > 100) {
+
+        alert(
+
+            "O ministério deve ter no máximo 100 caracteres."
+
+        );
+
+        campoMinisterio.focus();
+
+        return false;
+
+    }
+
     if (estaEditando()) {
 
         return true;
@@ -1208,6 +1242,14 @@ document.addEventListener(
         configurarModoEdicao();
 
         carregarMembro();
+
+        if (estaEditando()) {
+
+            campoCargo.focus();
+
+            return;
+
+        }
 
         campoNome.focus();
 

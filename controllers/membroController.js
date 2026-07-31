@@ -1100,6 +1100,25 @@ async function listarNomes(req, res) {
 
             const { id } = req.params;
 
+            const cargo =
+                req.body.cargo?.trim() || null;
+
+            const ministerio =
+                req.body.ministerio?.trim() || null;
+
+            if (cargo?.length > 100 || ministerio?.length > 100) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    message:
+                        "Cargo e ministério devem ter no máximo 100 caracteres."
+
+                });
+
+            }
+
             const membro =
 
                 await membroModel.atualizarDadosAdministrativos(
@@ -1107,11 +1126,9 @@ async function listarNomes(req, res) {
                     id,
 
                     {
-                        cargo:
-                            req.body.cargo?.trim() || null,
+                        cargo,
 
-                        ministerio:
-                            req.body.ministerio?.trim() || null
+                        ministerio
                     }
 
                 );
