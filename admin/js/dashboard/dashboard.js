@@ -83,6 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         carregarDashboard();
 
-    }, 5000);
+    }, 1000);
 
 });
