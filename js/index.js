@@ -780,6 +780,7 @@ document.addEventListener(
                     <form
                         action="/api/membros/login"
                         method="POST"
+                        novalidate
                         class="login-form member-login-form">
 
                         <label for="email">E-mail</label>

@@ -66,11 +66,13 @@ const token =
 // MOSTRAR / OCULTAR SENHA
 // =====================================
 
-botaoMostrarSenha.addEventListener(
+if (botaoMostrarSenha) {
 
-    "click",
+    botaoMostrarSenha.addEventListener(
 
-    () => {
+        "click",
+
+        () => {
 
         if (
 
@@ -96,15 +98,19 @@ botaoMostrarSenha.addEventListener(
 
         }
 
-    }
+        }
 
-);
+    );
 
-botaoMostrarConfirmacao.addEventListener(
+}
 
-    "click",
+if (botaoMostrarConfirmacao) {
 
-    () => {
+    botaoMostrarConfirmacao.addEventListener(
+
+        "click",
+
+        () => {
 
         if (
 
@@ -130,19 +136,23 @@ botaoMostrarConfirmacao.addEventListener(
 
         }
 
-    }
+        }
 
-);
+    );
+
+}
 
 // =====================================
 // ENVIAR
 // =====================================
 
-formulario.addEventListener(
+if (formulario) {
 
-    "submit",
+    formulario.addEventListener(
 
-    async (evento) => {
+        "submit",
+
+        async (evento) => {
 
         evento.preventDefault();
 
@@ -272,6 +282,8 @@ formulario.addEventListener(
 
         }
 
-    }
+        }
 
-);
+    );
+
+}

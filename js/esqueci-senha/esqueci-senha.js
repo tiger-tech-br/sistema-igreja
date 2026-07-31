@@ -14,6 +14,14 @@ const campoEmail =
 
 function validarEmail() {
 
+    if (!campoEmail) {
+
+        alert("Campo de e-mail não encontrado.");
+
+        return false;
+
+    }
+
     const email =
         campoEmail.value.trim();
 
@@ -129,13 +137,17 @@ async function enviarRecuperacao(event) {
 // EVENTOS
 // =====================================
 
-formulario.addEventListener(
+if (formulario) {
 
-    "submit",
+    formulario.addEventListener(
 
-    enviarRecuperacao
+        "submit",
 
-);
+        enviarRecuperacao
+
+    );
+
+}
 
 // =====================================
 // INICIALIZAÇÃO
@@ -147,7 +159,11 @@ document.addEventListener(
 
     () => {
 
-        campoEmail.focus();
+        if (campoEmail) {
+
+            campoEmail.focus();
+
+        }
 
     }
 

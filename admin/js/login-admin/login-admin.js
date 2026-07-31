@@ -20,6 +20,14 @@ const campoSenha =
 
 function validarEmail() {
 
+    if (!campoEmail) {
+
+        alert("Campo de e-mail não encontrado.");
+
+        return false;
+
+    }
+
     const email = campoEmail.value.trim();
 
     if (email === "") {
@@ -50,6 +58,14 @@ function validarEmail() {
 }
 
 function validarSenha() {
+
+    if (!campoSenha) {
+
+        alert("Campo de senha não encontrado.");
+
+        return false;
+
+    }
 
     const senha = campoSenha.value.trim();
 
@@ -148,10 +164,14 @@ async function fazerLogin(event) {
 // EVENTOS
 // =====================================
 
-formulario.addEventListener(
-    "submit",
-    fazerLogin
-);
+if (formulario) {
+
+    formulario.addEventListener(
+        "submit",
+        fazerLogin
+    );
+
+}
 
 
 
@@ -161,6 +181,10 @@ formulario.addEventListener(
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    campoEmail.focus();
+    if (campoEmail) {
+
+        campoEmail.focus();
+
+    }
 
 });
