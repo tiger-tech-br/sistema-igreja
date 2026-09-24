@@ -1,11 +1,11 @@
 const pool = require('../database/connection');
 const bcrypt = require('bcrypt');
 const { hashToken } = require('../utils/security');
-const { VERSION, CONSENT_TEXT } = require('../config/privacy');
+const { VERSION, NOTICE_TEXT, CONSENT_TEXT } = require('../config/privacy');
 const profile = `id, nome, TO_CHAR(data_nascimento, 'DD/MM/YYYY') AS data_nascimento,
     telefone, celular, email, endereco, cargo, ministerio, sexo, estado_civil, matricula,
     TO_CHAR(validade, 'DD/MM/YYYY') AS validade, qr_code, email_verificado,
-    consent_version, consent_at, consent_revoked_at`;
+    privacy_notice_version, privacy_notice_at, consent_version, consent_at, consent_revoked_at`;
 const one = async (sql, args) => (await pool.query(sql, args)).rows[0];
 module.exports = {
     async criar(d) {
@@ -14,13 +14,14 @@ module.exports = {
             await client.query('BEGIN');
             const result = await client.query(`INSERT INTO membros
                 (nome,data_nascimento,telefone,celular,email,senha,email_verificado,endereco,cargo,ministerio,
-                 sexo,estado_civil,matricula,validade,consent_version,consent_text,consent_at,token_confirmacao,confirmation_expires_at)
-                VALUES ($1,$2,$3,$4,$5,$6,FALSE,$7,NULL,NULL,$8,$9,$10,$11,$12,$13,NOW(),$14,NOW()+INTERVAL '24 hours')
+                 sexo,estado_civil,matricula,validade,privacy_notice_version,privacy_notice_text,privacy_notice_at,
+                 consent_version,consent_text,consent_at,token_confirmacao,confirmation_expires_at)
+                VALUES ($1,$2,$3,$4,$5,$6,FALSE,$7,NULL,NULL,$8,$9,$10,$11,$12,$13,NOW(),$12,$14,NOW(),$15,NOW()+INTERVAL '24 hours')
                 RETURNING id, nome, email`,
                 [d.nome,d.dataNascimento,d.telefone,d.celular,d.email,await bcrypt.hash(d.senha,12),
-                 d.endereco,d.sexo,d.estadoCivil,d.matricula,d.validade,VERSION,CONSENT_TEXT,hashToken(d.confirmationToken)]);
-            await client.query(`INSERT INTO privacy_consents (membro_id,version,texto) VALUES ($1,$2,$3)`,
-                [result.rows[0].id,VERSION,CONSENT_TEXT]);
+                 d.endereco,d.sexo,d.estadoCivil,d.matricula,d.validade,VERSION,NOTICE_TEXT,CONSENT_TEXT,hashToken(d.confirmationToken)]);
+            await client.query(`INSERT INTO privacy_consents (membro_id,version,notice_text,texto) VALUES ($1,$2,$3,$4)`,
+                [result.rows[0].id,VERSION,NOTICE_TEXT,CONSENT_TEXT]);
             await client.query('COMMIT');
             return result.rows[0];
         } catch (error) { await client.query('ROLLBACK'); throw error; }

@@ -624,11 +624,16 @@
                 <!-- BOTÕES -->
                 <!-- ========================= -->
 
-                <div class="form-group">
-                    <label><input type="checkbox" id="consentimento" required>
-                        Li o <a href="/privacidade" target="_blank" rel="noopener">Aviso de Privacidade</a> e autorizo especificamente o tratamento do meu vínculo religioso para cadastro, credencial e presença. Posso revogar esta autorização na área de privacidade.
+                <div class="form-group" id="privacidadeCadastro">
+                    <label><input type="checkbox" id="cienciaPrivacidade" required>
+                        <span id="privacyNoticeText">Confirmo que li o Aviso de Privacidade e entendi como meus dados serão utilizados e como posso exercer meus direitos.</span>
+                        <a href="/privacidade" target="_blank" rel="noopener">Consultar o Aviso de Privacidade</a>.
                     </label>
-                    <input type="hidden" id="privacyVersion" value="2026-09-23">
+                    <label><input type="checkbox" id="consentimento" required>
+                        <span id="privacyConsentText">Autorizo, de forma livre, informada e específica, o tratamento do dado sensível sobre meu vínculo religioso para administrar meu cadastro, emitir minha credencial e registrar minhas presenças. Posso revogar esta autorização a qualquer momento.</span>
+                    </label>
+                    <input type="hidden" id="privacyVersion" value="">
+                    <p id="privacyConfigError" role="alert" hidden></p>
                     <p>Cadastro exclusivo para maiores de 18 anos.</p>
                 </div>
 

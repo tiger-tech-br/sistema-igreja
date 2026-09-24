@@ -75,6 +75,41 @@ const campoConfirmarSenha =
 const erroData =
     document.getElementById("erroData");
 
+const botaoSalvar =
+    formulario.querySelector('button[type="submit"]');
+
+const privacidadeCadastro =
+    document.getElementById("privacidadeCadastro");
+
+async function carregarConfiguracaoPrivacidade() {
+
+    if (estaEditando()) return;
+
+    const erro = document.getElementById("privacyConfigError");
+    botaoSalvar.disabled = true;
+
+    try {
+
+        const resposta = await fetch("/api/privacidade/config", { headers: { Accept: "application/json" } });
+        if (!resposta.ok) throw new Error("configuração indisponível");
+        const config = await resposta.json();
+        if (!config.configured || !config.version || !config.noticeText || !config.consentText) throw new Error("configuração incompleta");
+
+        document.getElementById("privacyVersion").value = config.version;
+        document.getElementById("privacyNoticeText").textContent = config.noticeText;
+        document.getElementById("privacyConsentText").textContent = config.consentText;
+        erro.hidden = true;
+        botaoSalvar.disabled = false;
+
+    } catch (_) {
+
+        erro.textContent = "O cadastro está temporariamente indisponível porque o aviso de privacidade não pôde ser carregado. Atualize a página e tente novamente.";
+        erro.hidden = false;
+
+    }
+
+}
+
 // =====================================
 // UTILITÁRIOS
 // =====================================
@@ -97,6 +132,17 @@ function configurarModoEdicao() {
 
     const editando =
         estaEditando();
+
+    if (privacidadeCadastro) {
+
+        privacidadeCadastro.hidden = editando;
+        privacidadeCadastro.querySelectorAll('input[type="checkbox"]').forEach((campo) => {
+
+            campo.required = !editando;
+
+        });
+
+    }
 
     if (linkVoltarCadastro && editando) {
 
@@ -940,6 +986,10 @@ function obterDadosFormulario() {
 
             campoSenha.value,
 
+        cienciaPrivacidade:
+
+            document.getElementById("cienciaPrivacidade").checked,
+
         consentimento:
 
             document.getElementById("consentimento").checked,
@@ -1245,7 +1295,7 @@ document.addEventListener(
 
     "DOMContentLoaded",
 
-    () => {
+    async () => {
 
         configurarModoEdicao();
 
@@ -1258,6 +1308,8 @@ document.addEventListener(
             return;
 
         }
+
+        await carregarConfiguracaoPrivacidade();
 
         campoNome.focus();
 

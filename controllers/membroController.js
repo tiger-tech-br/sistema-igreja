@@ -33,7 +33,7 @@ exports.criar = safe(async (req,res) => {
     if (!/^[A-Za-zÀ-ÿ\s]{3,150}$/.test(name) || !emailValid(email)) return fail(res,'Informe nome e e-mail válidos.');
     if (!birth) return fail(res,'O cadastro é exclusivo para maiores de 18 anos. Informe uma data válida.');
     if (!passwordValid(d.senha)) return fail(res,'Use uma senha com pelo menos 12 caracteres e no máximo 72 bytes.');
-    if (d.consentimento !== true || d.privacyVersion !== VERSION) return fail(res,'Leia o aviso de privacidade e autorize especificamente o tratamento do vínculo religioso.');
+    if (d.cienciaPrivacidade !== true || d.consentimento !== true || d.privacyVersion !== VERSION) return fail(res,'Confirme a leitura do Aviso de Privacidade e autorize especificamente o tratamento do vínculo religioso.');
     const optional = {};
     for (const field of ['telefone','celular','endereco','sexo','estadoCivil']) {
         if (d[field] != null && (typeof d[field] !== 'string' || d[field].length > 300)) return fail(res,'Campo opcional inválido.');

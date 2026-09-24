@@ -6,7 +6,7 @@ const model = require('../models/membroModel');
 const member = require('../middlewares/authMembro');
 const admin = require('../middlewares/auth');
 const limit = require('../middlewares/accountLimiter');
-const { VERSION, CONSENT_TEXT, privacyConfig } = require('../config/privacy');
+const { VERSION, NOTICE_TEXT, CONSENT_TEXT, privacyConfig } = require('../config/privacy');
 const { adultDate } = require('../utils/security');
 const safe = fn => async (req,res,next) => { try { await fn(req,res); } catch(error) { next(error); } };
 const invalid = (res,message) => res.status(400).json({success:false,message});
@@ -15,7 +15,7 @@ router.get('/meus-dados',member,limit('export',10),safe(async (req,res) => {
     const id=req.session.membro.id;
     const [profile, accesses, consents, requests] = await Promise.all([
         model.buscarPorId(id), pool.query('SELECT data,horario FROM acessos WHERE membro_id=$1 ORDER BY data DESC',[id]),
-        pool.query('SELECT version,texto,criado_em,revoked_at FROM privacy_consents WHERE membro_id=$1 ORDER BY id',[id]),
+        pool.query('SELECT version,notice_text,texto,criado_em,revoked_at FROM privacy_consents WHERE membro_id=$1 ORDER BY id',[id]),
         pool.query('SELECT id,tipo,mensagem,status,resposta,criado_em,concluido_em FROM privacy_requests WHERE membro_id=$1 ORDER BY criado_em',[id])
     ]);
     res.attachment('meus-dados.json').json({ cadastro:profile,presencas:accesses.rows,consentimentos:consents.rows,solicitacoes:requests.rows });
@@ -42,14 +42,14 @@ router.post('/solicitacoes',member,limit('privacy-request',5,3600),safe(async (r
 }));
 router.post('/consentimento',member,limit('consent',5),safe(async (req,res) => {
     if (!privacyConfig().configured) return res.status(503).json({success:false,message:'Responsável e contato de privacidade ainda não configurados.'});
-    if (req.body?.consentimento!==true || req.body?.privacyVersion!==VERSION) return invalid(res,'Leia o aviso e autorize o tratamento de forma específica.');
+    if (req.body?.cienciaPrivacidade!==true || req.body?.consentimento!==true || req.body?.privacyVersion!==VERSION) return invalid(res,'Confirme a leitura do aviso e autorize o tratamento de forma específica.');
     const m=await model.buscarPorId(req.session.membro.id);
     if (!adultDate(m.data_nascimento)) return invalid(res,'O cadastro deve ter uma data de nascimento válida e idade mínima de 18 anos. Solicite a correção ao responsável.');
     const client=await pool.connect();
     try {
         await client.query('BEGIN');
-        await client.query('UPDATE membros SET consent_version=$1,consent_text=$2,consent_at=NOW(),consent_revoked_at=NULL WHERE id=$3',[VERSION,CONSENT_TEXT,m.id]);
-        await client.query('INSERT INTO privacy_consents(membro_id,version,texto) VALUES($1,$2,$3)',[m.id,VERSION,CONSENT_TEXT]);
+        await client.query('UPDATE membros SET privacy_notice_version=$1,privacy_notice_text=$2,privacy_notice_at=NOW(),consent_version=$1,consent_text=$3,consent_at=NOW(),consent_revoked_at=NULL WHERE id=$4',[VERSION,NOTICE_TEXT,CONSENT_TEXT,m.id]);
+        await client.query('INSERT INTO privacy_consents(membro_id,version,notice_text,texto) VALUES($1,$2,$3,$4)',[m.id,VERSION,NOTICE_TEXT,CONSENT_TEXT]);
         await client.query('COMMIT');
     } catch(error) { await client.query('ROLLBACK'); throw error; }
     finally { client.release(); }
