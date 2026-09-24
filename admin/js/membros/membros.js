@@ -80,17 +80,19 @@ function criarCardMembro(membro) {
 
             </button>
 
-            <button class="btn-qrcode">
+            <button class="btn-qrcode" title="Baixar QR Code para impressão" aria-label="Baixar QR Code para impressão">
 
                 <i class="fa-solid fa-download"></i>
 
             </button>
 
+            <!-- Botão de credencial temporariamente desativado.
             <button class="btn-credencial">
 
                 <i class="fa-solid fa-id-card"></i>
 
             </button>
+            -->
 
             <button class="btn-perfil">
 
@@ -132,12 +134,14 @@ function adicionarEventosCard(card, membro) {
 
         });
 
+    /* Botão de credencial temporariamente desativado.
         card.querySelector(".btn-credencial")
         .addEventListener("click", () => {
 
         baixarCredencial(membro.id);
 
     });
+    */
 
         card.querySelector(".btn-qrcode")
         .addEventListener("click", () => {
@@ -266,16 +270,33 @@ function baixarCredencial(id) {
 // =========================
 
 
-function baixarQRCode(membro) {
+async function baixarQRCode(membro) {
+    try {
+        const resposta = await fetch(`/api/membros/qrcode/${membro.id}`);
 
-    window.open(
+        if (!resposta.ok) {
+            const resultado = await resposta.json().catch(() => null);
+            throw new Error(resultado?.message || "Não foi possível baixar o QR Code.");
+        }
 
-        `/api/membros/qrcode/${membro.id}`,
+        if (!resposta.headers.get("Content-Type")?.includes("image/png")) {
+            throw new Error("Não foi possível baixar o QR Code. Atualize a página e entre novamente se necessário.");
+        }
 
-        "_blank"
-
-    );
-
+        const arquivo = await resposta.blob();
+        const url = URL.createObjectURL(arquivo);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `qrcode-${membro.id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        // Aguarda o navegador iniciar o download antes de liberar a imagem.
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (erro) {
+        console.error("[BAIXAR_QRCODE]", erro);
+        alert(erro.message || "Erro ao baixar o QR Code. Tente novamente.");
+    }
 }
 
 // =========================
