@@ -19,7 +19,14 @@ function createApp({ sessionStore } = {}) {
     if (production && appUrl.protocol !== 'https:') throw new Error('APP_URL deve usar HTTPS em produção.');
     const app = express();
     app.disable('x-powered-by');
-    app.set('trust proxy', process.env.TRUST_PROXY_HOPS ? Number(process.env.TRUST_PROXY_HOPS) : false);
+    const configuredProxyHops = process.env.TRUST_PROXY_HOPS;
+    const trustProxy = configuredProxyHops !== undefined && configuredProxyHops !== ''
+        ? Number(configuredProxyHops)
+        : process.env.RAILWAY_ENVIRONMENT ? 1 : false;
+    if (configuredProxyHops && (!Number.isInteger(trustProxy) || trustProxy < 0 || trustProxy > 2)) {
+        throw new Error('TRUST_PROXY_HOPS deve ser 0, 1 ou 2.');
+    }
+    app.set('trust proxy', trustProxy);
     app.use(helmet({ referrerPolicy: { policy: 'no-referrer' },
         contentSecurityPolicy: { directives: {
             scriptSrc: ["'self'"], scriptSrcAttr: ["'none'"],

@@ -4,7 +4,7 @@ O sistema implementa controles técnicos, mas a conformidade também depende da 
 
 ## Antes da publicação
 
-1. Preencha `PRIVACY_CONTROLLER`, `PRIVACY_EMAIL`, `APP_URL` com HTTPS, `SESSION_SECRET` aleatório e as credenciais do banco no ambiente da hospedagem. Cadastros novos ficam bloqueados enquanto o controlador e o contato não estiverem configurados.
+1. Preencha `PRIVACY_CONTROLLER`, `PRIVACY_EMAIL`, `APP_URL` com HTTPS, `SESSION_SECRET` aleatório e as credenciais do banco no ambiente da hospedagem. No Railway, deixe `TRUST_PROXY_HOPS` vazio para detectar automaticamente o único proxy da plataforma. Cadastros novos ficam bloqueados enquanto o controlador e o contato não estiverem configurados.
 2. Faça um backup protegido e teste em homologação. O Railway executará `npm run migrate` automaticamente antes de `npm start`. A migração não inventa consentimento para cadastros antigos; cada adulto deve registrar sua própria decisão na área `/privacidade`.
 3. Crie ou rotacione o administrador com variáveis temporárias `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD`, usando `npm run criar-admin` ou `npm run criar-admin -- --rotate`. Depois, remova `ADMIN_PASSWORD` do ambiente.
 4. Restrinja o banco e os backups, use TLS, limite os acessos administrativos e revise os contratos da hospedagem, banco e Resend. O arquivo `igreja-db.sql` distribuído foi sanitizado; cópias históricas devem ser tratadas separadamente.
