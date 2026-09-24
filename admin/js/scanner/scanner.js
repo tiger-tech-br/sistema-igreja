@@ -48,7 +48,17 @@ function pararScanner() {
 
 }
 
-function abrirCredencialValidada(textoLido) {
+async function registrarEabrir(id) {
+    const resposta = await fetch(`/api/membros/presenca/${id}`, { method: "POST" });
+    const resultado = await resposta.json();
+    if (!resposta.ok) {
+        throw new Error(resultado.message || "Não foi possível registrar a presença.");
+    }
+    abrirPagina(`/validar?id=${id}`);
+    return true;
+}
+
+async function abrirCredencialValidada(textoLido) {
 
     if (
 
@@ -71,9 +81,7 @@ function abrirCredencialValidada(textoLido) {
 
         ) {
 
-            abrirPagina(`/validar?id=${id}`);
-
-            return true;
+            return registrarEabrir(id);
 
         }
 
@@ -90,9 +98,7 @@ function abrirCredencialValidada(textoLido) {
 
         if (/^\d+$/.test(id || "")) {
 
-            abrirPagina(`/validar?id=${id}`);
-
-            return true;
+            return registrarEabrir(id);
 
         }
 
@@ -105,9 +111,7 @@ function abrirCredencialValidada(textoLido) {
 
         if (/^\d+$/.test(id)) {
 
-            abrirPagina(`/validar?id=${id}`);
-
-            return true;
+            return registrarEabrir(id);
 
         }
 
@@ -123,16 +127,14 @@ function abrirCredencialValidada(textoLido) {
 
 function sucesso(textoLido) {
 
-    pararScanner().then(() => {
-
-        if (!abrirCredencialValidada(textoLido)) {
-
+    pararScanner().then(async () => {
+        if (!await abrirCredencialValidada(textoLido)) {
             alert("QR Code invalido.");
-
             iniciarScanner();
-
         }
-
+    }).catch((erroLeitura) => {
+        alert(erroLeitura.message || "Não foi possível registrar a presença.");
+        iniciarScanner();
     });
 
 }

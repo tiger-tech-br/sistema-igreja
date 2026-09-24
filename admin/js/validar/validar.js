@@ -129,11 +129,8 @@ async function carregarMembro() {
 
         renderizarMembro(resultado.data);
 
-        const presenca = await fetch(`/api/membros/presenca/${id}`, { method: "POST" });
-        const resultadoPresenca = await presenca.json();
-        if (!presenca.ok) {
-            alert(resultadoPresenca.message || "Não foi possível registrar a presença.");
-        }
+        // A consulta pública é somente leitura. A presença é registrada
+        // exclusivamente pelo scanner de um administrador autenticado.
 
     } catch (erro) {
 

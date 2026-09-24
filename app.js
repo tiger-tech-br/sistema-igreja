@@ -73,13 +73,15 @@ function createApp({ sessionStore } = {}) {
         [['/login-admin', '/admin/index.html'], 'admin/index.html']
     ]) app.get(urls, page(file));
     app.get(['/perfil', '/perfil.html'], member, page('perfil.html'));
-    app.get(['/membros', '/membros.html'], admin, page('membros.html'));
+    app.get(['/membros', '/membros.html'], member, page('membros.html'));
     for (const [urls, file] of [
         [['/dashboard', '/admin/dashboard.html'], 'dashboard.html'], [['/admin/membros', '/admin/membros.html'], 'membros.html'],
         [['/admin/perfil', '/admin/perfil.html'], 'perfil.html'], [['/scanner', '/admin/scanner.html'], 'scanner.html'],
-        [['/validar', '/admin/validar.html'], 'validar.html'], [['/admin/presencas.html'], 'presencas.html'],
+        [['/admin/presencas.html'], 'presencas.html'],
         [['/admin/privacidade'], 'privacidade.html']
     ]) app.get(urls, admin, page('admin/' + file));
+    // Public credential view is read-only and receives only minimal consented fields.
+    app.get(['/validar', '/admin/validar.html'], page('admin/validar.html'));
     const logout = (req, res, next) => req.session.destroy(error => {
         if (error) return next(error);
         res.clearCookie('igreja.sid', { path: '/', httpOnly: true, secure: production, sameSite: 'lax' });
