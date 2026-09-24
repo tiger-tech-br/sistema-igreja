@@ -6,9 +6,15 @@
 
     display: flex;
 
+    flex-direction: column;
+
+    align-items: center;
+
     justify-content: center;
 
     padding: 3rem 1.5rem;
+
+    min-height: 100vh;
 
 }
 
@@ -547,6 +553,28 @@ hr {
 
     color: #111;
 
+}
+
+.perfil-privacidade {
+    width: 100%;
+    max-width: 950px;
+    margin-top: 1rem;
+    padding: 1.25rem 0 .25rem;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    text-align: center;
+}
+
+.perfil-privacidade a {
+    color: #ffffff;
+    font-size: .9rem;
+    opacity: .82;
+    text-decoration: none;
+    transition: opacity .2s ease, color .2s ease;
+}
+
+.perfil-privacidade a:hover {
+    color: var(--color-primary);
+    opacity: 1;
 }
 
 .hidden {
