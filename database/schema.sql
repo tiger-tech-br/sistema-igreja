@@ -29,6 +29,7 @@ CREATE TABLE membros (
     data_nascimento DATE,
 
     telefone VARCHAR(20),
+    celular VARCHAR(20),
 
     email VARCHAR(150) NOT NULL UNIQUE,
 

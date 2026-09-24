@@ -62,31 +62,13 @@ function criarCardMembro(membro) {
 
         <div class="membro-info">
 
-            <h3>${membro.nome}</h3>
+            <h3></h3>
 
-            <p>
+            <p><strong>Cargo:</strong> <span class="cargo"></span></p>
 
-                <strong>Cargo:</strong>
+            <p><strong>Matrícula:</strong> <span class="matricula"></span></p>
 
-                ${membro.cargo || "Não informado"}
-
-            </p>
-
-            <p>
-
-                <strong>Matrícula:</strong>
-
-                ${membro.matricula || "Não informada"}
-
-            </p>
-
-            <p>
-
-                <strong>Validade:</strong>
-
-                ${membro.validade || "Não informada"}
-
-            </p>
+            <p><strong>Validade:</strong> <span class="validade"></span></p>
 
         </div>
 
@@ -125,6 +107,11 @@ function criarCardMembro(membro) {
         </div>
 
     `;
+
+    card.querySelector("h3").textContent = membro.nome;
+    card.querySelector(".cargo").textContent = membro.cargo || "Não informado";
+    card.querySelector(".matricula").textContent = membro.matricula || "Não informada";
+    card.querySelector(".validade").textContent = membro.validade || "Não informada";
 
     adicionarEventosCard(card, membro);
 

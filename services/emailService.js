@@ -99,7 +99,7 @@ function substituirVariaveis(
 
             `{{${chave}}}`,
 
-            String(dados[chave] ?? "")
+            require('../utils/security').escapeHtml(dados[chave])
 
         );
 

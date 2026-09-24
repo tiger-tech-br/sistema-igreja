@@ -127,11 +127,13 @@ async function carregarMembro() {
 
         }
 
-        renderizarMembro(
+        renderizarMembro(resultado.data);
 
-            resultado.data
-
-        );
+        const presenca = await fetch(`/api/membros/presenca/${id}`, { method: "POST" });
+        const resultadoPresenca = await presenca.json();
+        if (!presenca.ok) {
+            alert(resultadoPresenca.message || "Não foi possível registrar a presença.");
+        }
 
     } catch (erro) {
 

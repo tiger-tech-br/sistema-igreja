@@ -1,127 +1,19 @@
-require("dotenv").config({ quiet: true });
-
-const bcrypt = require("bcrypt");
-
-const adminModel = require("../models/adminModel");
-
-// =====================================
-// CRIAR ADMINISTRADOR
-// =====================================
-
-async function criarAdministrador() {
-
-    try {
-
-        const nome = process.argv[2]?.trim();
-
-        const email = process.argv[3]?.trim().toLowerCase();
-
-        const senha = process.argv[4]?.trim();
-
-        if (!nome || !email || !senha) {
-
-            console.log("");
-
-            console.log("Uso:");
-
-            console.log('npm run criar-admin -- "Nome" "email@dominio.com" "Senha123"');
-
-            process.exit(1);
-
-        }
-
-        // =========================
-        // VALIDAR NOME
-        // =========================
-
-        const regexNome = /^[A-Za-zÀ-ÿ\s]{3,100}$/;
-
-        if (!regexNome.test(nome)) {
-
-            console.log("Nome inválido.");
-
-            process.exit(1);
-
-        }
-
-        // =========================
-        // VALIDAR E-MAIL
-        // =========================
-
-        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!regexEmail.test(email)) {
-
-            console.log("E-mail inválido.");
-
-            process.exit(1);
-
-        }
-
-        // =========================
-        // VALIDAR SENHA
-        // =========================
-
-        const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-
-        if (!regexSenha.test(senha)) {
-
-            console.log("A senha deve conter pelo menos 8 caracteres, uma letra maiúscula, uma minúscula e um número.");
-
-            process.exit(1);
-
-        }
-
-        // =========================
-        // VERIFICAR ADMINISTRADOR
-        // =========================
-
-        const administradorExistente = await adminModel.buscarPorEmail(email);
-
-        if (administradorExistente) {
-
-            console.log("Já existe um administrador com esse e-mail.");
-
-            process.exit(1);
-
-        }
-
-        // =========================
-        // CRIPTOGRAFAR SENHA
-        // =========================
-
-        const senhaCriptografada = await bcrypt.hash(senha, 10);
-
-        // =========================
-        // CADASTRAR
-        // =========================
-
-        const administrador = await adminModel.criarAdministrador(
-
-            nome,
-
-            email,
-
-            senhaCriptografada
-
-        );
-
-        console.log("");
-
-        console.log("Administrador criado com sucesso!");
-
-        console.log(administrador);
-
-        process.exit(0);
-
-    } catch (erro) {
-
-        console.error("[CRIAR_ADMIN]", erro);
-
-        process.exit(1);
-
+require('dotenv').config({quiet:true});
+const bcrypt=require('bcrypt');
+const pool=require('../database/connection');
+const {passwordValid}=require('../utils/security');
+async function main() {
+    const nome=process.env.ADMIN_NAME, email=process.env.ADMIN_EMAIL?.trim().toLowerCase(), senha=process.env.ADMIN_PASSWORD;
+    if (!nome || !/^[A-Za-zÀ-ÿ\s]{3,100}$/.test(nome) || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !passwordValid(senha)) {
+        throw new Error('Configure ADMIN_NAME, ADMIN_EMAIL e ADMIN_PASSWORD (12 caracteres a 72 bytes) no ambiente seguro.');
     }
-
+    const hash=await bcrypt.hash(senha,12);
+    if(process.argv.includes('--rotate')) {
+        const result=await pool.query('UPDATE administradores SET senha=$1,auth_version=auth_version+1 WHERE LOWER(email)=$2 RETURNING id',[hash,email]);
+        if(!result.rowCount) throw new Error('Administrador não encontrado.');
+    } else {
+        await pool.query('INSERT INTO administradores(nome,email,senha) VALUES($1,$2,$3)',[nome,email,hash]);
+    }
+    console.log('Administrador configurado. Remova ADMIN_PASSWORD do ambiente após o uso.');
 }
-
-criarAdministrador();
+main().catch(() => {console.error('Não foi possível configurar o administrador. Confira as variáveis e se a conta já existe; --rotate altera a senha de uma conta existente.');process.exitCode=1;}).finally(()=>pool.end());

@@ -178,13 +178,13 @@ if (formulario) {
 
         if (
 
-            senha.length < 8
+            senha.length < 12 || new TextEncoder().encode(senha).length > 72
 
         ) {
 
             alert(
 
-                "A senha deve possuir pelo menos 8 caracteres."
+                "A senha deve possuir pelo menos 12 caracteres e no máximo 72 bytes."
 
             );
 

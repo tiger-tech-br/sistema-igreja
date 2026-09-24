@@ -624,6 +624,14 @@
                 <!-- BOTÕES -->
                 <!-- ========================= -->
 
+                <div class="form-group">
+                    <label><input type="checkbox" id="consentimento" required>
+                        Li o <a href="/privacidade" target="_blank" rel="noopener">Aviso de Privacidade</a> e autorizo especificamente o tratamento do meu vínculo religioso para cadastro, credencial e presença. Posso revogar esta autorização na área de privacidade.
+                    </label>
+                    <input type="hidden" id="privacyVersion" value="2026-09-23">
+                    <p>Cadastro exclusivo para maiores de 18 anos.</p>
+                </div>
+
                 <div class="form-buttons">
 
                     <button
@@ -688,6 +696,7 @@
     <!-- JAVASCRIPT -->
     <!-- ========================= -->
 
+    <script src="/js/security.js"></script>
     <script src="/js/cadastro/cadastro.js"></script>
 
 </body>

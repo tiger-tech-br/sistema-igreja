@@ -524,7 +524,7 @@ function validarEmail() {
 
 function validarSenha() {
 
-    return campoSenha.value.trim().length >= 6;
+    return campoSenha.value.length >= 12 && new TextEncoder().encode(campoSenha.value).length <= 72;
 
 }
 
@@ -800,7 +800,7 @@ function validarFormulario() {
 
         alert(
 
-            "A senha deve possuir pelo menos 6 caracteres."
+            "A senha deve possuir pelo menos 12 caracteres e no máximo 72 bytes."
 
         );
 
@@ -938,7 +938,15 @@ function obterDadosFormulario() {
 
         senha:
 
-            campoSenha.value
+            campoSenha.value,
+
+        consentimento:
+
+            document.getElementById("consentimento").checked,
+
+        privacyVersion:
+
+            document.getElementById("privacyVersion").value
 
     };
 

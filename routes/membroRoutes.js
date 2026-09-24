@@ -1,181 +1,25 @@
-// =====================================
-// IMPORTAÇÕES
-// =====================================
-
-const express = require("express");
-
-const membroController =
-    require("../controllers/membroController");
-
-const verificarMembro =
-    require("../middlewares/authMembro");
-
-const verificarAutenticacao =
-    require("../middlewares/auth");
-
-// =====================================
-// ROUTER
-// =====================================
-
-const router = express.Router();
-
-// =====================================
-// ROTAS
-// =====================================
-
-// Cadastrar membro
-
-router.post(
-
-    "/",
-
-    membroController.criar
-
-);
-
-// Login
-
-router.post(
-
-    "/login",
-
-    membroController.login
-
-);
-
-// =====================================
-// STATUS DA SESSÃO
-// =====================================
-
-router.get(
-
-    "/sessao",
-
-    membroController.sessao
-
-);
-
-// Recuperar senha
-
-router.post(
-
-    "/esqueci-senha",
-
-    membroController.esqueciSenha
-
-);
-
-router.get(
-    "/redefinir-senha",
-    (req, res) => {
-        const token =
-            req.query.token;
-
-        const destino =
-            token
-                ? `/redefinir-senha?token=${encodeURIComponent(token)}`
-                : "/redefinir-senha";
-
-        res.redirect(destino);
-    }
-);
-
-router.post(
-    "/redefinir-senha",
-    membroController.redefinirSenha
-);
-
-// Listar membros
-
-router.get(
-    "/",
-    verificarAutenticacao,
-    membroController.listar
-);
-
-// =====================================
-// LISTAR NOMES
-// =====================================
-
-router.get(
-
-    "/lista",
-
-    verificarMembro,
-
-    membroController.listarNomes
-
-);
-
-// Dashboard
-
-router.get(
-    "/dashboard",
-    verificarAutenticacao,
-    membroController.dashboard
-);
-
-// Últimos cadastrados
-
-router.get(
-    "/ultimos",
-    verificarAutenticacao,
-    membroController.ultimos
-);
-
-// Validar credencial
-
-router.get(
-    "/validar/:id",
-    membroController.validar
-);
-
-// Baixar QR Code
-
-router.get(
-    "/qrcode/:id",
-    verificarAutenticacao,
-    membroController.baixarQRCode
-);
-
-// Perfil do membro logado
-
-router.get(
-
-    "/perfil",
-
-    verificarMembro,
-
-    membroController.perfil
-
-);
-
-// Buscar por ID
-
-router.get(
-    "/:id",
-    verificarAutenticacao,
-    membroController.buscarPorId
-);
-
-// Atualizar membro
-
-router.put(
-    "/:id",
-    verificarAutenticacao,
-    membroController.atualizar
-);
-
-// Excluir membro
-
-router.delete(
-    "/:id",
-    verificarAutenticacao,
-    membroController.excluir
-);
-
-// =====================================
-// EXPORTAÇÃO
-// =====================================
-
+const router = require('express').Router();
+const c = require('../controllers/membroController');
+const admin = require('../middlewares/auth');
+const member = require('../middlewares/authMembro');
+const limit = require('../middlewares/accountLimiter');
+router.param('id',(req,res,next,id) => /^[1-9]\d{0,9}$/.test(id) ? next() : res.status(400).json({success:false,message:'ID inválido.'}));
+router.post('/',limit('signup',5),c.criar);
+router.post('/login',limit('member-login',8),c.login);
+router.get('/sessao',c.sessao);
+router.post('/esqueci-senha',limit('recovery',3),c.esqueciSenha);
+router.post('/redefinir-senha',limit('reset',8),c.redefinirSenha);
+router.post('/confirmar-email',limit('confirm',8),c.confirmarEmail);
+router.get('/redefinir-senha',(req,res) => res.redirect('/redefinir-senha?token='+encodeURIComponent(typeof req.query.token === 'string' ? req.query.token : '')));
+router.get('/',admin,c.listar);
+router.get('/lista',admin,c.listarNomes);
+router.get('/dashboard',admin,c.dashboard);
+router.get('/ultimos',admin,c.ultimos);
+router.get('/validar/:id',admin,c.validar);
+router.post('/presenca/:id',admin,limit('attendance',60,60),c.presenca);
+router.get('/qrcode/:id',admin,c.baixarQRCode);
+router.get('/perfil',member,c.perfil);
+router.get('/:id',admin,c.buscarPorId);
+router.put('/:id',admin,c.atualizar);
+router.delete('/:id',admin,c.excluir);
 module.exports = router;

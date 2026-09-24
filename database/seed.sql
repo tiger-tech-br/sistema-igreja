@@ -1,23 +1,2 @@
--- =====================================
--- ADMINISTRADOR PADRÃO
--- =====================================
-
-INSERT INTO administradores (
-
-    nome,
-
-    email,
-
-    senha
-
-)
-
-VALUES (
-
-    'Administrador',
-
-    'admin@igreja.com',
-
-    'Admin123'
-
-);
+-- Nenhuma credencial padrão é criada.
+-- Use npm run criar-admin com ADMIN_NAME, ADMIN_EMAIL e ADMIN_PASSWORD no ambiente seguro.

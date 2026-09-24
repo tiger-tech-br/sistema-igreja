@@ -1,51 +1,6 @@
-// =====================================
-// MIDDLEWARE DE ERRO
-// =====================================
-
-function errorMiddleware(
-
-    erro,
-
-    req,
-
-    res,
-
-    next
-
-) {
-
-    console.error(
-
-        "======================================"
-
-    );
-
-    console.error(
-
-        "[ERROR MIDDLEWARE]"
-
-    );
-
-    console.error(erro);
-
-    console.error(
-
-        "======================================"
-
-    );
-
-    return res.status(500).json({
-
-        success: false,
-
-        message: "Ocorreu um erro interno no servidor."
-
-    });
-
-}
-
-// =====================================
-// EXPORTAÇÃO
-// =====================================
-
-module.exports = errorMiddleware;
+module.exports = function errorMiddleware(error, req, res, next) {
+    if (res.headersSent) return next(error);
+    console.error('[REQUEST_FAILED]', error.type === 'entity.parse.failed' ? 'INVALID_JSON' : 'INTERNAL');
+    const status = error.type === 'entity.parse.failed' ? 400 : error.type === 'entity.too.large' ? 413 : 500;
+    res.status(status).json({ success: false, message: status === 500 ? 'Não foi possível concluir a operação.' : 'Requisição inválida.' });
+};

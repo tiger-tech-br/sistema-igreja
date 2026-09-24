@@ -23,19 +23,13 @@ function renderizarUltimosAcessos(acessos) {
 
     acessos.forEach((acesso) => {
 
-        tabelaUltimos.innerHTML += `
-
-            <tr>
-
-                <td>${acesso.nome}</td>
-
-                <td>${acesso.data}</td>
-
-                <td>${acesso.horario}</td>
-
-            </tr>
-
-        `;
+        const linha = document.createElement("tr");
+        for (const valor of [acesso.nome, acesso.data, acesso.horario]) {
+            const celula = document.createElement("td");
+            celula.textContent = valor || "";
+            linha.appendChild(celula);
+        }
+        tabelaUltimos.appendChild(linha);
 
     });
 

@@ -904,7 +904,7 @@ document.addEventListener(
 
                 {
 
-                    method: "GET"
+                    method: "POST"
 
                 }
 

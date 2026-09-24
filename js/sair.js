@@ -1,0 +1,1 @@
+document.getElementById('sair').addEventListener('click',async()=>{const response=await fetch('/logout',{method:'POST'});document.getElementById('resultado').textContent=response.ok?'Sessão encerrada.':'Não foi possível encerrar.';if(response.ok)setTimeout(()=>location.href='/',500);});
