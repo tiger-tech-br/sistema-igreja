@@ -64,13 +64,15 @@ module.exports = {
                 AND consent_at IS NOT NULL AND consent_revoked_at IS NULL
                 AND validade >= (NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE FOR UPDATE`, [id]);
             if (!member.rowCount) { await client.query('ROLLBACK'); return null; }
-            // Row lock serializes attendance for this member across application instances.
-            await client.query(`INSERT INTO acessos (membro_id,data,horario)
-                SELECT $1,(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE,(NOW() AT TIME ZONE 'America/Sao_Paulo')::TIME
-                WHERE NOT EXISTS (SELECT 1 FROM acessos WHERE membro_id=$1 AND data=(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE)`, [id]);
-            await client.query("INSERT INTO security_audit(actor_id,action,target_id) VALUES ($1,'attendance_recorded',$2)", [actor,id]);
+            // The unique index is the final guard against concurrent scanner callbacks.
+            const inserted = await client.query(`INSERT INTO acessos (membro_id,data,horario)
+                VALUES ($1,(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE,(NOW() AT TIME ZONE 'America/Sao_Paulo')::TIME)
+                ON CONFLICT (membro_id, data) DO NOTHING RETURNING id`, [id]);
+            if (inserted.rowCount) {
+                await client.query("INSERT INTO security_audit(actor_id,action,target_id) VALUES ($1,'attendance_recorded',$2)", [actor,id]);
+            }
             await client.query('COMMIT');
-            return { id };
+            return { id, alreadyRecorded: !inserted.rowCount };
         } catch (error) { await client.query('ROLLBACK'); throw error; }
         finally { client.release(); }
     },

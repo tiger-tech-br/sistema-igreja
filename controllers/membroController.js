@@ -129,8 +129,9 @@ exports.validar = safe(async (req,res) => {
     ok(res,{id:member.id,nome:member.nome,cargo:member.cargo,matricula:member.matricula,validade:member.validade});
 });
 exports.presenca = safe(async (req,res) => {
-    if (!await model.registrarAcesso(req.params.id,req.session.admin.id)) return fail(res,'Credencial inválida, expirada ou sem consentimento ativo.',403);
-    ok(res,undefined,'Presença registrada (uma por dia).');
+    const attendance = await model.registrarAcesso(req.params.id,req.session.admin.id);
+    if (!attendance) return fail(res,'Credencial inválida, expirada ou sem consentimento ativo.',403);
+    ok(res,{alreadyRecorded:attendance.alreadyRecorded},attendance.alreadyRecorded ? 'A presença deste membro já estava registrada hoje.' : 'Presença registrada.');
 });
 exports.ultimos = safe(async (req,res) => ok(res,await model.listarUltimos()));
 exports.dashboard = safe(async (req,res) => ok(res,await model.dashboard()));

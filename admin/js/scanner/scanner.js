@@ -26,6 +26,8 @@ const config = {
 
 };
 
+let processandoLeitura = false;
+
 // =====================================
 // UTILITARIOS
 // =====================================
@@ -127,13 +129,21 @@ async function abrirCredencialValidada(textoLido) {
 
 function sucesso(textoLido) {
 
+    if (processandoLeitura) {
+        return;
+    }
+
+    processandoLeitura = true;
+
     pararScanner().then(async () => {
         if (!await abrirCredencialValidada(textoLido)) {
             alert("QR Code invalido.");
+            processandoLeitura = false;
             iniciarScanner();
         }
     }).catch((erroLeitura) => {
         alert(erroLeitura.message || "Não foi possível registrar a presença.");
+        processandoLeitura = false;
         iniciarScanner();
     });
 
