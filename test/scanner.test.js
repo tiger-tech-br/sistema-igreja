@@ -31,10 +31,10 @@ test('QR displayed on screen or printed submits attendance through the admin end
     assert.equal(state.context.window.location.href, '/validar?id=42');
 });
 
-test('repeat attendance explicitly reports that no duplicate was created', async () => {
+test('repeat attendance reports confirmation in the same period', async () => {
     const state = scanner({ success: true, data: { alreadyRecorded: true } });
     await state.context.abrirCredencialValidada('/validar?id=42');
-    assert.match(state.alerts[0], /já teve a presença registrada neste período/);
+    assert.equal(state.alerts[0], 'A presença já foi confirmada neste período.');
     assert.equal(state.requests.length, 1);
 });
 
