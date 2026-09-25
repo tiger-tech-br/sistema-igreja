@@ -94,7 +94,7 @@ module.exports = {
         const total = await one('SELECT COUNT(*) AS total FROM membros WHERE email_verificado=TRUE AND consent_revoked_at IS NULL');
         const accesses = await pool.query(`SELECT m.nome,TO_CHAR(a.data,'DD/MM/YYYY') AS data,TO_CHAR(a.horario,'HH24:MI') AS horario
             FROM acessos a JOIN membros m ON m.id=a.membro_id WHERE a.data=(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE
-            AND m.consent_revoked_at IS NULL ORDER BY a.id DESC LIMIT 10`);
+            ORDER BY a.horario DESC,a.id DESC`);
         return { totalMembros: Number(total.total), ultimosAcessos: accesses.rows };
     },
     listarSemMatricula: async () => (await pool.query('SELECT id,nome FROM membros WHERE matricula IS NULL OR validade IS NULL')).rows,
