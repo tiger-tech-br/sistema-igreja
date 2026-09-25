@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lista de presença</title>
+    <link rel="stylesheet" href="/admin/css/global/reset.css">
+    <link rel="stylesheet" href="/admin/css/global/variables.css">
+    <link rel="stylesheet" href="/admin/css/global/base.css">
+    <link rel="stylesheet" href="/admin/css/pages/presencas.css">
+</head>
+<body>
+    <main class="presencas">
+        <nav><a href="/dashboard">Voltar ao painel</a><a href="/scanner">Ler QR Code</a></nav>
+        <h1>Lista de presença de hoje</h1>
+        <p>Até três presenças por membro por dia: uma pela manhã, uma à tarde e uma à noite, no horário de São Paulo.</p>
+        <p>Manhã: 00h–11h59 · Tarde: 12h–17h59 · Noite: 18h–23h59.</p>
+        <button type="button" id="atualizar">Atualizar lista</button>
+        <p id="status" role="status">Carregando presenças...</p>
+        <div class="tabela-container">
+            <table>
+                <caption>Presenças registradas hoje</caption>
+                <thead><tr><th scope="col">Nome</th><th scope="col">Cargo</th><th scope="col">Ministério</th><th scope="col">Data</th><th scope="col">Período</th><th scope="col">Primeira leitura no período</th></tr></thead>
+                <tbody id="presencas"></tbody>
+            </table>
+        </div>
+    </main>
+    <script src="/admin/js/presencas.js"></script>
+</body>
+</html>

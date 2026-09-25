@@ -15,6 +15,7 @@ router.get('/',admin,c.listar);
 router.get('/lista',member,c.listarNomes);
 router.get('/dashboard',admin,c.dashboard);
 router.get('/ultimos',admin,c.ultimos);
+router.get('/presencas',admin,c.listarPresencas);
 router.get('/validar/:id',c.validar);
 router.post('/presenca/:id',admin,limit('attendance',60,60),c.presenca);
 router.get('/qrcode/:id',admin,c.baixarQRCode);

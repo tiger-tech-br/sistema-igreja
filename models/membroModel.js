@@ -68,7 +68,7 @@ module.exports = {
             // The unique index is the final guard against concurrent scanner callbacks.
             const inserted = await client.query(`INSERT INTO acessos (membro_id,data,horario)
                 VALUES ($1,(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE,(NOW() AT TIME ZONE 'America/Sao_Paulo')::TIME)
-                ON CONFLICT (membro_id, data) DO NOTHING RETURNING id`, [id]);
+                ON CONFLICT (membro_id, data, periodo) DO NOTHING RETURNING id`, [id]);
             if (inserted.rowCount) {
                 await client.query("INSERT INTO security_audit(actor_id,action,target_id) VALUES ($1,'attendance_recorded',$2)", [actor,id]);
             }
@@ -77,6 +77,11 @@ module.exports = {
         } catch (error) { await client.query('ROLLBACK'); throw error; }
         finally { client.release(); }
     },
+    listarPresencas: async () => (await pool.query(`SELECT m.id,m.nome,m.cargo,m.ministerio,
+        TO_CHAR(a.data,'DD/MM/YYYY') AS data,TO_CHAR(a.horario,'HH24:MI:SS') AS horario,a.periodo
+        FROM acessos a JOIN membros m ON m.id=a.membro_id
+        WHERE a.data=(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE
+        ORDER BY a.horario DESC,a.id DESC`)).rows,
     listarUltimos: async (limit=5) => (await pool.query('SELECT id,nome,cargo FROM membros WHERE email_verificado=TRUE AND consent_revoked_at IS NULL ORDER BY id DESC LIMIT $1', [limit])).rows,
     async dashboard() {
         const total = await one('SELECT COUNT(*) AS total FROM membros WHERE email_verificado=TRUE AND consent_revoked_at IS NULL');

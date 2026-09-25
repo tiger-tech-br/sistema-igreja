@@ -56,6 +56,9 @@ async function registrarEabrir(id) {
     if (!resposta.ok) {
         throw new Error(resultado.message || "Não foi possível registrar a presença.");
     }
+    alert(resultado.data?.alreadyRecorded
+        ? "Este membro já teve a presença registrada neste período. Nenhuma presença duplicada foi criada."
+        : "Presença registrada com sucesso.");
     abrirPagina(`/validar?id=${id}`);
     return true;
 }
