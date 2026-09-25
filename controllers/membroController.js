@@ -140,6 +140,7 @@ exports.baixarQRCode = safe(async (req,res) => {
     if (!member) return fail(res,'Membro não encontrado.',404);
     if (!member.email_verificado) return fail(res,'Para liberar o QR Code, o membro precisa confirmar seu e-mail. Para reenviar a confirmação, use Esqueci minha senha.',403);
     if (member.consent_revoked_at) return fail(res,'O membro revogou o consentimento. Se desejar autorizar novamente, ele deve entrar na própria conta e acessar Privacidade e seus dados.',403);
-    if (!member.consent_at) return fail(res,'Este cadastro ainda não possui consentimento registrado. O membro deve entrar na própria conta, acessar Privacidade e seus dados e registrar o aceite para liberar o QR Code.',403);
+    // A rota exige administrador e permite imprimir QR Codes de cadastros antigos
+    // sem consentimento registrado. A validação e a presença mantêm suas regras.
     res.type('png').attachment('qrcode-'+member.id+'.png').send(await qr.gerarQRCodeBuffer(member.id));
 });
