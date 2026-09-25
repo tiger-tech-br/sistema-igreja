@@ -61,7 +61,7 @@ module.exports = {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
-            const member = await client.query(`SELECT id FROM membros WHERE id=$1 AND email_verificado=TRUE
+            const member = await client.query(`SELECT id,nome FROM membros WHERE id=$1 AND email_verificado=TRUE
                 AND consent_at IS NOT NULL AND consent_revoked_at IS NULL
                 AND validade >= (NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE FOR UPDATE`, [id]);
             if (!member.rowCount) { await client.query('ROLLBACK'); return null; }
@@ -72,8 +72,15 @@ module.exports = {
             if (inserted.rowCount) {
                 await client.query("INSERT INTO security_audit(actor_id,action,target_id) VALUES ($1,'attendance_recorded',$2)", [actor,id]);
             }
+            const record = await client.query(`SELECT TO_CHAR(data,'DD/MM/YYYY') AS data,
+                TO_CHAR(horario,'HH24:MI:SS') AS horario FROM acessos
+                WHERE membro_id=$1 AND data=(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE
+                AND periodo=CASE
+                    WHEN (NOW() AT TIME ZONE 'America/Sao_Paulo')::TIME < TIME '12:00:00' THEN 'manha'
+                    WHEN (NOW() AT TIME ZONE 'America/Sao_Paulo')::TIME < TIME '18:00:00' THEN 'tarde'
+                    ELSE 'noite' END`, [id]);
             await client.query('COMMIT');
-            return { id, alreadyRecorded: !inserted.rowCount };
+            return { id, nome: member.rows[0].nome, ...record.rows[0], alreadyRecorded: !inserted.rowCount };
         } catch (error) { await client.query('ROLLBACK'); throw error; }
         finally { client.release(); }
     },

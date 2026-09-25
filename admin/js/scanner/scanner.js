@@ -56,10 +56,16 @@ async function registrarEabrir(id) {
     if (!resposta.ok) {
         throw new Error(resultado.message || "Não foi possível registrar a presença.");
     }
-    alert(resultado.data?.alreadyRecorded
-        ? "Este membro já teve a presença registrada neste período. Nenhuma presença duplicada foi criada."
-        : "Presença registrada com sucesso.");
-    abrirPagina(`/validar?id=${id}`);
+    if (resultado.data.alreadyRecorded) {
+        alert("Este membro já teve a presença registrada neste período. Nenhuma presença duplicada foi criada.");
+    }
+    document.getElementById("nomePresenca").textContent = resultado.data.nome;
+    document.getElementById("dataPresenca").textContent = resultado.data.data;
+    document.getElementById("horaPresenca").textContent = resultado.data.horario;
+    document.getElementById("instrucaoScanner").hidden = true;
+    document.getElementById("reader").hidden = true;
+    document.getElementById("resultadoPresenca").hidden = false;
+    document.getElementById("btnProximaLeitura").hidden = false;
     return true;
 }
 
@@ -244,6 +250,15 @@ btnCancelar.addEventListener(
     }
 
 );
+
+document.getElementById("btnProximaLeitura").addEventListener("click", () => {
+    document.getElementById("resultadoPresenca").hidden = true;
+    document.getElementById("btnProximaLeitura").hidden = true;
+    document.getElementById("instrucaoScanner").hidden = false;
+    document.getElementById("reader").hidden = false;
+    processandoLeitura = false;
+    iniciarScanner();
+});
 
 window.addEventListener("beforeunload", () => {
 

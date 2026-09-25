@@ -7,9 +7,10 @@ const source = fs.readFileSync(path.join(__dirname, '../admin/js/scanner/scanner
 
 function scanner(response) {
     const alerts = [], requests = [];
+    const elements = {};
     const context = vm.createContext({
         URL, console,
-        document: { getElementById: () => ({ addEventListener() {} }), addEventListener() {} },
+        document: { getElementById: id => elements[id] ||= { addEventListener() {} }, addEventListener() {} },
         window: { location: { origin: 'https://igreja.example', href: '' }, addEventListener() {} },
         Html5Qrcode: class {},
         alert: message => alerts.push(message),
@@ -19,15 +20,19 @@ function scanner(response) {
         }
     });
     vm.runInContext(source, context);
-    return { context, alerts, requests };
+    return { context, alerts, requests, elements };
 }
 
 test('QR displayed on screen or printed submits attendance through the admin endpoint', async () => {
-    const state = scanner({ success: true, data: { alreadyRecorded: false } });
+    const state = scanner({ success: true, data: { alreadyRecorded: false, nome: 'Maria', data: '24/09/2026', horario: '12:30:00' } });
     assert.equal(await state.context.abrirCredencialValidada('https://igreja.example/validar?id=42'), true);
     assert.deepEqual(state.requests, [{ url: '/api/membros/presenca/42', method: 'POST' }]);
-    assert.match(state.alerts[0], /Presença registrada com sucesso/);
-    assert.equal(state.context.window.location.href, '/validar?id=42');
+    assert.equal(state.alerts.length, 0);
+    assert.equal(state.context.window.location.href, '');
+    assert.equal(state.elements.nomePresenca.textContent, 'Maria');
+    assert.equal(state.elements.dataPresenca.textContent, '24/09/2026');
+    assert.equal(state.elements.horaPresenca.textContent, '12:30:00');
+    assert.equal(state.elements.resultadoPresenca.hidden, false);
 });
 
 test('repeat attendance explicitly reports that no duplicate was created', async () => {
