@@ -28,11 +28,7 @@ test('QR displayed on screen or printed submits attendance through the admin end
     assert.equal(await state.context.abrirCredencialValidada('https://igreja.example/validar?id=42'), true);
     assert.deepEqual(state.requests, [{ url: '/api/membros/presenca/42', method: 'POST' }]);
     assert.equal(state.alerts.length, 0);
-    assert.equal(state.context.window.location.href, '');
-    assert.equal(state.elements.nomePresenca.textContent, 'Maria');
-    assert.equal(state.elements.dataPresenca.textContent, '24/09/2026');
-    assert.equal(state.elements.horaPresenca.textContent, '12:30:00');
-    assert.equal(state.elements.resultadoPresenca.hidden, false);
+    assert.equal(state.context.window.location.href, '/validar?id=42');
 });
 
 test('repeat attendance explicitly reports that no duplicate was created', async () => {

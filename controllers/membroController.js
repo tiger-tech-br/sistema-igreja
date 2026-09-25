@@ -122,6 +122,11 @@ exports.excluir = safe(async (req,res) => {
 });
 exports.validar = safe(async (req,res) => {
     const member=await model.buscarPorId(req.params.id);
+    // O administrador pode consultar a credencial dos membros que escaneia.
+    if (req.session.admin) {
+        if (!member) return fail(res,'Membro não encontrado.',404);
+        return ok(res,{id:member.id,nome:member.nome,cargo:member.cargo,matricula:member.matricula,validade:member.validade});
+    }
     if (!member || !member.email_verificado || member.consent_revoked_at || !member.consent_at) return fail(res,'Credencial indisponível.',404);
     const [day,month,year]=member.validade.split('/');
     const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
