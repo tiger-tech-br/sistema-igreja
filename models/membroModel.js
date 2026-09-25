@@ -61,9 +61,8 @@ module.exports = {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
-            const member = await client.query(`SELECT id,nome FROM membros WHERE id=$1 AND email_verificado=TRUE
-                AND consent_at IS NOT NULL AND consent_revoked_at IS NULL
-                AND validade >= (NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE FOR UPDATE`, [id]);
+            // A presença é registrada exclusivamente por um administrador autenticado.
+            const member = await client.query('SELECT id,nome FROM membros WHERE id=$1 FOR UPDATE', [id]);
             if (!member.rowCount) { await client.query('ROLLBACK'); return null; }
             // The unique index is the final guard against concurrent scanner callbacks.
             const inserted = await client.query(`INSERT INTO acessos (membro_id,data,horario)

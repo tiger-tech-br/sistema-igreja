@@ -130,7 +130,7 @@ exports.validar = safe(async (req,res) => {
 });
 exports.presenca = safe(async (req,res) => {
     const attendance = await model.registrarAcesso(req.params.id,req.session.admin.id);
-    if (!attendance) return fail(res,'Credencial inválida, expirada ou sem consentimento ativo.',403);
+    if (!attendance) return fail(res,'Membro não encontrado. Este QR Code não corresponde a um cadastro existente.',404);
     ok(res,attendance,attendance.alreadyRecorded ? 'A presença deste membro já estava registrada neste período.' : 'Presença registrada.');
 });
 exports.ultimos = safe(async (req,res) => ok(res,await model.listarUltimos()));
