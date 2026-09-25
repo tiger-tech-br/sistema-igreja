@@ -30,10 +30,10 @@ module.exports = {
     buscarPorEmail: email => one('SELECT * FROM membros WHERE LOWER(email) = $1 LIMIT 1', [email]),
     buscarPorId: id => one('SELECT ' + profile + ' FROM membros WHERE id = $1', [id]),
     buscarPorMatricula: value => one('SELECT id FROM membros WHERE matricula = $1', [value]),
-    listar: async () => (await pool.query('SELECT ' + profile + ' FROM membros WHERE email_verificado = TRUE AND consent_revoked_at IS NULL ORDER BY nome')).rows,
+    listar: async () => (await pool.query('SELECT ' + profile + ' FROM membros ORDER BY nome')).rows,
     listarNomes: async () => (await pool.query('SELECT id,nome FROM membros WHERE email_verificado = TRUE AND consent_revoked_at IS NULL ORDER BY nome')).rows,
     atualizarQRCode: (id, qr) => one('UPDATE membros SET qr_code = $1 WHERE id = $2 RETURNING id', [qr,id]),
-    atualizarDadosAdministrativos: (id,d) => one('UPDATE membros SET cargo = $1, ministerio = $2 WHERE id = $3 AND consent_revoked_at IS NULL RETURNING ' + profile, [d.cargo,d.ministerio,id]),
+    atualizarDadosAdministrativos: (id,d) => one('UPDATE membros SET cargo = $1, ministerio = $2 WHERE id = $3 RETURNING ' + profile, [d.cargo,d.ministerio,id]),
     async excluir(id, actorId) {
         const client = await pool.connect();
         try {

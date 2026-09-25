@@ -112,7 +112,7 @@ exports.atualizar = safe(async (req,res) => {
         d[field]=text(req.body?.[field],100)||null;
     }
     const member=await model.atualizarDadosAdministrativos(req.params.id,d);
-    if (!member) return fail(res,'Cadastro indisponível para alteração.',404);
+    if (!member) return fail(res,'Membro não encontrado.',404);
     await pool.query("INSERT INTO security_audit(actor_id,action,target_id) VALUES ($1,'member_updated',$2)",[req.session.admin.id,member.id]);
     ok(res,member,'Dados atualizados.');
 });
