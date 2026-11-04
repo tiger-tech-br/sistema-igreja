@@ -164,6 +164,22 @@ document.addEventListener(
 
             );
 
+        if (btnMenu && menu) {
+            if (!menu.id) menu.id = "menuPrincipal";
+            btnMenu.setAttribute("aria-controls", menu.id);
+            btnMenu.setAttribute("aria-expanded", String(menu.classList.contains("active")));
+        }
+
+        if (btnLogin && loginMenu) {
+            btnLogin.setAttribute("aria-controls", loginMenu.id);
+            btnLogin.setAttribute("aria-expanded", String(loginMenu.classList.contains("active")));
+        }
+
+        if (btnMobileLogin && mobileLoginForm) {
+            btnMobileLogin.setAttribute("aria-controls", mobileLoginForm.id);
+            btnMobileLogin.setAttribute("aria-expanded", String(!mobileLoginForm.classList.contains("hidden")));
+        }
+
 
                     // ======================================
         // HEADER
@@ -261,6 +277,19 @@ document.addEventListener(
 
             }
 
+            if (mobileLoginForm) {
+                mobileLoginForm.classList.add("hidden");
+            }
+            if (btnMobileLogin) {
+                btnMobileLogin.setAttribute("aria-expanded", "false");
+            }
+            if (mobileLogin) {
+                mobileLogin.classList.toggle("hidden", usuarioLogado);
+            }
+            [mobileUser, mobilePerfil, mobileLogout].forEach((item) => {
+                item?.classList.toggle("hidden", !usuarioLogado);
+            });
+
             menu.classList.add(
 
                 "active"
@@ -351,6 +380,10 @@ document.addEventListener(
 
             }
 
+            if (btnMobileLogin) {
+                btnMobileLogin.setAttribute("aria-expanded", "false");
+            }
+
             atualizarIconeMenu();
 
         }
@@ -431,6 +464,8 @@ document.addEventListener(
 
                     fecharMenu();
 
+                    fecharDropdownLogin();
+
                 }
 
             }
@@ -453,6 +488,10 @@ document.addEventListener(
 
                     fecharMenu();
 
+                }
+
+                else {
+                    fecharDropdownLogin();
                 }
 
             }
@@ -567,6 +606,8 @@ document.addEventListener(
 
             );
 
+            btnLogin.setAttribute("aria-expanded", "true");
+
         }
 
         function fecharDropdownLogin() {
@@ -595,6 +636,8 @@ document.addEventListener(
 
             );
 
+            btnLogin.setAttribute("aria-expanded", "false");
+
         }
 
         function alternarDropdownLogin() {
@@ -609,17 +652,12 @@ document.addEventListener(
 
             }
 
-            loginMenu.classList.toggle(
-
-                "active"
-
-            );
-
-            btnLogin.classList.toggle(
-
-                "active"
-
-            );
+            if (loginMenu.classList.contains("active")) {
+                fecharDropdownLogin();
+            }
+            else {
+                abrirDropdownLogin();
+            }
 
         }
 
@@ -769,7 +807,7 @@ document.addEventListener(
 
                     <i class="fa-solid fa-circle-user"></i>
 
-                    <span>Login</span>
+                    <span>Área do membro</span>
 
                     <i class="fa-solid fa-chevron-down"></i>
 
@@ -780,7 +818,6 @@ document.addEventListener(
                     <form
                         action="/api/membros/login"
                         method="POST"
-                        novalidate
                         class="login-form member-login-form">
 
                         <label for="email">E-mail</label>
@@ -1230,6 +1267,12 @@ document.addEventListener(
 
             );
 
+            if (btnMobileLogin) {
+                btnMobileLogin.setAttribute("aria-expanded", "true");
+            }
+
+            atualizarIconeMenu();
+
             if (mobileEmail) {
 
                 mobileEmail.focus();
@@ -1255,6 +1298,10 @@ document.addEventListener(
                 "hidden"
 
             );
+
+            if (btnMobileLogin) {
+                btnMobileLogin.setAttribute("aria-expanded", "false");
+            }
 
             abrirMenu();
 
@@ -1307,6 +1354,29 @@ document.addEventListener(
             }
 
         }
+
+        document.querySelectorAll("[data-member-access]").forEach((link) => {
+            link.addEventListener("click", (event) => {
+                if (usuarioLogado) return;
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (window.innerWidth <= 992) {
+                    mostrarFormularioLogin();
+                    return;
+                }
+
+                abrirDropdownLogin();
+                window.requestAnimationFrame(() => {
+                    window.requestAnimationFrame(() => {
+                        if (window.innerWidth > 992 && loginMenu?.classList.contains("active")) {
+                            loginMenu.querySelector('input[name="email"]')?.focus({ preventScroll: true });
+                        }
+                    });
+                });
+            });
+        });
 
         if (
 
