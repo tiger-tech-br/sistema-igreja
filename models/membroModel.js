@@ -91,10 +91,10 @@ module.exports = {
     listarUltimos: async (limit=5) => (await pool.query('SELECT id,nome,cargo FROM membros WHERE email_verificado=TRUE AND consent_revoked_at IS NULL ORDER BY id DESC LIMIT $1', [limit])).rows,
     async dashboard() {
         const total = await one('SELECT COUNT(*) AS total FROM membros WHERE email_verificado=TRUE AND consent_revoked_at IS NULL');
-        const accesses = await pool.query(`SELECT m.nome,TO_CHAR(a.data,'DD/MM/YYYY') AS data,TO_CHAR(a.horario,'HH24:MI') AS horario
+        const accesses = await pool.query(`SELECT m.id,m.nome,m.cargo,m.ministerio,a.periodo,TO_CHAR(a.data,'DD/MM/YYYY') AS data,TO_CHAR(a.horario,'HH24:MI') AS horario
             FROM acessos a JOIN membros m ON m.id=a.membro_id WHERE a.data=(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE
             ORDER BY a.horario DESC,a.id DESC`);
-        return { totalMembros: Number(total.total), ultimosAcessos: accesses.rows };
+        return { totalMembros: Number(total.total), totalPresencas: accesses.rows.length, ultimosAcessos: accesses.rows };
     },
     listarSemMatricula: async () => (await pool.query('SELECT id,nome FROM membros WHERE matricula IS NULL OR validade IS NULL')).rows,
     atualizarMatriculaValidade: (id,matricula,validade) => pool.query('UPDATE membros SET matricula=$1,validade=$2 WHERE id=$3',[matricula,validade,id])

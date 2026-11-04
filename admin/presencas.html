@@ -2,29 +2,58 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lista de presença</title>
-    <link rel="stylesheet" href="/admin/css/global/reset.css">
-    <link rel="stylesheet" href="/admin/css/global/variables.css">
-    <link rel="stylesheet" href="/admin/css/global/base.css">
-    <link rel="stylesheet" href="/admin/css/pages/presencas.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presenças | Área administrativa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/admin/css/admin.css?v=3.0.0">
 </head>
-<body>
-    <main class="presencas">
-        <nav><a href="/dashboard">Voltar ao painel</a><a href="/scanner">Ler QR Code</a></nav>
-        <h1>Lista de presença de hoje</h1>
-        <p>Até três presenças por membro por dia: uma pela manhã, uma à tarde e uma à noite, no horário de São Paulo.</p>
-        <p>Manhã: 00h–11h59 · Tarde: 12h–17h59 · Noite: 18h–23h59.</p>
-        <button type="button" id="atualizar">Atualizar lista</button>
-        <p id="status" role="status">Carregando presenças...</p>
-        <div class="tabela-container">
-            <table>
-                <caption>Presenças registradas hoje</caption>
-                <thead><tr><th scope="col">Nome</th><th scope="col">Cargo</th><th scope="col">Ministério</th><th scope="col">Data</th><th scope="col">Período</th><th scope="col">Primeira leitura no período</th></tr></thead>
-                <tbody id="presencas"></tbody>
-            </table>
-        </div>
-    </main>
+<body class="admin-page admin-attendance-page">
+    <div class="overlay" aria-hidden="true"></div>
+    <button id="btnMenu" class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="adminSidebar"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+    <div class="dashboard admin-shell">
+        <aside class="sidebar" id="adminSidebar">
+            <a class="sidebar-brand" href="/dashboard" aria-label="Visão geral da igreja">
+                <i class="sidebar-symbol fa-solid fa-church" aria-hidden="true"></i>
+                <span class="sidebar-brand-title">Assembleia de Deus</span>
+                <span class="sidebar-brand-subtitle">Gestão de membros</span>
+            </a>
+            <nav aria-label="Navegação administrativa">
+                <ul class="menu">
+                    <li ><a href="/dashboard"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Visão geral</span></a></li>
+                    <li><a href="/admin/membros"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Membros</span></a></li>
+                    <li><a href="/scanner"><i class="fa-solid fa-qrcode" aria-hidden="true"></i><span>Leitor de QR Code</span></a></li>
+                    <li class="active"><a href="/admin/presencas.html" aria-current="page"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><span>Presenças</span></a></li>
+                    <li><a href="/admin/privacidade"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>Privacidade</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user"><span class="admin-avatar" aria-hidden="true">AD</span><span>Administrador</span></div>
+                <a class="sidebar-logout" href="/logout-admin"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Sair</a>
+            </div>
+        </aside>
+        <main class="content admin-content" id="mainContent">
+            <header class="topbar admin-topbar">
+                <nav class="breadcrumb" aria-label="Localização"><a href="/dashboard">Gestão</a><span aria-hidden="true">/</span><span aria-current="page">Presenças</span></nav>
+                <div class="admin-account"><span>Administrador</span><span class="admin-avatar" aria-hidden="true">AD</span></div>
+            </header>
+            <div class="page-content">
+            <div class="admin-page-heading page-heading"><div class="page-heading-copy page-intro"><h1>Presenças</h1><p>Acompanhe as presenças registradas hoje, por membro e período.</p></div></div>
+            <section class="presencas">
+                <div class="attendance-toolbar"><p>Até três presenças por membro por dia: uma em cada período, no horário de São Paulo.</p><button type="button" id="atualizar" class="btn btn-secondary"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>Atualizar lista</button></div>
+                <div class="attendance-periods" aria-label="Horários dos períodos"><span><i class="fa-solid fa-sun" aria-hidden="true"></i>Manhã · 00h–11h59</span><span><i class="fa-solid fa-cloud-sun" aria-hidden="true"></i>Tarde · 12h–17h59</span><span><i class="fa-solid fa-moon" aria-hidden="true"></i>Noite · 18h–23h59</span></div>
+                <p id="status" class="attendance-status" role="status">Carregando presenças...</p>
+                <div class="tabela-container admin-panel panel">
+                    <table><caption>Presenças registradas hoje</caption><thead><tr><th scope="col">Nome</th><th scope="col">Cargo</th><th scope="col">Ministério</th><th scope="col">Data</th><th scope="col">Período</th><th scope="col">Primeira leitura no período</th></tr></thead><tbody id="presencas"></tbody></table>
+                </div>
+            </section>
+            </div>
+        </main>
+    </div>
+    <script src="/js/security.js"></script>
+    <script src="/admin/js/layout/menu.js?v=3.0.0"></script>
     <script src="/admin/js/presencas.js"></script>
 </body>
 </html>

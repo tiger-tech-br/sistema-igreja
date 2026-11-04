@@ -1,309 +1,96 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
-    <head>
-
-        <!-- ========================= -->
-        <!-- META -->
-        <!-- ========================= -->
-
-        <meta charset="UTF-8">
-
-        <meta
-
-            name="viewport"
-
-            content="width=device-width, initial-scale=1.0">
-
-        <title>
-
-            Painel Administrativo
-
-        </title>
-
-        <!-- ========================= -->
-        <!-- GOOGLE FONTS -->
-        <!-- ========================= -->
-
-        <link
-
-            rel="preconnect"
-
-            href="https://fonts.googleapis.com">
-
-        <link
-
-            rel="preconnect"
-
-            href="https://fonts.gstatic.com"
-
-            crossorigin>
-
-        <link
-
-            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-
-            rel="stylesheet">
-
-        <!-- ========================= -->
-        <!-- FONT AWESOME -->
-        <!-- ========================= -->
-
-        <link
-
-            rel="stylesheet"
-
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-        <!-- ========================= -->
-        <!-- CSS GLOBAL -->
-        <!-- ========================= -->
-
-        <link rel="stylesheet" href="/admin/css/global/reset.css">
-
-        <link rel="stylesheet" href="/admin/css/global/variables.css">
-
-        <link rel="stylesheet" href="/admin/css/global/base.css">
-
-        <link rel="stylesheet" href="/admin/css/layout/layout.css">
-
-        <link rel="stylesheet" href="/admin/css/pages/dashboard.css?v=2.0.0">
-
-
-    </head>
-
-    <body>
-
-    <!-- ========================= -->
-    <!-- OVERLAY -->
-    <!-- ========================= -->
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#252523">
+    <title>Visão geral | Gestão de membros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/admin/css/admin.css?v=3.0.0">
+</head>
+<body data-inline-scanner="true">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <div class="overlay"></div>
-
-        <button
-
-        id="btnMenu"
-
-        class="menu-toggle"
-
-        type="button"
-
-        aria-label="Abrir menu"
-
-        aria-expanded="false">
-
-        <i class="fa-solid fa-bars"></i>
-
-    </button>
-
-    <!-- ========================= -->
-    <!-- DASHBOARD -->
-    <!-- ========================= -->
-
-    <div class="dashboard">
-
-        <!-- ========================= -->
-        <!-- SIDEBAR -->
-        <!-- ========================= -->
-
-        <aside class="sidebar">
-
-            <div class="logo">
-
-                <img
-
-                    src="/images/assembleia-logo.png"
-
-                    alt="Logo da Igreja">
-
-            </div>
-
-            <nav>
-
+    <button id="btnMenu" class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="adminSidebar"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+    <div class="dashboard admin-shell">
+        <aside class="sidebar" id="adminSidebar">
+            <a class="sidebar-brand" href="/dashboard" aria-label="Visão geral da igreja">
+                <i class="sidebar-symbol fa-solid fa-church" aria-hidden="true"></i>
+                <span class="sidebar-brand-title">Assembleia de Deus</span>
+                <span class="sidebar-brand-subtitle">Gestão de membros</span>
+            </a>
+            <nav aria-label="Navegação administrativa">
                 <ul class="menu">
-
-                    <li class="active">
-
-                        <a href="/dashboard">
-
-                            <i class="fa-solid fa-chart-line"></i>
-
-                            Painel
-
-                        </a>
-
-                    </li>
-
-                    <li>
-
-                        <a href="/admin/membros">
-
-                            <i class="fa-solid fa-users"></i>
-
-                            Membros
-
-                        </a>
-
-                    </li>
-
-                    <li class="logout">
-
-                        <a href="/logout-admin">
-
-                            <i class="fa-solid fa-right-from-bracket"></i>
-
-                            Sair
-
-                        </a>
-
-                    </li>
-
+                    <li class="active"><a href="/dashboard" aria-current="page"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Visão geral</span></a></li>
+                    <li><a href="/admin/membros"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Membros</span></a></li>
+                    <li><a href="/scanner"><i class="fa-solid fa-qrcode" aria-hidden="true"></i><span>Leitor de QR Code</span></a></li>
+                    <li><a href="/admin/presencas.html"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><span>Presenças</span></a></li>
+                    <li><a href="/admin/privacidade"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>Privacidade</span></a></li>
                 </ul>
-
             </nav>
-
+            <div class="sidebar-footer">
+                <div class="sidebar-user"><span class="admin-avatar" aria-hidden="true">AD</span><span>Administrador</span></div>
+                <a class="sidebar-logout" href="/logout-admin"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Sair</a>
+            </div>
         </aside>
-
-        <!-- ========================= -->
-        <!-- CONTEÚDO -->
-        <!-- ========================= -->
-
-        <main class="content">
-
-            <!-- ========================= -->
-            <!-- TOPBAR -->
-            <!-- ========================= -->
-
-            <header class="topbar">
-
-                <div>
-
-                    <h1>
-
-                        Painel
-
-                    </h1>
-
-                    <p>
-
-                        Bem-vindo ao painel administrativo.
-
-                    </p>
-
-                </div>
-
-  
-
+        <main class="admin-content" id="conteudo">
+            <header class="admin-topbar">
+                <div class="breadcrumb"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Administração</span><span aria-hidden="true">/</span><strong>Visão geral</strong></div>
+                <div class="admin-account"><p id="dashboardStatus" class="page-status" role="status"></p><span>Administrador</span><span class="admin-avatar" aria-hidden="true">AD</span></div>
             </header>
-
-            
-            <!-- ========================= -->
-            <!-- CARDS -->
-            <!-- ========================= -->
-
-            <section class="cards">
-
-                <article class="card">
-
-                    <i class="fa-solid fa-users"></i>
-
-                    <h2 id="totalMembros">
-
-                        0
-
-                    </h2>
-
-                    <span>
-
-                        Membros
-
-                    </span>
-
-                </article>
-
-            </section>
-
-            <!-- ========================= -->
-            <!-- SCANNER -->
-            <!-- ========================= -->
-
-            <section class="scanner-area">
-
-                <a
-
-                    href="/scanner"
-
-                    class="btn-scanner">
-
-                    <i class="fa-solid fa-camera"></i>
-
-                    Escanear QR Code
-
-                </a>
-
-            </section>
-
-            <!-- ========================= -->
-            <!-- PRESENÇAS DE HOJE -->
-            <!-- ========================= -->
-
-            <section class="ultimos">
-
-                <h2>
-
-                    Presenças de hoje
-
-                </h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Membro</th>
-
-                            <th>Data</th>
-
-                            <th>Horário</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="tabelaUltimos">
-
-                        <!-- JavaScript -->
-
-                    </tbody>
-
-                </table>
-
-            </section>
-
+            <div class="page-content">
+                <div class="page-heading">
+                    <div class="page-intro"><h1>Sua comunidade, mais conectada.</h1><p>Membros, credenciais e presenças em um só lugar.</p></div>
+                    <div class="page-actions"><button type="button" class="btn btn-primary" id="btnIniciarScanner"><i class="fa-solid fa-qrcode" aria-hidden="true"></i>Escanear QR Code</button></div>
+                </div>
+                <section class="stats-grid" aria-label="Resumo da igreja">
+                    <article class="stat-card"><span class="stat-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></span><div class="stat-copy"><h2 class="stat-label">Membros cadastrados</h2><p class="stat-value" id="totalMembros">—</p></div></article>
+                    <article class="stat-card"><span class="stat-icon stat-icon-success"><i class="fa-regular fa-circle-check" aria-hidden="true"></i></span><div class="stat-copy"><h2 class="stat-label">Presenças hoje</h2><p class="stat-value" id="totalPresencas">—</p></div></article>
+                    <article class="stat-card"><span class="stat-icon"><i class="fa-regular fa-calendar" aria-hidden="true"></i></span><div class="stat-copy"><h2 class="stat-label">Período atual</h2><p class="stat-value" id="periodoAtual">—</p><p class="stat-caption" id="periodoHorario">Horário de São Paulo</p></div></article>
+                </section>
+                <section class="dashboard-grid" aria-label="Leitor e credencial">
+                    <article class="panel scanner-panel">
+                        <div class="panel-heading"><h2>Presença por QR Code</h2><p id="instrucaoScanner">Uma presença por membro em cada período.</p></div>
+                        <div class="panel-body">
+                            <div class="scanner-viewport">
+                                <div id="reader" aria-label="Leitor de QR Code"></div>
+                                <div class="scanner-placeholder" id="scannerPlaceholder"><span class="scan-corner tl"></span><span class="scan-corner tr"></span><span class="scan-corner bl"></span><span class="scan-corner br"></span><i class="fa-solid fa-qrcode" aria-hidden="true"></i><strong>Leitor pronto para iniciar</strong><p>Clique em Escanear QR Code para ativar a câmera.</p></div>
+                            </div>
+                            <div class="scanner-feedback"><p id="scannerStatus" class="scanner-status" role="status">Pronto para registrar presenças</p><p id="scannerDetalhes" class="text-muted">Leituras repetidas não duplicam a presença no período.</p><button id="btnCancelar" class="btn btn-secondary" type="button" hidden><i class="fa-solid fa-stop" aria-hidden="true"></i>Encerrar leitura</button></div>
+                        </div>
+                    </article>
+                    <article class="panel credential-panel">
+                        <div class="panel-heading"><h2>Credencial digital</h2><p>Perfil do membro</p></div>
+                        <div class="panel-body">
+                            <div id="credencialVazia" class="empty-state"><i class="fa-regular fa-id-card" aria-hidden="true"></i><h3>Nenhum membro selecionado</h3><p>A credencial aparecerá após uma leitura ou ao selecionar uma presença na lista.</p></div>
+                            <div id="credencialConteudo" hidden>
+                                <div class="credential-card">
+                                    <div class="credential-brand"><i class="fa-solid fa-church" aria-hidden="true"></i><span>Assembleia de Deus</span></div>
+                                    <div class="credential-body">
+                                        <div class="credential-person"><span class="avatar" id="credencialIniciais" aria-hidden="true"></span><div><h3 id="credencialNome"></h3><p id="credencialCargo"></p></div></div>
+                                        <dl class="credential-meta"><div><dt>Matrícula</dt><dd id="credencialMatricula">—</dd></div><div><dt>Validade</dt><dd id="credencialValidade">—</dd></div></dl>
+                                        <div class="credential-code"><img id="credencialQRCode" alt="QR Code da credencial do membro selecionado" width="150" height="150" hidden><p id="credencialStatus" class="status-badge"></p></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="credential-download"><a id="btnCredencialPDF" class="btn btn-primary" target="_blank" rel="noopener" hidden><i class="fa-solid fa-download" aria-hidden="true"></i>Baixar credencial em PDF</a></div>
+                        </div>
+                    </article>
+                </section>
+                <section class="panel attendance-panel" aria-labelledby="tituloPresencas">
+                    <div class="panel-heading title-row"><h2 id="tituloPresencas">Presenças de hoje</h2><a class="text-link" href="/admin/presencas.html">Ver lista completa <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a></div>
+                    <div class="table-responsive"><table id="presencasDashboard"><thead><tr><th scope="col">Membro</th><th scope="col">Cargo</th><th scope="col">Ministério</th><th scope="col">Período</th><th scope="col">Primeira leitura</th></tr></thead><tbody id="tabelaUltimos"><tr><td colspan="5" class="empty-table">Carregando presenças…</td></tr></tbody></table></div>
+                </section>
+            </div>
         </main>
-
     </div>
-
-        <!-- ========================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================= -->
-
     <script src="/js/security.js"></script>
-
-    <script
-
-        src="/admin/js/layout/menu.js?v=2.0.0">
-
-    </script>
-
-    <script
-
-        src="/admin/js/dashboard/dashboard.js?v=2.0.0">
-
-    </script>
-
+    <script src="/vendor/html5-qrcode.min.js"></script>
+    <script src="/admin/js/layout/menu.js?v=3.0.0"></script>
+    <script src="/admin/js/dashboard/dashboard.js?v=3.0.0"></script>
+    <script src="/admin/js/scanner/scanner.js?v=3.0.0"></script>
 </body>
-
-
 </html>

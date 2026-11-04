@@ -52,6 +52,9 @@ function abrirMenu() {
 
     icone.classList.add("fa-xmark");
 
+    btnMenu.setAttribute("aria-expanded", "true");
+    btnMenu.setAttribute("aria-label", "Fechar menu");
+
 }
 
 // =====================================
@@ -69,6 +72,9 @@ function fecharMenu() {
     icone.classList.remove("fa-xmark");
 
     icone.classList.add("fa-bars");
+
+    btnMenu.setAttribute("aria-expanded", "false");
+    btnMenu.setAttribute("aria-label", "Abrir menu");
 
 }
 
@@ -199,6 +205,9 @@ function adicionarEventos() {
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && modalLogout && !modalLogout.hidden) {
             fecharModalLogout();
+        } else if (event.key === "Escape" && sidebar.classList.contains("aberto")) {
+            fecharMenu();
+            btnMenu.focus();
         }
     });
 
@@ -219,6 +228,10 @@ document.addEventListener(
             return;
 
         }
+
+        if (!sidebar.id) sidebar.id = "adminSidebar";
+        btnMenu.setAttribute("aria-controls", sidebar.id);
+        btnMenu.setAttribute("aria-expanded", String(sidebar.classList.contains("aberto")));
 
         adicionarEventos();
 

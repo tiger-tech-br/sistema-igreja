@@ -1,1 +1,55 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Solicitações LGPD</title><link rel="stylesheet" href="/admin/css/global/global.css"><link rel="stylesheet" href="/admin/css/layout/forms.css"></head><body><main><h1>Solicitações de privacidade</h1><p>Verifique a identidade e a base legal antes de alterar, excluir ou reter dados. A resposta deve registrar a providência e a justificativa.</p><div id="lista"></div><p><a href="/dashboard">Voltar</a></p></main><script src="/js/security.js"></script><script src="/admin/js/privacidade.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacidade | Área administrativa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/admin/css/admin.css?v=3.0.0">
+</head>
+<body class="admin-page admin-privacy-page">
+    <div class="overlay" aria-hidden="true"></div>
+    <button id="btnMenu" class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="adminSidebar"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+    <div class="dashboard admin-shell">
+        <aside class="sidebar" id="adminSidebar">
+            <a class="sidebar-brand" href="/dashboard" aria-label="Visão geral da igreja">
+                <i class="sidebar-symbol fa-solid fa-church" aria-hidden="true"></i>
+                <span class="sidebar-brand-title">Assembleia de Deus</span>
+                <span class="sidebar-brand-subtitle">Gestão de membros</span>
+            </a>
+            <nav aria-label="Navegação administrativa">
+                <ul class="menu">
+                    <li ><a href="/dashboard"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Visão geral</span></a></li>
+                    <li><a href="/admin/membros"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Membros</span></a></li>
+                    <li><a href="/scanner"><i class="fa-solid fa-qrcode" aria-hidden="true"></i><span>Leitor de QR Code</span></a></li>
+                    <li><a href="/admin/presencas.html"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><span>Presenças</span></a></li>
+                    <li class="active"><a href="/admin/privacidade" aria-current="page"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>Privacidade</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user"><span class="admin-avatar" aria-hidden="true">AD</span><span>Administrador</span></div>
+                <a class="sidebar-logout" href="/logout-admin"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Sair</a>
+            </div>
+        </aside>
+        <main class="content admin-content" id="mainContent">
+            <header class="topbar admin-topbar">
+                <nav class="breadcrumb" aria-label="Localização"><a href="/dashboard">Gestão</a><span aria-hidden="true">/</span><span aria-current="page">Privacidade</span></nav>
+                <div class="admin-account"><span>Administrador</span><span class="admin-avatar" aria-hidden="true">AD</span></div>
+            </header>
+            <div class="page-content">
+            <div class="admin-page-heading page-heading"><div class="page-heading-copy page-intro"><h1>Privacidade</h1><p>Acompanhe e responda às solicitações de privacidade dos membros.</p></div></div>
+            <section class="privacy-page" aria-label="Solicitações de privacidade">
+                <div class="privacy-notice admin-panel panel"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><div><h2>Solicitações de privacidade</h2><p>Verifique a identidade e a base legal antes de alterar, excluir ou reter dados. A resposta deve registrar a providência e a justificativa.</p></div></div>
+                <div id="lista" aria-live="polite"></div>
+            </section>
+            </div>
+        </main>
+    </div>
+    <script src="/js/security.js"></script>
+    <script src="/admin/js/layout/menu.js?v=3.0.0"></script>
+    <script src="/admin/js/privacidade.js?v=3.0.0"></script>
+</body>
+</html>

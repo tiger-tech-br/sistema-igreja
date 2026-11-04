@@ -1,213 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-    <!-- ========================= -->
-    <!-- META -->
-    <!-- ========================= -->
-
     <meta charset="UTF-8">
-
-    <meta
-
-        name="viewport"
-
-        content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        Validação de Credencial
-
-    </title>
-
-    <!-- ========================= -->
-    <!-- GOOGLE FONTS -->
-    <!-- ========================= -->
-
-    <link
-
-        rel="preconnect"
-
-        href="https://fonts.googleapis.com">
-
-    <link
-
-        rel="preconnect"
-
-        href="https://fonts.gstatic.com"
-
-        crossorigin>
-
-    <link
-
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-
-        rel="stylesheet">
-
-    <!-- ========================= -->
-    <!-- FONT AWESOME -->
-    <!-- ========================= -->
-
-    <link
-
-        rel="stylesheet"
-
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <!-- ========================= -->
-    <!-- CSS GLOBAL -->
-    <!-- ========================= -->
-
-        <link
-
-            rel="stylesheet"
-
-            href="/admin/css/global/global.css">
-
-        <link
-
-            rel="stylesheet"
-
-            href="/admin/css/layout/layout.css">
-
-        <link
-
-            rel="stylesheet"
-
-            href="/admin/css/pages/validar.css?v=2.0.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validação de credencial | Assembléia de Deus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/admin/css/admin.css?v=3.0.0">
 </head>
-
-<body>
-
-    <!-- ========================= -->
-    <!-- CONTAINER -->
-    <!-- ========================= -->
-
-    <main class="validar-container">
-
-        <!-- ========================= -->
-        <!-- CARD -->
-        <!-- ========================= -->
-
-        <section class="validar-card">
-
-            <img
-
-                src="/images/assembleia-logo.png"
-
-                alt="Logo da Igreja"
-
-                class="logo">
-
-            <h1>
-
-                Assembléia de Deus
-
-            </h1>
-
-
+<body class="admin-validation-page standalone-page">
+    <header class="credential-topbar">
+        <a class="login-brand" href="/" aria-label="Visitar site da igreja"><img src="/images/assembleia-logo.png" alt="Logo da Assembléia de Deus" class="logo"><span class="brand-copy"><strong>Assembléia de Deus</strong><span>Lugar de Esperança</span></span></a>
+        <a class="credential-back text-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Voltar ao site</a>
+    </header>
+    <main class="validar-container public-validation">
+        <section class="validar-card admin-panel panel" aria-labelledby="tituloCredencial">
+            <img src="/images/assembleia-logo.png" alt="Logo da igreja" class="logo">
+            <h1 id="tituloCredencial">Validação de credencial</h1>
+            <p class="credential-caption">Identificação do membro</p>
             <div class="dados-membro">
-
-                <div class="info">
-
-                    <strong>
-
-                        Nome da Igreja
-
-                    </strong>
-
-                    <span>
-
-                        Assembléia de Deus
-
-                    </span>
-
-                </div>
-
-                 <div class="info">
-
-                    <strong>
-
-                        Nome do membro
-
-                    </strong>
-
-                    <span id="nome">
-
-                        Carregando...
-
-                    </span>
-
-                </div>
-
-
-                <div class="info" id="areaCargo">
-
-                    <strong>
-
-                        Cargo
-
-                    </strong>
-
-                    <span id="cargo">
-
-                        Carregando...
-
-                    </span>
-
-                </div>
-
-                <div class="info">
-
-                    <strong>
-
-                        Matrícula
-
-                    </strong>
-
-                    <span id="matricula">
-
-                        Carregando...
-
-                    </span>
-
-                </div>
-
-                <div class="info">
-
-                    <strong>
-
-                        Validade
-
-                    </strong>
-
-                    <span id="validade">
-
-                        Carregando...
-
-                    </span>
-
-                </div>
-
+                <div class="info"><strong>Nome da igreja</strong><span>Assembléia de Deus Lugar de Esperança</span></div>
+                <div class="info"><strong>Nome do membro</strong><span id="nome">Carregando...</span></div>
+                <div class="info" id="areaCargo"><strong>Cargo</strong><span id="cargo">Carregando...</span></div>
+                <div class="info"><strong>Matrícula</strong><span id="matricula">Carregando...</span></div>
+                <div class="info"><strong>Validade</strong><span id="validade">Carregando...</span></div>
             </div>
-
         </section>
-
     </main>
-
-    <!-- ========================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================= -->
-
     <script src="/js/security.js"></script>
-
-    <script
-
-        src="/admin/js/validar/validar.js?v=2.0.0">
-
-    </script>
-
+    <script src="/admin/js/validar/validar.js?v=2.0.0"></script>
 </body>
-
 </html>

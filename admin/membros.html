@@ -1,254 +1,57 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-    <!-- ========================= -->
-    <!-- META -->
-    <!-- ========================= -->
-
     <meta charset="UTF-8">
-
-    <meta
-
-        name="viewport"
-
-        content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        Membros | Painel Administrativo
-
-    </title>
-
-    <!-- ========================= -->
-    <!-- GOOGLE FONTS -->
-    <!-- ========================= -->
-
-    <link
-
-        rel="preconnect"
-
-        href="https://fonts.googleapis.com">
-
-    <link
-
-        rel="preconnect"
-
-        href="https://fonts.gstatic.com"
-
-        crossorigin>
-
-    <link
-
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-
-        rel="stylesheet">
-
-    <!-- ========================= -->
-    <!-- FONT AWESOME -->
-    <!-- ========================= -->
-
-    <link
-
-        rel="stylesheet"
-
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <!-- ========================= -->
-    <!-- CSS GLOBAL -->
-    <!-- ========================= -->
-
-    <link rel="stylesheet" href="/admin/css/global/reset.css">
-
-    <link rel="stylesheet" href="/admin/css/global/variables.css">
-
-    <link rel="stylesheet" href="/admin/css/global/base.css">
-
-    <link rel="stylesheet" href="/admin/css/layout/layout.css">
-
-    <link rel="stylesheet" href="/admin/css/pages/membros.css?v=2.0.3">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membros | Área administrativa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/admin/css/admin.css?v=3.0.0">
 </head>
-
-<body>
-
-    <!-- ========================= -->
-    <!-- OVERLAY -->
-    <!-- ========================= -->
-
-    <div class="overlay"></div>
-
-        <button
-
-            id="btnMenu"
-
-            class="menu-toggle"
-
-            aria-label="Abrir menu">
-
-            <i class="fa-solid fa-bars"></i>
-
-        </button>
-
-    <!-- ========================= -->
-    <!-- DASHBOARD -->
-    <!-- ========================= -->
-
-    <div class="dashboard">
-
-        <!-- ========================= -->
-        <!-- SIDEBAR -->
-        <!-- ========================= -->
-
-        <aside class="sidebar">
-
-            <div class="logo">
-
-                <img
-
-                    src="/images/assembleia-logo.png"
-
-                    alt="Logo da Igreja">
-
-            </div>
-
-            <nav>
-
+<body class="admin-page admin-members-page">
+    <div class="overlay" aria-hidden="true"></div>
+    <button id="btnMenu" class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="adminSidebar"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+    <div class="dashboard admin-shell">
+        <aside class="sidebar" id="adminSidebar">
+            <a class="sidebar-brand" href="/dashboard" aria-label="Visão geral da igreja">
+                <i class="sidebar-symbol fa-solid fa-church" aria-hidden="true"></i>
+                <span class="sidebar-brand-title">Assembleia de Deus</span>
+                <span class="sidebar-brand-subtitle">Gestão de membros</span>
+            </a>
+            <nav aria-label="Navegação administrativa">
                 <ul class="menu">
-
-                    <li>
-
-                        <a href="/dashboard">
-
-                            <i class="fa-solid fa-chart-line"></i>
-
-                            Painel
-
-                        </a>
-
-                    </li>
-
-                    <li class="active">
-
-                        <a href="/admin/membros">
-
-                            <i class="fa-solid fa-users"></i>
-
-                            Membros
-
-                        </a>
-
-                    </li>
-
-                    <li class="logout">
-
-                        <a href="/logout-admin">
-
-                            <i class="fa-solid fa-right-from-bracket"></i>
-
-                            Sair
-
-                        </a>
-
-                    </li>
-
+                    <li ><a href="/dashboard"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Visão geral</span></a></li>
+                    <li class="active"><a href="/admin/membros" aria-current="page"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Membros</span></a></li>
+                    <li><a href="/scanner"><i class="fa-solid fa-qrcode" aria-hidden="true"></i><span>Leitor de QR Code</span></a></li>
+                    <li><a href="/admin/presencas.html"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><span>Presenças</span></a></li>
+                    <li><a href="/admin/privacidade"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>Privacidade</span></a></li>
                 </ul>
-
             </nav>
-
+            <div class="sidebar-footer">
+                <div class="sidebar-user"><span class="admin-avatar" aria-hidden="true">AD</span><span>Administrador</span></div>
+                <a class="sidebar-logout" href="/logout-admin"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Sair</a>
+            </div>
         </aside>
-
-        <!-- ========================= -->
-        <!-- CONTEÚDO -->
-        <!-- ========================= -->
-
-        <main class="content">
-
-            <!-- ========================= -->
-            <!-- TOPBAR -->
-            <!-- ========================= -->
-
-            <header class="topbar">
-
-                <div>
-
-                    <h1>
-
-                        Membros
-
-                    </h1>
-
-                    <p>
-
-                        Gerencie todos os membros cadastrados.
-
-                    </p>
-
-                </div>
-
+        <main class="content admin-content" id="mainContent">
+            <header class="topbar admin-topbar">
+                <nav class="breadcrumb" aria-label="Localização"><a href="/dashboard">Gestão</a><span aria-hidden="true">/</span><span aria-current="page">Membros</span></nav>
+                <div class="admin-account"><span>Administrador</span><span class="admin-avatar" aria-hidden="true">AD</span></div>
             </header>
-
-            <!-- ========================= -->
-            <!-- PESQUISA -->
-            <!-- ========================= -->
-
-            <section class="pesquisa">
-
-                <input
-
-                    type="text"
-
-                    id="pesquisa"
-
-                    placeholder="Pesquisar membro...">
-
-                <button
-
-                    type="button"
-
-                    aria-label="Pesquisar" class="btn-pesquisar">
-
-                    <i class="fa-solid fa-magnifying-glass"></i>
-
-                </button>
-
+            <div class="page-content">
+            <div class="admin-page-heading page-heading"><div class="page-heading-copy page-intro"><h1>Membros</h1><p>Consulte os cadastros e gerencie os dados dos membros da igreja.</p></div></div>
+            <section class="pesquisa" aria-label="Pesquisar membros">
+                <label class="sr-only" for="pesquisa">Pesquisar membro pelo nome</label>
+                <input type="search" id="pesquisa" placeholder="Pesquisar membro pelo nome..." autocomplete="off">
+                <button type="button" class="btn-pesquisar" aria-label="Pesquisar"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
             </section>
-
-            <!-- ========================= -->
-            <!-- LISTA DE MEMBROS -->
-            <!-- ========================= -->
-
-            <section
-
-                class="lista-membros"
-
-                id="lista-membros">
-
-            </section>
-
+            <section class="lista-membros" id="lista-membros" aria-label="Membros cadastrados"></section>
+            </div>
         </main>
-
     </div>
-
-    <!-- ========================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================= -->
-
     <script src="/js/security.js"></script>
-
-    <script
-
-        src="/admin/js/layout/menu.js?v=2.0.0">
-
-    </script>
-
-    <script
-
-        src="/admin/js/membros/membros.js?v=2.0.4">
-
-    </script>
-
+    <script src="/admin/js/layout/menu.js?v=3.0.0"></script>
+    <script src="/admin/js/membros/membros.js?v=3.0.0"></script>
 </body>
-
 </html>

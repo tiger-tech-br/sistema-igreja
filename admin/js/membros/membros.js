@@ -74,7 +74,7 @@ function criarCardMembro(membro) {
 
         <div class="membro-acoes">
 
-            <button class="btn-editar">
+            <button type="button" class="btn-editar" aria-label="Editar dados administrativos" title="Editar dados administrativos">
 
                 <i class="fa-solid fa-pen"></i>
 
@@ -94,13 +94,13 @@ function criarCardMembro(membro) {
             </button>
             -->
 
-            <button class="btn-perfil">
+            <button type="button" class="btn-perfil" aria-label="Ver perfil do membro" title="Ver perfil do membro">
 
                 <i class="fa-solid fa-user"></i>
 
             </button>
 
-            <button class="btn-excluir">
+            <button type="button" class="btn-excluir" aria-label="Excluir cadastro" title="Excluir cadastro">
 
                 <i class="fa-solid fa-trash"></i>
 

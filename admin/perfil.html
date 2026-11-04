@@ -1,369 +1,86 @@
-﻿<!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-    <!-- ========================= -->
-    <!-- META -->
-    <!-- ========================= -->
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        Meu Perfil
-
-    </title>
-
-    <!-- ========================= -->
-    <!-- GOOGLE FONTS -->
-    <!-- ========================= -->
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- ========================= -->
-    <!-- FONT AWESOME -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <!-- ========================= -->
-    <!-- CSS GLOBAL -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="/css/global/global.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/variables.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/base.css">
-
-
-    <link
-        rel="stylesheet"
-        href="/admin/css/pages/perfil.css?v=2.0.1">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do membro | Área administrativa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/admin/css/admin.css?v=3.0.0">
 </head>
-
-<body>
-
-
-    <!-- ========================= -->
-    <!-- CONTEÚDO -->
-    <!-- ========================= -->
-
-        <main class="perfil-page">
-
-            <section class="container">
-
-                <div class="perfil-acoes">
-
-                    <a
-                        href="/"
-                        class="btn-voltar-home"
-                        id="linkVoltarPerfil">
-
-                        <i class="fa-solid fa-arrow-left"></i>
-
-                        <span>
-
-                            Voltar
-
-                        </span>
-
-                    </a>
-
-                </div>
-
-                <div class="perfil-card">
-
-                                <!-- ========================= -->
-                <!-- CABEÇALHO DO PERFIL -->
-                <!-- ========================= -->
-
-                    <div class="perfil-titulo">
-
-                        <h1 id="nome">
-
-                            Carregando...
-
-                        </h1>
-
-                        <p
-                            id="cargo"
-                            class="perfil-cargo">
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <hr>
-
-                <!-- ========================= -->
-                <!-- DADOS DO MEMBRO -->
-                <!-- ========================= -->
-
-                <div class="perfil-info">
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-envelope"></i>
-
-                        <div>
-
-                            <strong>E-mail: </strong>
-
-                            <span id="email"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-phone"></i>
-
-                        <div>
-
-                            <strong>Telefone: </strong>
-
-                            <span id="telefone"></span>
-
-                        </div>
-
-                    </div>
-
-                            <div class="info">
-
-                                    <i class="fa-solid fa-mobile-screen-button"></i>
-
-                                    <div>
-
-                                        <strong>Celular:</strong>
-
-                                        <span id="celular"></span>
-
-                                    </div>
-
-                                </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-location-dot"></i>
-
-                        <div>
-
-                            <strong>Endereço: </strong>
-
-                            <span id="endereco"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-church"></i>
-
-                        <div>
-
-                            <strong>Ministério: </strong>
-
-                            <span id="ministerio"></span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <hr>
-
-                            <!-- ========================= -->
-                <!-- DADOS PESSOAIS -->
-                <!-- ========================= -->
-
-                <div class="perfil-info">
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-venus-mars"></i>
-
-                        <div>
-
-                            <strong>Sexo: </strong>
-
-                            <span id="sexo"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-heart"></i>
-
-                        <div>
-
-                            <strong>Estado Civil: </strong>
-
-                            <span id="estadoCivil"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-calendar-days"></i>
-
-                        <div>
-
-                            <strong>Data de Nascimento: </strong>
-
-                            <span id="nascimento"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-id-card"></i>
-
-                        <div>
-
-                            <strong>Matrícula: </strong>
-
-                            <span id="matricula"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-calendar-check"></i>
-
-                        <div>
-
-                            <strong>Validade: </strong>
-
-                            <span id="validade"></span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <hr>
-
-                <!-- ========================= -->
-                <!-- QR CODE -->
-                <!-- ========================= -->
-
-                <section class="perfil-qrcode">
-
-                    <h2>
-
-                        Credencial Digital
-
-                    </h2>
-
-                    <p>
-
-                        Apresente este QR Code quando solicitado.
-
-                    </p>
-
-                    <img
-
-                        id="qrCode"
-
-                        src=""
-
-                        alt="QR Code da credencial do membro">
-
-                </section>
-
-                <div
-                    class="perfil-excluir hidden"
-                    id="areaExcluirCadastro">
-
-                    <button
-                        type="button"
-                        class="btn-acao-perfil btn-editar-admin"
-                        id="btnEditarAdministrativo">
-
-                        <i class="fa-solid fa-pen-to-square"></i>
-
-                        <span>
-
-                            Editar cargo/ministério
-
-                        </span>
-
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn-acao-perfil btn-excluir-cadastro"
-                        id="btnExcluirCadastro">
-
-                        <i class="fa-solid fa-trash"></i>
-
-                        <span>
-
-                            Excluir cadastro
-
-                        </span>
-
-                    </button>
-
-                </div>
-
+<body class="admin-page admin-profile-page">
+    <div class="overlay" aria-hidden="true"></div>
+    <button id="btnMenu" class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="adminSidebar"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+    <div class="dashboard admin-shell">
+        <aside class="sidebar" id="adminSidebar">
+            <a class="sidebar-brand" href="/dashboard" aria-label="Visão geral da igreja">
+                <i class="sidebar-symbol fa-solid fa-church" aria-hidden="true"></i>
+                <span class="sidebar-brand-title">Assembleia de Deus</span>
+                <span class="sidebar-brand-subtitle">Gestão de membros</span>
+            </a>
+            <nav aria-label="Navegação administrativa">
+                <ul class="menu">
+                    <li ><a href="/dashboard"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Visão geral</span></a></li>
+                    <li class="active"><a href="/admin/membros" aria-current="page"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Membros</span></a></li>
+                    <li><a href="/scanner"><i class="fa-solid fa-qrcode" aria-hidden="true"></i><span>Leitor de QR Code</span></a></li>
+                    <li><a href="/admin/presencas.html"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><span>Presenças</span></a></li>
+                    <li><a href="/admin/privacidade"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span>Privacidade</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user"><span class="admin-avatar" aria-hidden="true">AD</span><span>Administrador</span></div>
+                <a class="sidebar-logout" href="/logout-admin"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Sair</a>
             </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- ========================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================= -->
-
+        </aside>
+        <main class="content admin-content" id="mainContent">
+            <header class="topbar admin-topbar">
+                <nav class="breadcrumb" aria-label="Localização"><a href="/dashboard">Gestão</a><span aria-hidden="true">/</span><span aria-current="page">Perfil do membro</span></nav>
+                <div class="admin-account"><span>Administrador</span><span class="admin-avatar" aria-hidden="true">AD</span></div>
+            </header>
+            <div class="page-content">
+            <div class="admin-page-heading page-heading"><div class="page-heading-copy page-intro"><h1>Perfil do membro</h1><p>Dados do cadastro e credencial digital do membro.</p></div></div>
+            <section class="perfil-page">
+                <div class="container profile-container">
+                    <div class="perfil-acoes"><a href="/dashboard" class="btn-voltar-home" id="linkVoltarPerfil"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Voltar</span></a></div>
+                    <div class="profile-layout">
+                        <article class="perfil-card admin-panel panel">
+                            <div class="perfil-titulo"><span class="profile-avatar"><i class="fa-solid fa-user" aria-hidden="true"></i></span><div><h2 id="nome">Carregando...</h2><p id="cargo" class="perfil-cargo"></p></div></div>
+                            <hr>
+                            <h3>Dados de contato</h3>
+                            <div class="perfil-info profile-fields">
+                                <div class="info"><i class="fa-solid fa-envelope" aria-hidden="true"></i><div><strong>E-mail</strong><span id="email"></span></div></div>
+                                <div class="info"><i class="fa-solid fa-phone" aria-hidden="true"></i><div><strong>Telefone</strong><span id="telefone"></span></div></div>
+                                <div class="info"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><div><strong>Celular</strong><span id="celular"></span></div></div>
+                                <div class="info"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><div><strong>Endereço</strong><span id="endereco"></span></div></div>
+                                <div class="info"><i class="fa-solid fa-church" aria-hidden="true"></i><div><strong>Ministério</strong><span id="ministerio"></span></div></div>
+                            </div>
+                            <hr>
+                            <h3>Dados pessoais e identificação</h3>
+                            <div class="perfil-info profile-fields">
+                                <div class="info"><i class="fa-solid fa-venus-mars" aria-hidden="true"></i><div><strong>Sexo</strong><span id="sexo"></span></div></div>
+                                <div class="info"><i class="fa-solid fa-heart" aria-hidden="true"></i><div><strong>Estado civil</strong><span id="estadoCivil"></span></div></div>
+                                <div class="info"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i><div><strong>Data de nascimento</strong><span id="nascimento"></span></div></div>
+                                <div class="info"><i class="fa-solid fa-id-card" aria-hidden="true"></i><div><strong>Matrícula</strong><span id="matricula"></span></div></div>
+                                <div class="info"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i><div><strong>Validade</strong><span id="validade"></span></div></div>
+                            </div>
+                        </article>
+                        <aside class="profile-credential">
+                            <section class="perfil-qrcode admin-panel panel"><h2>Credencial digital</h2><p>QR Code de identificação do membro.</p><img id="qrCode" src="" alt="QR Code da credencial do membro"></section>
+                            <div class="perfil-excluir hidden" id="areaExcluirCadastro">
+                                <button type="button" class="btn-acao-perfil btn-editar-admin" id="btnEditarAdministrativo"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><span>Editar cargo/ministério</span></button>
+                                <button type="button" class="btn-acao-perfil btn-excluir-cadastro" id="btnExcluirCadastro"><i class="fa-solid fa-trash" aria-hidden="true"></i><span>Excluir cadastro</span></button>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+            </div>
+        </main>
+    </div>
     <script src="/js/security.js"></script>
+    <script src="/admin/js/layout/menu.js?v=3.0.0"></script>
     <script src="/admin/js/perfil/perfil.js?v=2.0.1"></script>
-
 </body>
-
 </html>
