@@ -185,7 +185,6 @@ main > section { padding-block: 90px; scroll-margin-top: 96px; }
 .member-banner-copy { flex: 1; min-width: 0; }
 .member-banner-copy h2 { margin-bottom: 9px; font-size: clamp(1.7rem, 2.2vw, 2.15rem); }
 .member-banner-copy p { color: #e6e4de; font-size: .78rem; }
-.member-access-button { flex-shrink: 0; font-size: .8rem; }
 .contato { padding-top: 42px; padding-bottom: 85px; }
 .contato-content { display: grid; grid-template-columns: 1fr 1.15fr; gap: 5%; align-items: stretch; }
 .contato-info { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
@@ -236,7 +235,6 @@ main > section { padding-block: 90px; scroll-margin-top: 96px; }
   .evento-card { gap: 15px; padding: 22px 18px; }
   .member-banner-content { gap: 22px; padding: 30px; }
   .member-banner-icon { flex-basis: 60px; padding-right: 22px; }
-  .member-access-button { padding-inline: 18px; font-size: .74rem; }
   .footer-content { gap: 30px; }
 }
 
@@ -299,7 +297,6 @@ main > section { padding-block: 90px; scroll-margin-top: 96px; }
   .member-banner { padding-block: 45px; }
   .member-banner-content { flex-wrap: wrap; gap: 20px; }
   .member-banner-copy { flex-basis: calc(100% - 100px); }
-  .member-access-button { margin-left: 80px; font-size: .8rem; }
   .contato-content { grid-template-columns: 1fr; gap: 30px; }
   .contato-info { gap: 22px 38px; }
   .contato-card p { font-size: .83rem; }
@@ -370,7 +367,6 @@ main > section { padding-block: 90px; scroll-margin-top: 96px; }
   .member-banner-copy { flex-basis: auto; }
   .member-banner-copy h2 { font-size: 1.95rem; line-height: 1.14; }
   .member-banner-copy p { font-size: .8rem; line-height: 1.75; }
-  .member-access-button { margin: 0; width: 100%; }
   .contato { padding-top: 24px; }
   .contato-info { grid-template-columns: 1fr; gap: 5px; }
   .contato-card { padding-block: 15px; border-bottom: 1px solid $line; }

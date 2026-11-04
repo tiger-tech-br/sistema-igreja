@@ -1355,29 +1355,6 @@ document.addEventListener(
 
         }
 
-        document.querySelectorAll("[data-member-access]").forEach((link) => {
-            link.addEventListener("click", (event) => {
-                if (usuarioLogado) return;
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                if (window.innerWidth <= 992) {
-                    mostrarFormularioLogin();
-                    return;
-                }
-
-                abrirDropdownLogin();
-                window.requestAnimationFrame(() => {
-                    window.requestAnimationFrame(() => {
-                        if (window.innerWidth > 992 && loginMenu?.classList.contains("active")) {
-                            loginMenu.querySelector('input[name="email"]')?.focus({ preventScroll: true });
-                        }
-                    });
-                });
-            });
-        });
-
         if (
 
             btnMobileLogin &&
