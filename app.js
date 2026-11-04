@@ -9,6 +9,7 @@ const PgSession = require('connect-pg-simple')(session);
 const admin = require('./middlewares/auth');
 const member = require('./middlewares/authMembro');
 const { csrfProtection, csrfToken, refreshIdentity } = require('./middlewares/security');
+const { createLeitorRouter } = require('./routes/leitorRoutes');
 
 function createApp({ sessionStore } = {}) {
     const production = process.env.NODE_ENV === 'production' || Boolean(process.env.RAILWAY_ENVIRONMENT);
@@ -46,6 +47,10 @@ function createApp({ sessionStore } = {}) {
         message: { success: false, message: 'Muitas requisições. Tente novamente em um minuto.' } }));
     app.use(express.json({ limit: '20kb' }));
     app.use(express.urlencoded({ extended: false, limit: '20kb', parameterLimit: 30 }));
+    app.use('/api/leitor', createLeitorRouter());
+    app.use('/leitor', express.static(path.join(__dirname, 'leitor-qrcode', 'dist'), {
+        dotfiles: 'deny', index: 'index.html', fallthrough: false
+    }));
     app.use(session({ name: 'igreja.sid', store: sessionStore || new PgSession({ pool, tableName: 'user_sessions', createTableIfMissing: true }),
         secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false,
         cookie: { httpOnly: true, secure: production, sameSite: 'lax', maxAge: 7200000 } }));
@@ -83,10 +88,11 @@ function createApp({ sessionStore } = {}) {
     app.get(['/membros', '/membros.html'], member, page('membros.html'));
     for (const [urls, file] of [
         [['/dashboard', '/admin/dashboard.html'], 'dashboard.html'], [['/admin/membros', '/admin/membros.html'], 'membros.html'],
-        [['/admin/perfil', '/admin/perfil.html'], 'perfil.html'], [['/scanner', '/admin/scanner.html'], 'scanner.html'],
+        [['/admin/perfil', '/admin/perfil.html'], 'perfil.html'],
         [['/admin/presencas.html'], 'presencas.html'],
         [['/admin/privacidade'], 'privacidade.html']
     ]) app.get(urls, admin, page('admin/' + file));
+    app.get(['/scanner', '/admin/scanner.html'], admin, (req, res) => res.redirect('/leitor/'));
     // Public credential view is read-only and receives only minimal consented fields.
     app.get(['/validar', '/admin/validar.html'], page('admin/validar.html'));
     const logout = (req, res, next) => req.session.destroy(error => {

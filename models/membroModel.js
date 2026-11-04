@@ -62,7 +62,7 @@ module.exports = {
         try {
             await client.query('BEGIN');
             // A presença é registrada exclusivamente por um administrador autenticado.
-            const member = await client.query('SELECT id,nome FROM membros WHERE id=$1 FOR UPDATE', [id]);
+            const member = await client.query('SELECT id,nome,cargo,ministerio,matricula FROM membros WHERE id=$1 FOR UPDATE', [id]);
             if (!member.rowCount) { await client.query('ROLLBACK'); return null; }
             // The unique index is the final guard against concurrent scanner callbacks.
             const inserted = await client.query(`INSERT INTO acessos (membro_id,data,horario)
@@ -71,7 +71,7 @@ module.exports = {
             if (inserted.rowCount) {
                 await client.query("INSERT INTO security_audit(actor_id,action,target_id) VALUES ($1,'attendance_recorded',$2)", [actor,id]);
             }
-            const record = await client.query(`SELECT TO_CHAR(data,'DD/MM/YYYY') AS data,
+            const record = await client.query(`SELECT periodo,TO_CHAR(data,'DD/MM/YYYY') AS data,
                 TO_CHAR(horario,'HH24:MI:SS') AS horario FROM acessos
                 WHERE membro_id=$1 AND data=(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE
                 AND periodo=CASE
@@ -79,7 +79,8 @@ module.exports = {
                     WHEN (NOW() AT TIME ZONE 'America/Sao_Paulo')::TIME < TIME '18:00:00' THEN 'tarde'
                     ELSE 'noite' END`, [id]);
             await client.query('COMMIT');
-            return { id, nome: member.rows[0].nome, ...record.rows[0], alreadyRecorded: !inserted.rowCount };
+            const { nome, cargo, ministerio, matricula } = member.rows[0];
+            return { id, nome, cargo, ministerio, matricula, ...record.rows[0], alreadyRecorded: !inserted.rowCount };
         } catch (error) { await client.query('ROLLBACK'); throw error; }
         finally { client.release(); }
     },

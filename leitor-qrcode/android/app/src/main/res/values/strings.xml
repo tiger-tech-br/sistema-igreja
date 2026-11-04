@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Leitor de presenças</string>
+    <string name="title_activity_main">Leitor de presenças</string>
+    <string name="package_name">br.com.assembleiadedeus.leitor</string>
+    <string name="custom_url_scheme">br.com.assembleiadedeus.leitor</string>
+</resources>

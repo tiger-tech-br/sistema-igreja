@@ -1,0 +1,13 @@
+{
+  "appId": "br.com.assembleiadedeus.leitor",
+  "appName": "Leitor de presenças",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "backgroundColor": "#f8f5ef",
+    "allowMixedContent": false
+  }
+}

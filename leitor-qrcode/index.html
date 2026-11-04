@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#242522">
+  <meta name="description" content="Leitor de presenças da Assembleia de Deus. Acesso exclusivo para administradores autorizados.">
+  <title>Leitor de presenças | Assembleia de Deus</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+</head>
+<body>
+  <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="church" viewBox="0 0 64 64"><path d="M32 3v17m-6-11h12M10 59V35l22-17 22 17v24H38V44a6 6 0 0 0-12 0v15H10Zm-6 0h56"/></symbol>
+    <symbol id="scan" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3M3 12h18"/></symbol>
+    <symbol id="logout" viewBox="0 0 24 24"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5m5-13 5 5-5 5M9 12h11"/></symbol>
+    <symbol id="torch" viewBox="0 0 24 24"><path d="m5 7 5 6v8h4v-8l5-6H5Zm1-5 1 2m5-3v3m6-2-1 2"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="m6 12 4 4 8-8"/></symbol>
+    <symbol id="mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 6 8 6 8-6"/></symbol>
+    <symbol id="lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+    <symbol id="eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+  </svg>
+
+  <main id="app">
+    <section id="loginScreen" class="login-screen">
+      <header class="login-brand">
+        <svg class="church-logo" aria-hidden="true"><use href="#church"/></svg>
+        <h1>Assembleia de Deus</h1>
+        <p class="brand-tagline">Lugar de Esperança</p>
+        <p class="brand-product">Leitor de presenças</p>
+      </header>
+      <div class="login-content">
+        <div class="login-intro"><h2>Acesso autorizado</h2><p>Acesso da equipe de recepção</p></div>
+        <form id="loginForm">
+          <label for="email">E-mail</label>
+          <div class="input-wrap"><svg aria-hidden="true"><use href="#mail"/></svg><input id="email" type="email" name="email" autocomplete="username" placeholder="Digite seu e-mail" maxlength="150" required></div>
+          <label for="senha">Senha</label>
+          <div class="input-wrap"><svg aria-hidden="true"><use href="#lock"/></svg><input id="senha" type="password" name="senha" autocomplete="current-password" placeholder="Digite sua senha" required><button id="togglePassword" class="icon-button" type="button" aria-label="Mostrar senha" aria-pressed="false"><svg aria-hidden="true"><use href="#eye"/></svg></button></div>
+          <p id="loginMessage" class="form-message" role="alert" hidden></p>
+          <button id="loginButton" class="button button-gold" type="submit"><span>Escanear QRCODE</span><svg aria-hidden="true"><use href="#arrow"/></svg></button>
+        </form>
+        <p class="access-help">Precisa de acesso?<br>Fale com o administrador.</p>
+        <p class="authorized-note"><svg aria-hidden="true"><use href="#lock"/></svg>Uso exclusivo da equipe autorizada</p>
+      </div>
+    </section>
+
+    <section id="scannerScreen" class="scanner-screen" hidden>
+      <header class="scanner-header">
+        <svg class="church-logo" aria-hidden="true"><use href="#church"/></svg>
+        <div class="scanner-brand"><h1>Assembleia de Deus</h1><p>Leitor de presenças</p></div>
+        <button id="logoutButton" class="logout-button" type="button"><svg aria-hidden="true"><use href="#logout"/></svg><span>Sair</span></button>
+      </header>
+      <div class="scanner-top">
+        <h2>Registrar presença</h2>
+        <div class="scanner-meta"><p class="period">Período: <strong id="currentPeriod">—</strong></p><p class="connection" id="connectionState" data-state="neutral"><span class="connection-dot" aria-hidden="true"></span><span id="connectionText">Verificando acesso</span></p></div>
+        <p class="scanner-instruction">Aponte para o QR Code do membro</p>
+      </div>
+      <div class="camera-frame" id="cameraFrame">
+        <div id="reader" aria-label="Imagem da câmera do leitor"></div>
+        <div class="camera-placeholder" id="cameraPlaceholder"><svg aria-hidden="true"><use href="#scan"/></svg><span id="cameraMessage">Preparando câmera…</span></div>
+        <span class="scan-corner top-left" aria-hidden="true"></span><span class="scan-corner top-right" aria-hidden="true"></span><span class="scan-corner bottom-left" aria-hidden="true"></span><span class="scan-corner bottom-right" aria-hidden="true"></span>
+      </div>
+      <div class="scanner-bottom">
+        <div class="feedback-area" aria-live="polite" aria-atomic="true">
+          <div id="waitingState" class="waiting-state"><div><svg aria-hidden="true"><use href="#scan"/></svg><h3>Aguardando leitura</h3></div><p>Apresente a credencial digital ou impressa.</p></div>
+          <article id="lastAttendance" class="last-attendance" hidden>
+            <h3 class="confirmation-title" id="confirmationTitle"><span class="check-icon"><svg aria-hidden="true"><use href="#check"/></svg></span><span id="confirmationText">Presença confirmada</span></h3>
+            <div class="member-card"><div class="member-top"><span class="member-avatar" id="memberInitials" aria-hidden="true"></span><div><h4 id="memberName"></h4><p id="memberRole"></p><p id="memberRegistration"></p></div></div><p class="member-time" id="memberTime"></p></div>
+            <p class="ready-next" id="nextReading">Pronto para a próxima leitura</p>
+          </article>
+          <p id="scanMessage" class="scan-message" hidden></p>
+        </div>
+        <div class="reader-controls">
+          <button id="retryButton" class="button button-outline" type="button" hidden>Tentar novamente</button>
+          <button id="restartCameraButton" class="button button-outline" type="button" hidden>Ativar câmera</button>
+          <button id="torchButton" class="button button-outline" type="button" aria-pressed="false" hidden><svg aria-hidden="true"><use href="#torch"/></svg><span>Lanterna</span></button>
+          <p class="continuous-note">Leitura contínua</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
