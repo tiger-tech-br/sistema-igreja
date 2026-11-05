@@ -2,6 +2,8 @@
 
 Aplicativo Android exclusivo do membro, separado do **Leitor de presenças** do administrador. Nome no aparelho: **Minha credencial**. Pacote: `br.com.assembleiadedeus.membro`. O ícone claro com cartão de identificação diferencia este aplicativo do leitor escuro. Os dois podem ser instalados juntos.
 
+**Atualização 1.0.1:** corrige o erro “Illegal invocation” ao iniciar o acompanhamento da leitura depois de carregar a imagem do QR Code. A chamada aos temporizadores do navegador mantém o contexto correto. O APK tem código de versão 2 e pode ser instalado por cima da versão de testes anterior com a mesma assinatura.
+
 ## Fluxo
 
 1. O membro entra com o mesmo e-mail e senha da área do membro do Sistema Igreja.
@@ -78,7 +80,7 @@ npm run build:apk
 
 O comando compila a interface, sincroniza o projeto Android, executa `assembleDebug` e entrega:
 
-`artifacts/minha-credencial-v1.0-debug.apk`
+`artifacts/minha-credencial-v1.0.1-debug.apk`
 
 Para abrir o projeto Android existente:
 

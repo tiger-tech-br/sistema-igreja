@@ -134,3 +134,55 @@ test('erros de API preservam status para sessão, credencial e espera de nova te
   api.token='fixture-only';
   await assert.rejects(api.credential(), error=>error.status===403 && error.message==='Credencial indisponível.' && error.retryAfterMs===30000);
 });
+
+test('timers padrão preservam o contexto Window ao preparar, pausar e retomar a leitura', async () => {
+  const originalSetTimeout = globalThis.setTimeout;
+  const originalClearTimeout = globalThis.clearTimeout;
+  const tasks = new Map();
+  const receivers = [];
+  let sequence = 0;
+  globalThis.setTimeout = function (callback, delay) {
+    receivers.push(this);
+    if (this !== globalThis) throw new TypeError('Illegal invocation');
+    assert.equal(this, globalThis);
+    const id = ++sequence;
+    tasks.set(id, { callback, delay });
+    return id;
+  };
+  globalThis.clearTimeout = function (id) {
+    receivers.push(this);
+    if (this !== globalThis) throw new TypeError('Illegal invocation');
+    assert.equal(this, globalThis);
+    tasks.delete(id);
+  };
+  try {
+    const states = [];
+    const observer = new PresenceObserver({
+      read: async cursor => ({ cursor, confirmed: false }),
+      onState: state => states.push(state)
+    });
+    observer.arm('0');
+    assert.equal(tasks.size, 1);
+    assert.equal([...tasks.values()][0].delay, 0);
+    observer.pause();
+    assert.equal(tasks.size, 0);
+    assert.equal(observer.cursor, '0');
+    observer.resume();
+    assert.equal(tasks.size, 1);
+    const [id, task] = tasks.entries().next().value;
+    tasks.delete(id);
+    task.callback();
+    await settle();
+    assert.equal(states.at(-1).kind, 'waiting');
+    assert.equal(tasks.size, 1);
+    assert.equal([...tasks.values()][0].delay, 2000);
+    observer.stop();
+    assert.equal(tasks.size, 0);
+    assert.equal(observer.cursor, null);
+    assert.ok(receivers.length >= 4);
+    for (const receiver of receivers) assert.equal(receiver, globalThis);
+  } finally {
+    globalThis.setTimeout = originalSetTimeout;
+    globalThis.clearTimeout = originalClearTimeout;
+  }
+});

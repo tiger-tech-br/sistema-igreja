@@ -1,10 +1,11 @@
 import { spawn } from 'node:child_process';
-import { access, copyFile, mkdir, writeFile } from 'node:fs/promises';
+import { access, copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 if (process.platform !== 'win32') throw new Error('Este comando prepara o APK no Windows. Use ./gradlew assembleDebug em outros sistemas.');
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const metadata = JSON.parse(await readFile(path.join(project, 'package.json'), 'utf8'));
 const android = path.join(project, 'android');
 const sdk = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || path.join(process.env.LOCALAPPDATA, 'Android', 'Sdk');
 const java = process.env.JAVA_HOME || path.join(process.env.ProgramFiles || 'C:/Program Files', 'Android', 'Android Studio', 'jbr');
@@ -23,6 +24,6 @@ await run('npm run sync:android', project);
 await run('gradlew.bat assembleDebug --no-daemon', android);
 const artifacts = path.join(project, 'artifacts');
 await mkdir(artifacts, { recursive: true });
-const output = path.join(artifacts, 'minha-credencial-v1.0-debug.apk');
+const output = path.join(artifacts, `minha-credencial-v${metadata.version}-debug.apk`);
 await copyFile(path.join(android, 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk'), output);
 console.log(`APK do membro gerado: ${output}`);

@@ -2,7 +2,9 @@ const validCursor = value => typeof value === 'string' && /^(0|[1-9]\d{0,29})$/.
 
 // Consultas somente de leitura. Uma presença antiga nunca confirma uma apresentação nova.
 export class PresenceObserver {
-  constructor({ read, onState = () => {}, online = () => true, schedule = setTimeout, unschedule = clearTimeout, interval = 2000 }) {
+  constructor({ read, onState = () => {}, online = () => true,
+    schedule = (callback, delay) => globalThis.setTimeout(callback, delay),
+    unschedule = timer => globalThis.clearTimeout(timer), interval = 2000 }) {
     Object.assign(this, { read, onState, online, schedule, unschedule, interval });
     this.generation = 0;
     this.enabled = false;
