@@ -17,7 +17,39 @@ let cameraTask;
 let cameraFailure = '';
 let foreground = !document.hidden;
 let torch = false;
+let activeScreen = 'login';
 const periodLabels = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
+
+function showScreen(screen) {
+  activeScreen = screen;
+  $('loginScreen').hidden = screen !== 'login';
+  $('homeScreen').hidden = screen !== 'home';
+  $('scannerScreen').hidden = screen !== 'scanner';
+  if (screen !== 'scanner') document.documentElement.classList.remove('native-camera-active');
+}
+
+function hasValidSession() {
+  if (!api.token) return false;
+  if (Date.now() >= sessionExpiresAt) {
+    logout('Seu acesso expirou. Entre novamente.');
+    return false;
+  }
+  return true;
+}
+
+function openScanner() {
+  if (!hasValidSession()) return;
+  showScreen('scanner');
+  cameraWanted = true;
+  syncCamera();
+}
+
+function backToHome() {
+  if (!hasValidSession()) return;
+  cameraWanted = false;
+  showScreen('home');
+  syncCamera();
+}
 
 function connection(text, state = 'neutral') {
   $('connectionText').textContent = text;
@@ -84,7 +116,7 @@ function syncCamera() {
   if (cameraTask) return cameraTask;
   cameraTask = (async () => {
     for (;;) {
-      const desired = Boolean(cameraWanted && foreground && api.token);
+      const desired = Boolean(cameraWanted && activeScreen === 'scanner' && foreground && api.token);
       if (!desired) {
         if (camera?.running) await camera.stop().catch(() => {});
         if (cameraWanted && foreground && api.token) continue;
@@ -103,7 +135,7 @@ function syncCamera() {
         $('restartCameraButton').hidden = true;
         cameraFailure = '';
         $('cameraMessage').textContent = 'Preparando câmera…';
-        camera ||= await createCamera({ onRead: raw => { if (foreground && api.token) controller.read(raw); }, onError: cameraError });
+        camera ||= await createCamera({ onRead: raw => { if (cameraWanted && activeScreen === 'scanner' && foreground && api.token) controller.read(raw); }, onError: cameraError });
         if (epoch !== sessionEpoch || !cameraWanted || !foreground || !api.token) continue;
         await camera.start();
         if (epoch !== sessionEpoch || !cameraWanted || !foreground || !api.token) {
@@ -141,8 +173,7 @@ function logout(message = '') {
   cameraWanted = false;
   cameraFailure = '';
   syncCamera();
-  $('scannerScreen').hidden = true;
-  $('loginScreen').hidden = false;
+  showScreen('login');
   $('senha').value = '';
   $('senha').type = 'password';
   $('togglePassword').setAttribute('aria-pressed', 'false');
@@ -150,7 +181,7 @@ function logout(message = '') {
   $('loginMessage').textContent = message;
   $('loginMessage').hidden = !message;
   $('loginButton').disabled = false;
-  $('loginButton').querySelector('span').textContent = 'Escanear QRCODE';
+  $('loginButton').querySelector('span').textContent = 'Entrar';
   $('lastAttendance').hidden = true;
   $('waitingState').hidden = false;
   showScanMessage('');
@@ -171,14 +202,12 @@ $('loginForm').addEventListener('submit', async event => {
     api.token = result.token;
     sessionExpiresAt = expiration;
     $('senha').value = '';
-    $('loginScreen').hidden = true;
-    $('scannerScreen').hidden = false;
+    showScreen('home');
     $('cameraPlaceholder').hidden = false;
     controller.activate();
     connection(navigator.onLine === false ? 'Sem conexão' : 'Conectado', navigator.onLine === false ? 'offline' : 'online');
     expiryTimer = setTimeout(() => logout('Seu acesso expirou. Entre novamente.'), Math.min(expiration - Date.now(), 86400000));
-    cameraWanted = true;
-    syncCamera();
+    cameraWanted = false;
   } catch (error) {
     if (epoch !== sessionEpoch) return;
     $('loginMessage').textContent = error.message || 'Não foi possível entrar. Verifique a conexão.';
@@ -186,7 +215,7 @@ $('loginForm').addEventListener('submit', async event => {
   } finally {
     if (epoch === sessionEpoch) {
       $('loginButton').disabled = false;
-      $('loginButton').querySelector('span').textContent = 'Escanear QRCODE';
+      $('loginButton').querySelector('span').textContent = 'Entrar';
     }
   }
 });
@@ -198,8 +227,11 @@ $('togglePassword').addEventListener('click', () => {
   $('togglePassword').setAttribute('aria-label', visible ? 'Ocultar senha' : 'Mostrar senha');
 });
 $('logoutButton').addEventListener('click', () => logout());
+$('homeLogoutButton').addEventListener('click', () => logout());
+$('startScannerButton').addEventListener('click', openScanner);
+$('backButton').addEventListener('click', backToHome);
 $('retryButton').addEventListener('click', () => controller.retry());
-$('restartCameraButton').addEventListener('click', () => { cameraWanted = true; syncCamera(); });
+$('restartCameraButton').addEventListener('click', () => { if (activeScreen === 'scanner') openScanner(); });
 $('torchButton').addEventListener('click', async () => {
   if (!camera?.running) return;
   const epoch = sessionEpoch;
@@ -224,8 +256,14 @@ function setForeground(value) {
 document.addEventListener('visibilitychange', () => setForeground(!document.hidden));
 window.addEventListener('offline', () => { connection('Sem conexão', 'offline'); if (api.token) showScanMessage('Sem conexão. Nenhuma leitura será confirmada até o servidor responder.'); });
 window.addEventListener('online', () => connection('Aguardando confirmação', 'neutral'));
-window.addEventListener('pagehide', () => { cameraWanted = false; syncCamera(); });
-window.addEventListener('pageshow', event => { if (event.persisted && api.token) { cameraWanted = true; setForeground(!document.hidden); } });
-if (Capacitor.isNativePlatform()) App.addListener('appStateChange', ({ isActive }) => setForeground(isActive)).catch(() => {});
+window.addEventListener('pagehide', () => setForeground(false));
+window.addEventListener('pageshow', event => { if (event.persisted && api.token) setForeground(!document.hidden); });
+if (Capacitor.isNativePlatform()) {
+  App.addListener('appStateChange', ({ isActive }) => setForeground(isActive)).catch(() => {});
+  App.addListener('backButton', () => {
+    if (activeScreen === 'scanner' && api.token) backToHome();
+    else App.minimizeApp().catch(() => {});
+  }).catch(() => {});
+}
 updatePeriod();
 setInterval(updatePeriod, 60000);

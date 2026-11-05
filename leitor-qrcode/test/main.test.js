@@ -18,12 +18,21 @@ async function settle(until = () => false) {
   }
 }
 
-function fixture({ startGate, stopGate, register = async id => ({ id, nome: 'Membro de teste', periodo: 'noite', horario: '19:42:00' }) } = {}) {
+function fixture({ startGate, stopGate, native = false, register = async id => ({ id, nome: 'Membro de teste', periodo: 'noite', horario: '19:42:00' }) } = {}) {
   const elements = new Map();
   const docHandlers = new Map();
   const windowHandlers = new Map();
   const classes = new Set();
+  const appHandlers = new Map();
+  const timers = new Map();
+  let clock = Date.now();
+  let nextTimer = 0;
   let loginCalls = 0;
+  let minimized = 0;
+  class FixtureDate extends Date {
+    constructor(...args) { super(...(args.length ? args : [clock])); }
+    static now() { return clock; }
+  }
   const camera = {
     running: false, starts: 0, stops: 0,
     async start() { this.starts++; if (startGate) await startGate.promise; this.running = true; },
@@ -59,7 +68,7 @@ function fixture({ startGate, stopGate, register = async id => ({ id, nome: 'Mem
   };
   class FakeApi {
     constructor() { this.token = null; }
-    async login() { loginCalls++; return { token: 'fixture-only', expiresAt: new Date(Date.now() + 7200000).toISOString() }; }
+    async login() { loginCalls++; return { token: 'fixture-only', expiresAt: new Date(clock + 7200000).toISOString() }; }
     register(id) { return register(id); }
     clear() { this.token = null; }
   }
@@ -67,21 +76,27 @@ function fixture({ startGate, stopGate, register = async id => ({ id, nome: 'Mem
     document,
     window: { addEventListener(name, handler) { windowHandlers.set(name, handler); } },
     navigator: { onLine: true, vibrate() {} },
-    Capacitor: { isNativePlatform: () => false }, App: {}, SERVER_URL: server,
+    Capacitor: { isNativePlatform: () => native },
+    App: {
+      async addListener(name, handler) { appHandlers.set(name, handler); },
+      async minimizeApp() { minimized++; }
+    }, SERVER_URL: server,
     ReaderApi: FakeApi, ScanController,
     createCamera: async callbacks => { Object.assign(camera, callbacks); return camera; },
-    setTimeout() { return 1; }, clearTimeout() {}, setInterval() { return 2; },
-    URL, Intl, Date, console
+    setTimeout(callback) { const id = ++nextTimer; timers.set(id, callback); return id; },
+    clearTimeout(id) { timers.delete(id); }, setInterval() { return 2; },
+    URL, Intl, Date: FixtureDate, console
   });
   vm.runInContext(script, context, { filename: 'main.js' });
   return {
-    camera, elements, classes, get loginCalls() { return loginCalls; },
+    camera, elements, classes, get loginCalls() { return loginCalls; }, get minimized() { return minimized; },
     async login() {
       elements.get('email').value = 'fixture@example.invalid';
       elements.get('senha').value = 'fixture-only';
       await elements.get('loginForm').fire('submit');
       await settle();
     },
+    async openScanner() { await this.click('startScannerButton'); },
     async click(id) {
       const target = elements.get(id);
       await target.fire('click');
@@ -93,9 +108,184 @@ function fixture({ startGate, stopGate, register = async id => ({ id, nome: 'Mem
       document.hidden = hidden;
       docHandlers.get('visibilitychange')?.();
       await settle();
+    },
+    async windowEvent(name, event = {}) {
+      windowHandlers.get(name)?.(event);
+      await settle();
+    },
+    async appEvent(name, event = {}) {
+      appHandlers.get(name)?.(event);
+      await settle();
+    },
+    advance(milliseconds) { clock += milliseconds; },
+    async expire() {
+      clock += 7200001;
+      for (const callback of [...timers.values()]) callback();
+      await settle();
     }
   };
 }
+
+test('Entrar abre a tela inicial e só Escanear QRCode abre a câmera', async () => {
+  const screen = fixture();
+  assert.equal(screen.elements.get('loginScreen').hidden, false);
+  assert.equal(screen.camera.starts, 0);
+  await screen.login();
+  assert.equal(screen.elements.get('loginButton').querySelector('span').textContent, 'Entrar');
+  assert.equal(screen.elements.get('loginScreen').hidden, true);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.elements.get('scannerScreen').hidden, true);
+  assert.equal(screen.camera.starts, 0);
+  await screen.visibility(true);
+  await screen.visibility(false);
+  await screen.windowEvent('pagehide');
+  await screen.windowEvent('pageshow', { persisted: true });
+  assert.equal(screen.camera.starts, 0);
+  await screen.openScanner();
+  assert.equal(screen.elements.get('homeScreen').hidden, true);
+  assert.equal(screen.elements.get('scannerScreen').hidden, false);
+  assert.equal(screen.camera.starts, 1);
+  assert.equal(screen.camera.running, true);
+  assert.equal(screen.loginCalls, 1);
+});
+
+test('Voltar desliga câmera e lanterna, mantém o acesso e bloqueia leituras atrasadas', async () => {
+  const registrations = [];
+  const screen = fixture({ register: async id => {
+    registrations.push(id);
+    return { id, nome: 'Membro confirmado' };
+  } });
+  await screen.login();
+  await screen.openScanner();
+  await screen.click('torchButton');
+  assert.equal(screen.elements.get('torchButton').getAttribute('aria-pressed'), 'true');
+  await screen.click('backButton');
+  assert.equal(screen.camera.running, false);
+  assert.equal(screen.camera.stops, 1);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.elements.get('scannerScreen').hidden, true);
+  assert.equal(screen.elements.get('loginScreen').hidden, true);
+  assert.equal(screen.elements.get('torchButton').getAttribute('aria-pressed'), 'false');
+  screen.camera.onRead(`${server}/validar?id=1`);
+  await settle();
+  assert.deepEqual(registrations, []);
+  await screen.visibility(true);
+  await screen.visibility(false);
+  assert.equal(screen.camera.starts, 1);
+  await screen.openScanner();
+  screen.camera.onRead(`${server}/validar?id=2`);
+  await settle(() => screen.elements.get('lastAttendance').hidden === false);
+  assert.deepEqual(registrations, ['2']);
+  assert.equal(screen.camera.starts, 2);
+  assert.equal(screen.loginCalls, 1);
+});
+
+test('Voltar preserva uma confirmação pendente e a última presença ao reabrir', async () => {
+  const registration = pending();
+  const screen = fixture({ register: () => registration.promise });
+  await screen.login();
+  await screen.openScanner();
+  screen.camera.onRead(`${server}/validar?id=1`);
+  await screen.click('backButton');
+  registration.resolve({ id: '1', nome: 'Presença recebida pelo servidor', periodo: 'noite' });
+  await settle(() => screen.elements.get('lastAttendance').hidden === false);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.elements.get('memberName').textContent, 'Presença recebida pelo servidor');
+  await screen.openScanner();
+  assert.equal(screen.elements.get('lastAttendance').hidden, false);
+  assert.equal(screen.elements.get('memberName').textContent, 'Presença recebida pelo servidor');
+  assert.equal(screen.elements.get('waitingState').hidden, true);
+  assert.equal(screen.loginCalls, 1);
+});
+
+test('Voltar durante a abertura pendente fecha a câmera sem voltar ao login', async () => {
+  const gate = pending();
+  const screen = fixture({ startGate: gate });
+  await screen.login();
+  await screen.openScanner();
+  assert.equal(screen.camera.starts, 1);
+  await screen.click('backButton');
+  gate.resolve();
+  await settle(() => screen.camera.stops === 1 && !screen.camera.running);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.elements.get('loginScreen').hidden, true);
+  assert.equal(screen.camera.running, false);
+  await screen.openScanner();
+  assert.equal(screen.camera.starts, 2);
+  assert.equal(screen.camera.running, true);
+  assert.equal(screen.loginCalls, 1);
+});
+
+test('reabrir enquanto Voltar ainda encerra a câmera inicia somente uma nova captura', async () => {
+  const gate = pending();
+  const screen = fixture({ stopGate: gate });
+  await screen.login();
+  await screen.openScanner();
+  await screen.click('backButton');
+  assert.equal(screen.camera.stops, 1);
+  await screen.openScanner();
+  assert.equal(screen.camera.starts, 1);
+  gate.resolve();
+  await settle(() => screen.camera.starts === 2 && screen.camera.running);
+  assert.equal(screen.camera.starts, 2);
+  assert.equal(screen.camera.stops, 1);
+  assert.equal(screen.elements.get('scannerScreen').hidden, false);
+  assert.equal(screen.elements.get('cameraPlaceholder').hidden, true);
+});
+
+test('Sair nas duas telas encerra o acesso e a câmera sem reaproveitar a sessão anterior', async () => {
+  for (const logoutButton of ['homeLogoutButton', 'logoutButton']) {
+    const screen = fixture();
+    await screen.login();
+    if (logoutButton === 'logoutButton') await screen.openScanner();
+    await screen.click(logoutButton);
+    assert.equal(screen.elements.get('loginScreen').hidden, false);
+    assert.equal(screen.elements.get('homeScreen').hidden, true);
+    assert.equal(screen.elements.get('scannerScreen').hidden, true);
+    assert.equal(screen.camera.running, false);
+    assert.equal(screen.elements.get('lastAttendance').hidden, true);
+    const starts = screen.camera.starts;
+    await screen.openScanner();
+    assert.equal(screen.camera.starts, starts);
+    assert.equal(screen.elements.get('loginScreen').hidden, false);
+  }
+});
+
+test('a expiração funciona na tela inicial e impede abrir câmera com acesso vencido', async () => {
+  const timedOut = fixture();
+  await timedOut.login();
+  await timedOut.expire();
+  assert.equal(timedOut.elements.get('loginScreen').hidden, false);
+  assert.match(timedOut.elements.get('loginMessage').textContent, /acesso expirou/);
+  assert.equal(timedOut.camera.starts, 0);
+
+  const suspendedTimer = fixture();
+  await suspendedTimer.login();
+  suspendedTimer.advance(7200001);
+  await suspendedTimer.openScanner();
+  assert.equal(suspendedTimer.elements.get('loginScreen').hidden, false);
+  assert.match(suspendedTimer.elements.get('loginMessage').textContent, /acesso expirou/);
+  assert.equal(suspendedTimer.camera.starts, 0);
+});
+
+test('o botão Voltar do Android também retorna à tela inicial sem encerrar o acesso', async () => {
+  const screen = fixture({ native: true });
+  await screen.login();
+  await screen.openScanner();
+  await screen.appEvent('backButton');
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.elements.get('loginScreen').hidden, true);
+  assert.equal(screen.camera.running, false);
+  assert.equal(screen.minimized, 0);
+  await screen.appEvent('backButton');
+  assert.equal(screen.minimized, 1);
+  await screen.appEvent('appStateChange', { isActive: false });
+  await screen.appEvent('appStateChange', { isActive: true });
+  assert.equal(screen.camera.starts, 1);
+  await screen.openScanner();
+  assert.equal(screen.camera.running, true);
+  assert.equal(screen.loginCalls, 1);
+});
 
 test('a última presença confirmada continua visível após uma leitura com falha', async () => {
   const screen = fixture({ register: async id => {
@@ -103,6 +293,7 @@ test('a última presença confirmada continua visível após uma leitura com fal
     return { id, nome: 'Primeiro membro', cargo: 'Membro', periodo: 'noite', data: '04/11/2026', horario: '19:42:00' };
   } });
   await screen.login();
+  await screen.openScanner();
   screen.camera.onRead(`${server}/validar?id=1`);
   await settle(() => screen.elements.get('lastAttendance').hidden === false);
   assert.equal(screen.elements.get('memberName').textContent, 'Primeiro membro');
@@ -119,6 +310,7 @@ test('sair durante a abertura da câmera encerra a abertura pendente e mantém o
   const gate = pending();
   const screen = fixture({ startGate: gate });
   await screen.login();
+  await screen.openScanner();
   assert.equal(screen.camera.starts, 1);
   assert.equal(screen.camera.running, false);
   await screen.click('logoutButton');
@@ -135,6 +327,7 @@ test('voltar ao primeiro plano durante camera.stop retoma a câmera sem outro to
   const gate = pending();
   const screen = fixture({ stopGate: gate });
   await screen.login();
+  await screen.openScanner();
   assert.equal(screen.camera.running, true);
   await screen.visibility(true);
   assert.equal(screen.camera.stops, 1);
@@ -150,6 +343,7 @@ test('erro de permissão continua visível e botão Ativar câmera permite tenta
   const gate = pending();
   const screen = fixture({ startGate: gate });
   await screen.login();
+  await screen.openScanner();
   gate.reject(new Error('Permita o acesso à câmera nas configurações.'));
   await settle(() => screen.elements.get('restartCameraButton').hidden === false);
   assert.match(screen.elements.get('cameraMessage').textContent, /Permita o acesso/);

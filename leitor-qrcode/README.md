@@ -8,7 +8,9 @@ Este é um projeto independente de interface e aplicativo Android, com `package.
 
 ## O que está incluído
 
-- Tela de acesso com “Acesso autorizado”, parágrafo centralizado e botão “Escanear QRCODE”.
+- Tela de acesso com “Acesso autorizado”, parágrafo centralizado e botão “Entrar”.
+- Tela inicial após o login, com botão dourado “Escanear QRCode”. A câmera só é aberta ao tocar nesse botão.
+- Botão “Voltar” na câmera para retornar à tela inicial sem encerrar a sessão; “Sair” permanece nas duas telas autenticadas.
 - Leitura contínua de QR Code com confirmação somente após resposta positiva do servidor.
 - Identificação do membro e indicação de presença nova ou já confirmada no período.
 - Último resultado confirmado visível enquanto a câmera prepara a próxima leitura.
@@ -150,8 +152,12 @@ O arquivo gerado é um **APK de testes, assinado com chave de depuração**. Ser
 1. Transfira `artifacts/igreja-leitor-debug.apk` para o telefone.
 2. Abra esse arquivo pelo aplicativo de arquivos do aparelho.
 3. Se o Android pedir permissão para instalar dessa origem, permita apenas ao aplicativo usado para abrir esse APK conhecido. Depois da instalação, essa permissão pode ser desativada novamente.
-4. Abra **Leitor de presenças**, entre com uma conta administrativa autorizada e conceda a permissão da câmera.
-5. Apresente um QR Code de membro e aguarde a confirmação enviada pelo servidor.
+4. Abra **Leitor de presenças** e use **Entrar** com uma conta administrativa autorizada.
+5. Na tela inicial, toque em **Escanear QRCode** e conceda a permissão da câmera, quando solicitada.
+6. Apresente um QR Code de membro e aguarde a confirmação enviada pelo servidor. A câmera continua aberta para o próximo membro.
+7. Use **Voltar** para fechar a câmera e retornar à tela inicial mantendo a conta conectada. **Sair**, disponível na tela inicial e na câmera, encerra o acesso e retorna ao login.
+
+Esta atualização Android é a versão **1.1**, código **2**. O identificador do aplicativo e a assinatura de testes permanecem os mesmos, permitindo atualizar a instalação anterior com essa assinatura.
 
 Como alternativa, com telefone conectado por USB e depuração autorizada, o APK pode ser instalado pelo Platform Tools:
 
@@ -192,6 +198,8 @@ Entre dois membros, a câmera não é fechada nem reiniciada e a página não é
 Manter o mesmo QR Code diante da câmera não dispara uma sequência de pedidos. Uma leitura diferente pode seguir assim que o pedido em andamento terminar. O último resultado confirmado continua visível e não é apagado apenas porque outro QR Code inválido entrou no enquadramento.
 
 Ao ir para segundo plano, a câmera é pausada. O aplicativo tenta retomar o uso quando volta à tela. A lanterna aparece somente quando for suportada pela câmera.
+
+O retorno do segundo plano respeita a tela escolhida: se estiver na tela inicial, a câmera continua fechada. **Voltar** também desliga a câmera e a lanterna, sem apagar a última presença confirmada. Uma solicitação que já tenha sido enviada ao servidor pode concluir depois desse retorno; seu resultado fica disponível ao abrir o leitor novamente. O botão Voltar do próprio Android tem o mesmo comportamento na câmera; nas outras telas, coloca o aplicativo em segundo plano.
 
 ## Acesso e confirmação de presença
 
@@ -235,6 +243,10 @@ O teste de integração dos períodos depende de um banco de testes explicitamen
 Antes de considerar a leitura pronta para uso, valide:
 
 - [ ] Login de administrador válido, senha incorreta, saída e acesso expirado.
+- [ ] Após entrar, a tela inicial aparece sem abrir a câmera; “Escanear QRCode” abre o leitor.
+- [ ] “Voltar” fecha a câmera sem pedir novo login, inclusive durante a abertura ou confirmação de uma leitura.
+- [ ] Abrir o leitor novamente mantém a última presença confirmada e permite continuar as leituras.
+- [ ] “Sair” encerra o acesso tanto na tela inicial quanto na câmera.
 - [ ] Câmera permitida e negada em um Android real.
 - [ ] QR Code válido na tela e em uma credencial impressa.
 - [ ] QR inválido, domínio diferente e membro inexistente, sem presença confirmada.

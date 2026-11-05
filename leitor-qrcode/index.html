@@ -20,6 +20,7 @@
     <symbol id="lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
     <symbol id="eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
     <symbol id="arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="back" viewBox="0 0 24 24"><path d="M20 12H4m6-6-6 6 6 6"/></symbol>
   </svg>
 
   <main id="app">
@@ -38,10 +39,25 @@
           <label for="senha">Senha</label>
           <div class="input-wrap"><svg aria-hidden="true"><use href="#lock"/></svg><input id="senha" type="password" name="senha" autocomplete="current-password" placeholder="Digite sua senha" required><button id="togglePassword" class="icon-button" type="button" aria-label="Mostrar senha" aria-pressed="false"><svg aria-hidden="true"><use href="#eye"/></svg></button></div>
           <p id="loginMessage" class="form-message" role="alert" hidden></p>
-          <button id="loginButton" class="button button-gold" type="submit"><span>Escanear QRCODE</span><svg aria-hidden="true"><use href="#arrow"/></svg></button>
+          <button id="loginButton" class="button button-gold" type="submit"><span>Entrar</span><svg aria-hidden="true"><use href="#arrow"/></svg></button>
         </form>
         <p class="access-help">Precisa de acesso?<br>Fale com o administrador.</p>
         <p class="authorized-note"><svg aria-hidden="true"><use href="#lock"/></svg>Uso exclusivo da equipe autorizada</p>
+      </div>
+    </section>
+
+    <section id="homeScreen" class="home-screen" hidden>
+      <header class="scanner-header">
+        <svg class="church-logo" aria-hidden="true"><use href="#church"/></svg>
+        <div class="scanner-brand"><h1>Assembleia de Deus</h1><p>Leitor de presenças</p></div>
+        <button id="homeLogoutButton" class="logout-button" type="button"><svg aria-hidden="true"><use href="#logout"/></svg><span>Sair</span></button>
+      </header>
+      <div class="home-content">
+        <div class="home-scan-icon"><svg aria-hidden="true"><use href="#scan"/></svg></div>
+        <h2>Registrar presença</h2>
+        <p>Toque no botão abaixo para abrir a câmera e ler o QR Code do membro.</p>
+        <button id="startScannerButton" class="button button-gold" type="button"><svg aria-hidden="true"><use href="#scan"/></svg><span>Escanear QRCode</span></button>
+        <p class="home-hint">Você pode voltar a esta tela sem sair da sua conta.</p>
       </div>
     </section>
 
@@ -52,7 +68,7 @@
         <button id="logoutButton" class="logout-button" type="button"><svg aria-hidden="true"><use href="#logout"/></svg><span>Sair</span></button>
       </header>
       <div class="scanner-top">
-        <h2>Registrar presença</h2>
+        <div class="scanner-title-row"><h2>Registrar presença</h2><button id="backButton" class="back-button" type="button"><svg aria-hidden="true"><use href="#back"/></svg><span>Voltar</span></button></div>
         <div class="scanner-meta"><p class="period">Período: <strong id="currentPeriod">—</strong></p><p class="connection" id="connectionState" data-state="neutral"><span class="connection-dot" aria-hidden="true"></span><span id="connectionText">Verificando acesso</span></p></div>
         <p class="scanner-instruction">Aponte para o QR Code do membro</p>
       </div>
