@@ -6,9 +6,10 @@
   "scripts": {
     "build": "npm run build:css && npm run build:leitor",
     "build:leitor": "npm --prefix leitor-qrcode ci --include=dev && npm --prefix leitor-qrcode run build:web",
-    "build:css": "sass css/index.scss:css/index.css admin/css/admin.scss:admin/css/admin.css --style=compressed --no-source-map",
+    "build:css": "sass css/index.scss:css/index.css css/portal.scss:css/portal.css admin/css/admin.scss:admin/css/admin.css --style=compressed --no-source-map",
+    "build:css:portal": "sass css/portal.scss css/portal.css --style=compressed --no-source-map",
     "build:css:admin": "sass admin/css/admin.scss admin/css/admin.css --style=compressed --no-source-map",
-    "watch:css": "sass --watch css/index.scss:css/index.css admin/css/admin.scss:admin/css/admin.css --style=compressed --no-source-map",
+    "watch:css": "sass --watch css/index.scss:css/index.css css/portal.scss:css/portal.css admin/css/admin.scss:admin/css/admin.css --style=compressed --no-source-map",
     "prestart": "node scripts/migrate.js",
     "start": "node server.js",
     "dev": "nodemon server.js",

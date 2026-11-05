@@ -1,709 +1,82 @@
-﻿<!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-    <!-- ========================= -->
-    <!-- META -->
-    <!-- ========================= -->
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        Cadastro de Membro
-
-    </title>
-
-    <!-- ========================= -->
-    <!-- GOOGLE FONTS -->
-    <!-- ========================= -->
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- ========================= -->
-    <!-- FONT AWESOME -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <!-- ========================= -->
-    <!-- CSS -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="/css/global/reset.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/variables.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/base.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/pages/cadastro.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Cadastro de membro | Assembleia de Deus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/portal.css?v=4.0.0">
 </head>
-
-<body>
-
-    <!-- ========================= -->
-    <!-- CONTAINER -->
-    <!-- ========================= -->
-
-    <main class="cadastro-container">
-
-        <!-- ========================= -->
-        <!-- CARD -->
-        <!-- ========================= -->
-
-        <section class="cadastro-card">
-
-            <!-- ========================= -->
-            <!-- CABEÇALHO -->
-            <!-- ========================= -->
-
-            <header class="cadastro-header">
-
-                <h1>
-
-                    Cadastro de Membro
-
-                </h1>
-
-                <p>
-
-                    Preencha seus dados para solicitar seu cadastro na igreja.
-
-                </p>
-
-            </header>
-
-            <!-- ========================= -->
-            <!-- FORMULÁRIO -->
-            <!-- ========================= -->
-
-            <form
-
-                id="formCadastro"
-
-                class="cadastro-form"
-
-                autocomplete="on"
-
-                novalidate>
-
-
-                            <!-- ========================= -->
-                <!-- DADOS PESSOAIS -->
-                <!-- ========================= -->
-
-                <section class="form-section">
-
-                    <h2>
-
-                        <i class="fa-solid fa-user"></i>
-
-                        Dados Pessoais
-
-                    </h2>
-
+<body class="portal-page">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="portal-topbar">
+        <a class="portal-brand" href="/" aria-label="Assembleia de Deus — página inicial">
+            <svg class="portal-brand-icon" viewBox="0 0 48 58" width="42" height="50" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 3v14M19 8h10M7 31l17-14 17 14M10 29v24h11V40a3 3 0 0 1 6 0v13h11V29M5 53h38"/></svg>
+            <span class="portal-brand-copy"><strong>Assembleia de Deus</strong><small>Lugar de Esperança</small></span>
+        </a>
+        <nav class="portal-nav" aria-label="Navegação do site"><a href="/">Início</a><a href="/privacidade">Privacidade</a></nav>
+    </header>
+    <main class="portal-main auth-main auth-main-register" id="conteudo">
+        <header class="portal-heading auth-register-heading">
+            <p class="portal-eyebrow">Faça parte da nossa comunidade</p>
+            <h1>Cadastro de membro</h1>
+            <p>Preencha seus dados para solicitar seu cadastro na igreja.</p>
+        </header>
+        <section class="portal-card auth-card auth-card-register" aria-label="Formulário de cadastro de membro">
+            <form id="formCadastro" class="cadastro-form auth-form" autocomplete="on" novalidate>
+                <section class="form-section" aria-labelledby="dadosPessoaisTitulo">
+                    <div class="auth-section-heading"><span class="auth-step" aria-hidden="true">01</span><div><h2 id="dadosPessoaisTitulo">Dados pessoais</h2><p>Conte um pouco sobre você.</p></div></div>
                     <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label for="nome">
-
-                                Nome Completo <span>*</span>
-
-                            </label>
-
-                            <input
-
-                                type="text"
-
-                                id="nome"
-
-                                name="nome"
-
-                                placeholder="Digite seu nome completo"
-
-                                autocomplete="name"
-
-                                required>
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label for="dataNascimento">
-
-                                Data de Nascimento <span>*</span>
-
-                            </label>
-
-                            <input
-
-                                type="text"
-
-                                id="dataNascimento"
-
-                                name="dataNascimento"
-
-                                maxlength="10"
-
-                                inputmode="numeric"
-
-                                autocomplete="bday"
-
-                                placeholder="dd/mm/aaaa"
-
-                                required>
-
-                            <small
-
-                                id="erroData"
-
-                                class="erro-campo">
-
-                            </small>
-
-                        </div>
-
+                        <div class="form-group"><label for="nome">Nome completo <span aria-hidden="true">*</span></label><input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" autocomplete="name" required></div>
+                        <div class="form-group"><label for="dataNascimento">Data de nascimento <span aria-hidden="true">*</span></label><input type="text" id="dataNascimento" name="dataNascimento" maxlength="10" inputmode="numeric" autocomplete="bday" placeholder="dd/mm/aaaa" aria-describedby="erroData" required><small id="erroData" class="erro-campo" aria-live="polite"></small></div>
+                        <div class="form-group"><label for="sexo">Sexo <span aria-hidden="true">*</span></label><select id="sexo" name="sexo" required><option value="">Selecione</option><option value="Masculino">Masculino</option><option value="Feminino">Feminino</option></select></div>
+                        <div class="form-group"><label for="estadoCivil">Estado civil <span aria-hidden="true">*</span></label><select id="estadoCivil" name="estadoCivil" required><option value="">Selecione</option><option value="Solteiro(a)">Solteiro(a)</option><option value="Casado(a)">Casado(a)</option><option value="Divorciado(a)">Divorciado(a)</option><option value="Viúvo(a)">Viúvo(a)</option></select></div>
                     </div>
-
-                    <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label for="sexo">
-
-                                Sexo <span>*</span>
-
-                            </label>
-
-                            <select
-
-                                id="sexo"
-
-                                name="sexo"
-
-                                required>
-
-                                <option value="">
-
-                                    Selecione
-
-                                </option>
-
-                                <option value="Masculino">
-
-                                    Masculino
-
-                                </option>
-
-                                <option value="Feminino">
-
-                                    Feminino
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label for="estadoCivil">
-
-                                Estado Civil <span>*</span>
-
-                            </label>
-
-                            <select
-
-                                id="estadoCivil"
-
-                                name="estadoCivil"
-
-                                required>
-
-                                <option value="">
-
-                                    Selecione
-
-                                </option>
-
-                                <option value="Solteiro(a)">
-
-                                    Solteiro(a)
-
-                                </option>
-
-                                <option value="Casado(a)">
-
-                                    Casado(a)
-
-                                </option>
-
-                                <option value="Divorciado(a)">
-
-                                    Divorciado(a)
-
-                                </option>
-
-                                <option value="Viúvo(a)">
-
-                                    Viúvo(a)
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
                 </section>
-
-
-                                <!-- ========================= -->
-                <!-- CONTATO -->
-                <!-- ========================= -->
-
-                <section class="form-section">
-
-                    <h2>
-
-                        <i class="fa-solid fa-address-book"></i>
-
-                        Contato
-
-                    </h2>
-
+                <section class="form-section" aria-labelledby="contatoTitulo">
+                    <div class="auth-section-heading"><span class="auth-step" aria-hidden="true">02</span><div><h2 id="contatoTitulo">Contato e acesso</h2><p>Seus dados de contato e a senha da sua conta.</p></div></div>
                     <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label for="telefone">
-
-                                Telefone Fixo (Opcional) <span>*</span>
-
-                            </label>
-
-                            <input
-
-                                type="tel"
-
-                                id="telefone"
-
-                                name="telefone"
-
-                                placeholder="(11) 9999-9999"
-
-                                autocomplete="tel"
-
-                                >
-
-                        </div>
-
-                          <div class="form-group">
-
-                            <label for="celular">
-
-                                Celular <span>*</span>
-
-                            </label>
-
-                            <input
-
-                                type="tel"
-
-                                id="celular"
-
-                                name="celular"
-
-                                placeholder="(11) 99999-9999"
-
-                                autocomplete="tel"
-
-                                required>
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label for="email">
-
-                                E-mail <span>*</span>
-
-                            </label>
-
-                            <input
-
-                                type="email"
-
-                                id="email"
-
-                                name="email"
-
-                                placeholder="email@exemplo.com"
-
-                                autocomplete="email"
-
-                                required>
-
-                        </div>
-
+                        <div class="form-group"><label for="telefone">Telefone fixo <span class="auth-optional">(opcional)</span></label><input type="tel" id="telefone" name="telefone" placeholder="(11) 9999-9999" autocomplete="tel"></div>
+                        <div class="form-group"><label for="celular">Celular <span aria-hidden="true">*</span></label><input type="tel" id="celular" name="celular" placeholder="(11) 99999-9999" autocomplete="tel" required></div>
+                        <div class="form-group auth-field-wide"><label for="email">E-mail <span aria-hidden="true">*</span></label><input type="email" id="email" name="email" placeholder="email@exemplo.com" autocomplete="email" required></div>
+                        <div class="form-group"><label for="senha">Senha <span aria-hidden="true">*</span></label><input type="password" id="senha" name="senha" placeholder="Crie uma senha" autocomplete="new-password" minlength="8" aria-describedby="requisitosSenhaCadastro" required></div>
+                        <div class="form-group"><label for="confirmarSenha">Confirmar senha <span aria-hidden="true">*</span></label><input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme sua senha" autocomplete="new-password" minlength="8" required></div>
                     </div>
-
-                    <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label for="senha">
-
-                                Senha <span>*</span>
-
-                            </label>
-
-                            <input
-
-                                type="password"
-
-                                id="senha"
-
-                                name="senha"
-
-                                placeholder="Crie uma senha"
-
-                                autocomplete="new-password"
-
-                                minlength="8"
-
-                                required>
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label for="confirmarSenha">
-
-                                Confirmar Senha <span>*</span>
-
-                            </label>
-
-                            <input
-
-                                type="password"
-
-                                id="confirmarSenha"
-
-                                name="confirmarSenha"
-
-                                placeholder="Confirme sua senha"
-
-                                autocomplete="new-password"
-
-                                minlength="8"
-
-                                required>
-
-                        </div>
-
-                    </div>
-
-                    <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label for="cep">
-
-                                CEP <span>*</span>
-
-                            </label>
-
-                            <input
-
-                                type="text"
-
-                                id="cep"
-
-                                name="cep"
-
-                                placeholder="00000-000"
-
-                                autocomplete="postal-code"
-
-                                inputmode="numeric"
-
-                                maxlength="9"
-
-                                required>
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label for="numero">
-
-                                N° <span>*</span>
-
-                            </label>
-
-                            <input
-
-                                type="text"
-
-                                id="numero"
-
-                                name="numero"
-
-                                placeholder="Número da casa"
-
-                                autocomplete="address-line2"
-
-                                required>
-
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="endereco">
-
-                            Endereço
-
-                        </label>
-
-                        <input
-
-                            type="text"
-
-                            id="endereco"
-
-                            name="endereco"
-
-                            placeholder="Preenchido automaticamente pelo CEP"
-
-                            autocomplete="street-address"
-
-                            readonly
-
-                            required>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="complemento">
-
-                            Complemento ou bloco (apartamento)
-
-                        </label>
-
-                        <input
-
-                            type="text"
-
-                            id="complemento"
-
-                            name="complemento"
-
-                            placeholder="Apartamento, bloco, casa, referência..."
-
-                            autocomplete="address-line2">
-
-                    </div>
-
+                    <p class="auth-help" id="requisitosSenhaCadastro">A senha deve possuir pelo menos 12 caracteres e no máximo 72 bytes.</p>
                 </section>
-
-                <section
-                    class="form-section"
-                    id="secaoAdministrativa"
-                    hidden>
-
-                    <h2>
-
-                        <i class="fa-solid fa-user-shield"></i>
-
-                        Dados administrativos
-
-                    </h2>
-
+                <section class="form-section" aria-labelledby="enderecoTitulo">
+                    <div class="auth-section-heading"><span class="auth-step" aria-hidden="true">03</span><div><h2 id="enderecoTitulo">Endereço</h2><p>Informe o CEP para preencher seu endereço.</p></div></div>
                     <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label for="cargo">
-
-                                Cargo
-
-                            </label>
-
-                            <input
-
-                                type="text"
-
-                                id="cargo"
-
-                                name="cargo"
-
-                                maxlength="100"
-
-                                placeholder="Ex.: Pastor, Obreiro, Líder">
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label for="ministerio">
-
-                                Ministério
-
-                            </label>
-
-                            <input
-
-                                type="text"
-
-                                id="ministerio"
-
-                                name="ministerio"
-
-                                maxlength="100"
-
-                                placeholder="Ex.: Louvor, Infantil, Jovens">
-
-                        </div>
-
+                        <div class="form-group"><label for="cep">CEP <span aria-hidden="true">*</span></label><input type="text" id="cep" name="cep" placeholder="00000-000" autocomplete="postal-code" inputmode="numeric" maxlength="9" required></div>
+                        <div class="form-group"><label for="numero">N° <span aria-hidden="true">*</span></label><input type="text" id="numero" name="numero" placeholder="Número da casa" autocomplete="address-line2" required></div>
+                        <div class="form-group auth-field-wide"><label for="endereco">Endereço</label><input type="text" id="endereco" name="endereco" placeholder="Preenchido automaticamente pelo CEP" autocomplete="street-address" readonly required></div>
+                        <div class="form-group auth-field-wide"><label for="complemento">Complemento ou bloco (apartamento)</label><input type="text" id="complemento" name="complemento" placeholder="Apartamento, bloco, casa, referência..." autocomplete="address-line2"></div>
                     </div>
-
                 </section>
-                <!-- ========================= -->
-                <!-- AVISO -->
-                <!-- ========================= -->
-
-                <div class="cadastro-info">
-
-                    <i class="fa-solid fa-circle-info"></i>
-
-                    <p>
-
-                        Após o envio, seu cadastro será analisado pela administração da igreja.
-                        Você será liberado para acessar o sistema após a aprovação.
-
-                    </p>
-
-                </div>
-
-                <!-- ========================= -->
-                <!-- BOTÕES -->
-                <!-- ========================= -->
-
-                <div class="form-group" id="privacidadeCadastro">
-                    <label><input type="checkbox" id="cienciaPrivacidade" required>
-                        <span id="privacyNoticeText">Confirmo que li o Aviso de Privacidade e entendi como meus dados serão utilizados e como posso exercer meus direitos.</span>
-                        <a href="/privacidade" target="_blank" rel="noopener">Consultar o Aviso de Privacidade</a>.
-                    </label>
-                    <label><input type="checkbox" id="consentimento" required>
-                        <span id="privacyConsentText">Autorizo, de forma livre, informada e específica, o tratamento do dado sensível sobre meu vínculo religioso para administrar meu cadastro, emitir minha credencial e registrar minhas presenças. Posso revogar esta autorização a qualquer momento.</span>
-                    </label>
+                <section class="form-section" id="secaoAdministrativa" hidden aria-labelledby="administrativosTitulo">
+                    <div class="auth-section-heading"><span class="auth-step" aria-hidden="true"><i class="fa-solid fa-user-shield"></i></span><div><h2 id="administrativosTitulo">Dados administrativos</h2><p>Informações de cargo e ministério.</p></div></div>
+                    <div class="form-grid"><div class="form-group"><label for="cargo">Cargo</label><input type="text" id="cargo" name="cargo" maxlength="100" placeholder="Ex.: Pastor, Obreiro, Líder"></div><div class="form-group"><label for="ministerio">Ministério</label><input type="text" id="ministerio" name="ministerio" maxlength="100" placeholder="Ex.: Louvor, Infantil, Jovens"></div></div>
+                </section>
+                <div class="cadastro-info"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><p>Após o envio, seu cadastro será analisado pela administração da igreja. Você será liberado para acessar o sistema após a aprovação.</p></div>
+                <div class="form-group auth-consents" id="privacidadeCadastro">
+                    <h2>Privacidade e autorização</h2>
+                    <label class="auth-consent"><input type="checkbox" id="cienciaPrivacidade" required><span><span id="privacyNoticeText">Confirmo que li o Aviso de Privacidade e entendi como meus dados serão utilizados e como posso exercer meus direitos.</span> <a href="/privacidade" target="_blank" rel="noopener">Consultar o Aviso de Privacidade</a>.</span></label>
+                    <label class="auth-consent"><input type="checkbox" id="consentimento" required><span id="privacyConsentText">Autorizo, de forma livre, informada e específica, o tratamento do dado sensível sobre meu vínculo religioso para administrar meu cadastro, emitir minha credencial e registrar minhas presenças. Posso revogar esta autorização a qualquer momento.</span></label>
                     <input type="hidden" id="privacyVersion" value="">
-                    <p id="privacyConfigError" role="alert" hidden></p>
-                    <p>Cadastro exclusivo para maiores de 18 anos.</p>
+                    <p id="privacyConfigError" class="auth-status" role="alert" hidden></p>
+                    <p class="auth-adult-note"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>Cadastro exclusivo para maiores de 18 anos.</p>
                 </div>
-
-                <div class="form-buttons">
-
-                    <button
-
-                        type="reset"
-
-                        class="btn-cancelar">
-
-                        <i class="fa-solid fa-eraser"></i>
-
-                        Limpar
-
-                    </button>
-
-                    <button
-
-                        type="submit"
-
-                        class="btn-salvar">
-
-                        <i class="fa-solid fa-paper-plane"></i>
-
-                        Enviar Cadastro
-
-                    </button>
-
-                </div>
-
+                <div class="form-buttons auth-actions"><button type="reset" class="portal-button-secondary btn-cancelar"><i class="fa-solid fa-eraser" aria-hidden="true"></i>Limpar</button><button type="submit" class="portal-button btn-salvar"><i class="fa-regular fa-paper-plane" aria-hidden="true"></i>Enviar cadastro</button></div>
             </form>
-
-            <!-- ========================= -->
-            <!-- RODAPÉ -->
-            <!-- ========================= -->
-
-            <footer class="cadastro-footer">
-
-                <a
-
-                    href="/"
-
-                    class="voltar-site"
-
-                    id="linkVoltarCadastro">
-
-                    <i class="fa-solid fa-arrow-left"></i>
-
-                    <span>
-
-                        Voltar ao site
-
-                    </span>
-
-                </a>
-
-            </footer>
-
+            <a href="/" class="auth-back voltar-site" id="linkVoltarCadastro"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Voltar ao site</span></a>
         </section>
-
     </main>
-
-    <!-- ========================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================= -->
-
+    <footer class="portal-footer"><p>Assembleia de Deus · Lugar de Esperança</p><a href="/privacidade">Privacidade e seus dados</a></footer>
     <script src="/js/security.js"></script>
     <script src="/js/cadastro/cadastro.js"></script>
-
 </body>
-
 </html>

@@ -1,1 +1,43 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Confirmar e-mail</title><link rel="stylesheet" href="/css/global/global.css"><link rel="stylesheet" href="/css/layout/forms.css"></head><body><main class="container"><section class="card"><h1>Confirmar e-mail</h1><p>Defina a senha da conta para comprovar o acesso a este e-mail.</p><form id="confirmar"><label>Senha (12 caracteres ou mais)<input id="senha" type="password" minlength="12" maxlength="72" required></label><button type="submit">Confirmar cadastro</button></form><p id="resultado" role="status"></p></section></main><script src="/js/security.js"></script><script src="/js/confirmar-email.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Confirmar e-mail | Assembleia de Deus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/portal.css?v=4.0.0">
+</head>
+<body class="portal-page">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="portal-topbar">
+        <a class="portal-brand" href="/" aria-label="Assembleia de Deus — página inicial">
+            <svg class="portal-brand-icon" viewBox="0 0 48 58" width="42" height="50" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 3v14M19 8h10M7 31l17-14 17 14M10 29v24h11V40a3 3 0 0 1 6 0v13h11V29M5 53h38"/></svg>
+            <span class="portal-brand-copy"><strong>Assembleia de Deus</strong><small>Lugar de Esperança</small></span>
+        </a>
+        <nav class="portal-nav" aria-label="Navegação do site"><a href="/">Início</a><a href="/privacidade">Privacidade</a></nav>
+    </header>
+    <main class="portal-main auth-main" id="conteudo">
+        <section class="portal-card auth-card" aria-labelledby="tituloConfirmar">
+            <header class="portal-heading auth-heading">
+                <span class="auth-symbol" aria-hidden="true"><i class="fa-regular fa-envelope-open"></i></span>
+                <p class="portal-eyebrow">Confirmação do cadastro</p>
+                <h1 id="tituloConfirmar">Confirmar e-mail</h1>
+                <p>Defina a senha da conta para comprovar o acesso a este e-mail.</p>
+            </header>
+            <form id="confirmar" class="auth-form">
+                <div class="auth-field"><label for="senha">Senha (12 caracteres ou mais)</label><input id="senha" type="password" autocomplete="new-password" minlength="12" maxlength="72" required></div>
+                <button type="submit" class="portal-button">Confirmar cadastro<i class="fa-solid fa-check" aria-hidden="true"></i></button>
+            </form>
+            <p id="resultado" class="auth-status" role="status" aria-live="polite"></p>
+            <a href="/" class="auth-back"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Voltar à página inicial</a>
+        </section>
+    </main>
+    <footer class="portal-footer"><p>Assembleia de Deus · Lugar de Esperança</p><a href="/privacidade">Privacidade e seus dados</a></footer>
+    <script src="/js/security.js"></script>
+    <script src="/js/confirmar-email.js"></script>
+</body>
+</html>

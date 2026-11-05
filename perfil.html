@@ -1,332 +1,76 @@
-﻿<!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-    <!-- ========================= -->
-    <!-- META -->
-    <!-- ========================= -->
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        Meu Perfil
-
-    </title>
-
-    <!-- ========================= -->
-    <!-- GOOGLE FONTS -->
-    <!-- ========================= -->
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- ========================= -->
-    <!-- FONT AWESOME -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <!-- ========================= -->
-    <!-- CSS GLOBAL -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="/css/global/global.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/variables.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/base.css">
-
-
-    <link
-        rel="stylesheet"
-        href="/css/pages/perfil.css?v=2.0.2">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Meu perfil | Assembleia de Deus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/portal.css?v=4.0.0">
 </head>
-
-<body>
-
-
-    <!-- ========================= -->
-    <!-- CONTEÚDO -->
-    <!-- ========================= -->
-
-        <main class="perfil-page">
-
-            <section class="container">
-
-                <div class="perfil-acoes">
-
-                    <a
-                        href="/"
-                        class="btn-voltar-home"
-                        id="linkVoltarPerfil">
-
-                        <i class="fa-solid fa-arrow-left"></i>
-
-                        <span>
-
-                            Voltar
-
-                        </span>
-
-                    </a>
-
-                </div>
-
-                <div class="perfil-card">
-
-                                <!-- ========================= -->
-                <!-- CABEÇALHO DO PERFIL -->
-                <!-- ========================= -->
-
-                    <div class="perfil-titulo">
-
-                        <h1 id="nome">
-
-                            Carregando...
-
-                        </h1>
-
-                        <p
-                            id="cargo"
-                            class="perfil-cargo">
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <hr>
-
-                <!-- ========================= -->
-                <!-- DADOS DO MEMBRO -->
-                <!-- ========================= -->
-
-                <div class="perfil-info">
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-envelope"></i>
-
-                        <div>
-
-                            <strong>E-mail: </strong>
-
-                            <span id="email"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-phone"></i>
-
-                        <div>
-
-                            <strong>Telefone: </strong>
-
-                            <span id="telefone"></span>
-
-                        </div>
-
-                    </div>
-
-                            <div class="info">
-
-                                    <i class="fa-solid fa-mobile-screen-button"></i>
-
-                                    <div>
-
-                                        <strong>Celular:</strong>
-
-                                        <span id="celular"></span>
-
-                                    </div>
-
-                                </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-location-dot"></i>
-
-                        <div>
-
-                            <strong>Endereço: </strong>
-
-                            <span id="endereco"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-church"></i>
-
-                        <div>
-
-                            <strong>Ministério: </strong>
-
-                            <span id="ministerio"></span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <hr>
-
-                            <!-- ========================= -->
-                <!-- DADOS PESSOAIS -->
-                <!-- ========================= -->
-
-                <div class="perfil-info">
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-venus-mars"></i>
-
-                        <div>
-
-                            <strong>Sexo: </strong>
-
-                            <span id="sexo"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-heart"></i>
-
-                        <div>
-
-                            <strong>Estado Civil: </strong>
-
-                            <span id="estadoCivil"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-calendar-days"></i>
-
-                        <div>
-
-                            <strong>Data de Nascimento: </strong>
-
-                            <span id="nascimento"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-id-card"></i>
-
-                        <div>
-
-                            <strong>Matrícula: </strong>
-
-                            <span id="matricula"></span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="info">
-
-                        <i class="fa-solid fa-calendar-check"></i>
-
-                        <div>
-
-                            <strong>Validade: </strong>
-
-                            <span id="validade"></span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <hr>
-
-                <!-- ========================= -->
-                <!-- QR CODE -->
-                <!-- ========================= -->
-
-                <section class="perfil-qrcode">
-
-                    <h2>
-
-                        Credencial Digital
-
-                    </h2>
-
-                    <p>
-
-                        Apresente este QR Code quando solicitado.
-
-                    </p>
-
-                    <img
-
-                        id="qrCode"
-
-                        src=""
-
-                        alt="QR Code da credencial do membro">
-
-                </section>
-
+<body class="portal-page member-profile">
+    <a class="portal-skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="portal-topbar">
+        <a class="portal-brand" href="/" aria-label="Assembleia de Deus — página inicial">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 3v17m-6-11h12M10 59V35l22-17 22 17v24H38V44a6 6 0 0 0-12 0v15H10Zm-6 0h56"/></svg>
+            <span><strong>Assembleia de Deus</strong><small>Lugar de Esperança</small></span>
+        </a>
+        <nav class="portal-nav" aria-label="Navegação da área do membro">
+            <a href="/">Início</a>
+            <a href="/perfil" aria-current="page">Meu perfil</a>
+            <a href="/membros">Membros</a>
+            <a href="/privacidade">Privacidade</a>
+            <a href="/logout">Sair <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i></a>
+        </nav>
+    </header>
+    <main id="conteudo" class="portal-main perfil-page">
+        <header class="portal-heading member-page-heading">
+            <div><span class="portal-eyebrow">Área do membro</span><h1>Meu perfil</h1><p>Seu vínculo com a igreja e sua credencial em um só lugar.</p></div>
+            <div class="perfil-acoes"><a href="/" class="portal-button portal-button-secondary btn-voltar-home" id="linkVoltarPerfil"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Voltar ao início</span></a></div>
+        </header>
+        <section class="portal-card perfil-card member-identity" aria-label="Identificação do membro">
+            <span class="member-identity-icon" aria-hidden="true"><i class="fa-regular fa-user"></i></span>
+            <div class="perfil-titulo"><p class="member-section-kicker">Você faz parte desta comunidade</p><h2 id="nome" aria-live="polite">Carregando...</h2><p id="cargo" class="perfil-cargo"></p></div>
         </section>
-
-        <footer class="perfil-privacidade">
-            <a href="/privacidade">Privacidade e seus dados</a>
-        </footer>
+        <div class="member-profile-grid">
+            <div class="member-details">
+                <section class="portal-card member-detail-card" aria-labelledby="tituloContato">
+                    <div class="member-section-heading"><span class="member-section-icon" aria-hidden="true"><i class="fa-regular fa-address-book"></i></span><div><h2 id="tituloContato">Dados de contato</h2><p>As informações do seu cadastro.</p></div></div>
+                    <div class="perfil-info">
+                        <div class="info"><i class="fa-regular fa-envelope" aria-hidden="true"></i><div><strong>E-mail</strong><span id="email"></span></div></div>
+                        <div class="info"><i class="fa-solid fa-phone" aria-hidden="true"></i><div><strong>Telefone</strong><span id="telefone"></span></div></div>
+                        <div class="info"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><div><strong>Celular</strong><span id="celular"></span></div></div>
+                        <div class="info"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><div><strong>Endereço</strong><span id="endereco"></span></div></div>
+                        <div class="info"><i class="fa-solid fa-church" aria-hidden="true"></i><div><strong>Ministério</strong><span id="ministerio"></span></div></div>
+                    </div>
+                </section>
+                <section class="portal-card member-detail-card" aria-labelledby="tituloPessoais">
+                    <div class="member-section-heading"><span class="member-section-icon" aria-hidden="true"><i class="fa-regular fa-id-card"></i></span><div><h2 id="tituloPessoais">Dados pessoais</h2><p>Conheça os detalhes do seu perfil.</p></div></div>
+                    <div class="perfil-info">
+                        <div class="info"><i class="fa-solid fa-venus-mars" aria-hidden="true"></i><div><strong>Sexo</strong><span id="sexo"></span></div></div>
+                        <div class="info"><i class="fa-regular fa-heart" aria-hidden="true"></i><div><strong>Estado civil</strong><span id="estadoCivil"></span></div></div>
+                        <div class="info"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i><div><strong>Data de nascimento</strong><span id="nascimento"></span></div></div>
+                    </div>
+                </section>
+            </div>
+            <aside class="portal-card perfil-qrcode member-credential" aria-labelledby="tituloCredencial">
+                <span class="member-credential-icon" aria-hidden="true"><i class="fa-solid fa-qrcode"></i></span>
+                <h2 id="tituloCredencial">Credencial digital</h2>
+                <p>Apresente seu QR Code à equipe de recepção para registrar sua presença.</p>
+                <div class="member-qr-frame"><img id="qrCode" alt="QR Code da credencial do membro" hidden><p id="perfilQrStatus" role="status">Carregando seu QR Code...</p></div>
+                <div class="member-credential-meta">
+                    <div class="info"><i class="fa-regular fa-id-badge" aria-hidden="true"></i><div><strong>Matrícula</strong><span id="matricula"></span></div></div>
+                    <div class="info"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><div><strong>Validade</strong><span id="validade"></span></div></div>
+                </div>
+                <a class="member-privacy-link" href="/privacidade"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>Privacidade e seus dados</a>
+            </aside>
+        </div>
     </main>
-
-
-    <!-- ========================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================= -->
-
+    <footer class="portal-footer perfil-privacidade"><p>Assembleia de Deus <span aria-hidden="true">·</span> Lugar de Esperança</p><a href="/privacidade">Privacidade e seus dados</a></footer>
     <script src="/js/security.js"></script>
-    <script src="/js/perfil/perfil.js?v=2.0.3"></script>
-
+    <script src="/js/perfil/perfil.js?v=4.0.0"></script>
 </body>
-
 </html>

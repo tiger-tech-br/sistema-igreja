@@ -6,9 +6,11 @@ async function load() {
     privacyVersion=config.version;
     document.getElementById('textoAviso').textContent=config.noticeText;
     document.getElementById('textoConsentimento').textContent=config.consentText;
-    document.getElementById('responsavel').textContent=config.configured ? `Controlador: ${config.controller}. Contato: ${config.contact}. Aviso ${config.version}.` : 'O responsável ainda precisa configurar PRIVACY_CONTROLLER e PRIVACY_EMAIL.';
+    document.getElementById('responsavel').textContent=config.configured ? `Controlador: ${config.controller}. Contato: ${config.contact}. Aviso ${config.version}.` : 'As informações de contato do responsável ainda não estão disponíveis.';
     const response=await fetch('/api/privacidade/solicitacoes');
     const box=document.getElementById('solicitacoes'); box.replaceChildren();
+    const accessNote=document.querySelector('.privacy-access-note');
+    if(accessNote) accessNote.hidden=response.status!==401;
     if(response.status===401){box.textContent='Entre na sua conta para baixar dados ou registrar e acompanhar solicitações.';return;}
     const profileResponse=await fetch('/api/membros/perfil');
     if(profileResponse.ok){
@@ -16,6 +18,7 @@ async function load() {
         document.getElementById('areaConsentimento').hidden=!config.configured || !profile.data || Boolean(profile.data.consent_at && !profile.data.consent_revoked_at);
     }
     const data=await response.json();
+    if(!(data.data||[]).length){const empty=document.createElement('p');empty.textContent='Você ainda não registrou solicitações de privacidade.';box.appendChild(empty);}
     for(const item of data.data||[]){const p=document.createElement('p');p.textContent=`${item.criado_em} — ${item.tipo} — ${item.status}${item.resposta?' — '+item.resposta:''} — protocolo ${item.id}`;box.appendChild(p);}
 }
 document.getElementById('formSolicitacao').addEventListener('submit',async event=>{event.preventDefault();const response=await fetch('/api/privacidade/solicitacoes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:document.getElementById('tipo').value,mensagem:document.getElementById('mensagem').value})});const data=await response.json();result.textContent=data.message+(data.protocolo?' Protocolo: '+data.protocolo:'');if(response.ok)load();});

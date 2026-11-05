@@ -1,214 +1,47 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-    <!-- ========================= -->
-    <!-- META -->
-    <!-- ========================= -->
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        Recuperação de Senha
-
-    </title>
-
-    <!-- ========================= -->
-    <!-- GOOGLE FONTS -->
-    <!-- ========================= -->
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <!-- ========================= -->
-    <!-- FONT AWESOME -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <!-- ========================= -->
-    <!-- CSS GLOBAL -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="/css/global/reset.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/variables.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/base.css">
-
-    <!-- ========================= -->
-    <!-- CSS LAYOUT -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="/css/layout/buttons.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/layout/forms.css">
-
-    <!-- ========================= -->
-    <!-- CSS DA PÁGINA -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="/css/pages/esqueci-senha.css?v=2.0.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Recuperar senha | Assembleia de Deus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/portal.css?v=4.0.0">
 </head>
-
-<body>
-
-    <!-- ========================= -->
-    <!-- CONTAINER -->
-    <!-- ========================= -->
-
-    <main class="recuperar-container">
-
-        <!-- ========================= -->
-        <!-- CARD -->
-        <!-- ========================= -->
-
-        <section class="recuperar-card">
-
-            <img
-
-                src="/images/assembleia-logo.png"
-
-                alt="Logo da Igreja"
-
-                class="logo">
-
-            <h1>
-
-                Recuperação de Senha
-
-            </h1>
-
-            <p class="subtitulo">
-
-                Informe o e-mail cadastrado.
-
-            </p>
-
-            <p class="descricao">
-
-                Caso exista uma conta vinculada ao e-mail informado,
-                enviaremos um link para que você possa redefinir sua
-                senha com segurança.
-
-            </p>
-
-            <!-- ========================= -->
-            <!-- FORMULÁRIO -->
-            <!-- ========================= -->
-
-            <form
-
-                id="formRecuperar"
-
-                autocomplete="on"
-
-                novalidate
-
-                aria-label="Recuperação de senha">
-
-                <div class="campo">
-
-                    <label for="email">
-
-                        E-mail
-
-                    </label>
-
-                    <div class="input">
-
-                        <i class="fa-solid fa-envelope"></i>
-
-                        <input
-
-                            type="email"
-
-                            id="email"
-
-                            name="email"
-
-                            placeholder="Digite seu e-mail"
-
-                            autocomplete="email"
-
-                            required>
-
-                    </div>
-
+<body class="portal-page">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="portal-topbar">
+        <a class="portal-brand" href="/" aria-label="Assembleia de Deus — página inicial">
+            <svg class="portal-brand-icon" viewBox="0 0 48 58" width="42" height="50" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 3v14M19 8h10M7 31l17-14 17 14M10 29v24h11V40a3 3 0 0 1 6 0v13h11V29M5 53h38"/></svg>
+            <span class="portal-brand-copy"><strong>Assembleia de Deus</strong><small>Lugar de Esperança</small></span>
+        </a>
+        <nav class="portal-nav" aria-label="Navegação do site"><a href="/">Início</a><a href="/privacidade">Privacidade</a></nav>
+    </header>
+    <main class="portal-main auth-main" id="conteudo">
+        <section class="portal-card auth-card" aria-labelledby="tituloRecuperar">
+            <header class="portal-heading auth-heading">
+                <span class="auth-symbol" aria-hidden="true"><i class="fa-solid fa-key"></i></span>
+                <p class="portal-eyebrow">Acesso à sua conta</p>
+                <h1 id="tituloRecuperar">Recuperar senha</h1>
+                <p>Informe o e-mail cadastrado.</p>
+            </header>
+            <p class="auth-description">Caso exista uma conta vinculada ao e-mail informado, enviaremos um link para que você possa redefinir sua senha com segurança.</p>
+            <form id="formRecuperar" class="auth-form" autocomplete="on" novalidate aria-label="Recuperação de senha">
+                <div class="auth-field campo">
+                    <label for="email">E-mail</label>
+                    <div class="auth-input input"><i class="fa-regular fa-envelope" aria-hidden="true"></i><input type="email" id="email" name="email" placeholder="Digite seu e-mail" autocomplete="email" required></div>
                 </div>
-
-                <button
-
-                    type="submit"
-
-                    class="btn-enviar">
-
-                    <i class="fa-solid fa-paper-plane"></i>
-
-                    Enviar
-
-                </button>
-
+                <button type="submit" class="portal-button btn-enviar"><i class="fa-regular fa-paper-plane" aria-hidden="true"></i>Enviar link de recuperação</button>
             </form>
-
-            <!-- ========================= -->
-            <!-- VOLTAR -->
-            <!-- ========================= -->
-
-            <a
-
-                href="/"
-
-                class="voltar">
-
-                <i class="fa-solid fa-arrow-left"></i>
-
-                Voltar à página inicial
-
-            </a>
-
+            <p class="auth-note"><i class="fa-solid fa-lock" aria-hidden="true"></i>O link será enviado para o seu e-mail.</p>
+            <a href="/" class="auth-back voltar"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Voltar à página inicial</a>
         </section>
-
     </main>
-
-    <!-- ========================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================= -->
-
+    <footer class="portal-footer"><p>Assembleia de Deus · Lugar de Esperança</p><a href="/privacidade">Privacidade e seus dados</a></footer>
     <script src="/js/security.js"></script>
     <script src="/js/esqueci-senha/esqueci-senha.js?v=2.0.0"></script>
-
 </body>
-
 </html>

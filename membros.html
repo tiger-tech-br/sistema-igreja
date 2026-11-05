@@ -1,173 +1,49 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
-
-    <!-- ========================= -->
-    <!-- META -->
-    <!-- ========================= -->
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        Membros da Igreja
-
-    </title>
-
-    <!-- ========================= -->
-    <!-- GOOGLE FONTS -->
-    <!-- ========================= -->
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- ========================= -->
-    <!-- FONT AWESOME -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <!-- ========================= -->
-    <!-- CSS -->
-    <!-- ========================= -->
-
-    <link
-        rel="stylesheet"
-        href="/css/global/reset.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/variables.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/global/base.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/layout/buttons.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/layout/cards.css">
-
-    <link
-        rel="stylesheet"
-        href="/css/pages/membros.css?v=2.0.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Membros | Assembleia de Deus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/portal.css?v=4.0.0">
 </head>
-
-<body>
-
-<main class="membros-page">
-
-    <section class="membros-container">
-
-        <!-- ========================= -->
-        <!-- CABEÇALHO -->
-        <!-- ========================= -->
-
-        <header class="membros-header">
-
-            <div class="membros-title">
-
-                <h1>
-
-                    Membros da Igreja
-
-                </h1>
-
-                <p>
-
-                    Lista pública de membros cadastrados.
-
-                </p>
-
-            </div>
-
-            <div class="membros-actions">
-
-                <a
-                    href="/perfil"
-                    class="btn btn-primary">
-
-                    <i class="fa-solid fa-user"></i>
-
-                    Meu Perfil
-
-                </a>
-
-            </div>
-
+<body class="portal-page member-directory">
+    <a class="portal-skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="portal-topbar">
+        <a class="portal-brand" href="/" aria-label="Assembleia de Deus — página inicial">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 3v17m-6-11h12M10 59V35l22-17 22 17v24H38V44a6 6 0 0 0-12 0v15H10Zm-6 0h56"/></svg>
+            <span><strong>Assembleia de Deus</strong><small>Lugar de Esperança</small></span>
+        </a>
+        <nav class="portal-nav" aria-label="Navegação da área do membro">
+            <a href="/">Início</a>
+            <a href="/perfil">Meu perfil</a>
+            <a href="/membros" aria-current="page">Membros</a>
+            <a href="/privacidade">Privacidade</a>
+            <a href="/logout">Sair <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i></a>
+        </nav>
+    </header>
+    <main id="conteudo" class="portal-main membros-page">
+        <header class="portal-heading membros-header">
+            <div class="membros-title"><span class="portal-eyebrow">Nossa comunidade</span><h1>Membros da igreja</h1><p>Pessoas que compartilham a fé e caminham com a gente.</p></div>
+            <div class="membros-actions"><a href="/perfil" class="portal-button portal-button-secondary"><i class="fa-regular fa-user" aria-hidden="true"></i>Meu perfil</a></div>
         </header>
-
-        <!-- ========================= -->
-        <!-- CARD -->
-        <!-- ========================= -->
-
-        <section class="card">
-
+        <section class="member-directory-section membros-container" aria-labelledby="tituloComunidade">
+            <div class="member-directory-heading"><div><h2 id="tituloComunidade">Juntos, somos igreja</h2><p>Conheça os membros da nossa comunidade.</p></div><span class="member-directory-symbol" aria-hidden="true"><i class="fa-solid fa-people-group"></i></span></div>
+            <p id="statusMembros" class="member-directory-status" role="status">Carregando membros...</p>
             <div class="table-responsive">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-
-                                Nome
-
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="listaMembros">
-
-                                            </tbody>
-
+                <table class="member-directory-table" aria-label="Membros da igreja">
+                    <thead><tr><th>Nome</th></tr></thead>
+                    <tbody id="listaMembros"></tbody>
                 </table>
-
             </div>
-
         </section>
-
-    </section>
-
-</main>
-
-<!-- ========================= -->
-<!-- JAVASCRIPT -->
-<!-- ========================= -->
-
-<script
-
-    src="/js/membros/membros.js?v=2.0.0">
-
-</script>
-
+    </main>
+    <footer class="portal-footer"><p>Assembleia de Deus <span aria-hidden="true">·</span> Lugar de Esperança</p><a href="/privacidade">Privacidade e seus dados</a></footer>
+    <script src="/js/security.js"></script>
+    <script src="/js/membros/membros.js?v=4.0.0"></script>
 </body>
-
 </html>
-

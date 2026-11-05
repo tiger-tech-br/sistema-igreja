@@ -1,194 +1,50 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        Redefinir Senha
-
-    </title>
-
-    <link
-        rel="stylesheet"
-        href="/css/pages/redefinir-senha.css">
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Redefinir senha | Assembleia de Deus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/portal.css?v=4.0.0">
 </head>
-
-<body>
-
-    <main class="redefinir-container">
-
-        <section class="redefinir-card">
-
-            <img
-
-                src="/images/assembleia-logo.png"
-
-                alt="Logo"
-
-                class="logo"
-
-            >
-
-            <h1>
-
-                Redefinir senha
-
-            </h1>
-
-            <p>
-
-                Digite uma nova senha para acessar sua conta.
-
-            </p>
-
-            <form
-
-                id="formRedefinirSenha"
-
-                autocomplete="off"
-
-                novalidate
-
-            >
-
-                            <div class="campo">
-
-                    <label for="senha">
-
-                        Nova senha
-
-                    </label>
-
-                    <div class="input-senha">
-
-                        <input
-
-                            type="password"
-
-                            id="senha"
-
-                            name="senha"
-
-                            required
-
-                            minlength="8"
-
-                        >
-
-                        <button
-
-                            type="button"
-
-                            id="mostrarSenha"
-
-                            class="btn-olho"
-
-                        >
-
-                            <i
-
-                                class="fa-solid fa-eye"
-
-                            ></i>
-
-                        </button>
-
-                    </div>
-
+<body class="portal-page">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="portal-topbar">
+        <a class="portal-brand" href="/" aria-label="Assembleia de Deus — página inicial">
+            <svg class="portal-brand-icon" viewBox="0 0 48 58" width="42" height="50" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 3v14M19 8h10M7 31l17-14 17 14M10 29v24h11V40a3 3 0 0 1 6 0v13h11V29M5 53h38"/></svg>
+            <span class="portal-brand-copy"><strong>Assembleia de Deus</strong><small>Lugar de Esperança</small></span>
+        </a>
+        <nav class="portal-nav" aria-label="Navegação do site"><a href="/">Início</a><a href="/privacidade">Privacidade</a></nav>
+    </header>
+    <main class="portal-main auth-main" id="conteudo">
+        <section class="portal-card auth-card" aria-labelledby="tituloRedefinir">
+            <header class="portal-heading auth-heading">
+                <span class="auth-symbol" aria-hidden="true"><i class="fa-solid fa-lock"></i></span>
+                <p class="portal-eyebrow">Uma nova senha</p>
+                <h1 id="tituloRedefinir">Redefinir senha</h1>
+                <p>Digite uma nova senha para acessar sua conta.</p>
+            </header>
+            <form id="formRedefinirSenha" class="auth-form" autocomplete="off" novalidate>
+                <div class="auth-field campo">
+                    <label for="senha">Nova senha</label>
+                    <div class="auth-password input-senha"><input type="password" id="senha" name="senha" autocomplete="new-password" aria-describedby="orientacaoSenha" required minlength="8"><button type="button" id="mostrarSenha" class="auth-toggle btn-olho" aria-label="Mostrar ou ocultar a nova senha"><i class="fa-solid fa-eye" aria-hidden="true"></i></button></div>
                 </div>
-
-                                <div class="campo">
-
-                    <label for="confirmarSenha">
-
-                        Confirmar senha
-
-                    </label>
-
-                    <div class="input-senha">
-
-                        <input
-
-                            type="password"
-
-                            id="confirmarSenha"
-
-                            name="confirmarSenha"
-
-                            required
-
-                            minlength="8"
-
-                        >
-
-                        <button
-
-                            type="button"
-
-                            id="mostrarConfirmacao"
-
-                            class="btn-olho"
-
-                        >
-
-                            <i
-
-                                class="fa-solid fa-eye"
-
-                            ></i>
-
-                        </button>
-
-                    </div>
-
+                <div class="auth-field campo">
+                    <label for="confirmarSenha">Confirmar senha</label>
+                    <div class="auth-password input-senha"><input type="password" id="confirmarSenha" name="confirmarSenha" autocomplete="new-password" required minlength="8"><button type="button" id="mostrarConfirmacao" class="auth-toggle btn-olho" aria-label="Mostrar ou ocultar a confirmação da senha"><i class="fa-solid fa-eye" aria-hidden="true"></i></button></div>
                 </div>
-
-                                <button
-
-                    type="submit"
-
-                    class="btn-redefinir"
-
-                >
-
-                    Redefinir senha
-
-                </button>
-
+                <p class="auth-help" id="orientacaoSenha">Use pelo menos 12 caracteres e no máximo 72 bytes.</p>
+                <button type="submit" class="portal-button btn-redefinir">Salvar nova senha<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
             </form>
-
-            <a
-
-                href="/"
-
-                class="voltar"
-
-            >
-
-                Voltar para a página inicial
-
-            </a>
-
+            <a href="/" class="auth-back voltar"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Voltar para a página inicial</a>
         </section>
-
     </main>
-
+    <footer class="portal-footer"><p>Assembleia de Deus · Lugar de Esperança</p><a href="/privacidade">Privacidade e seus dados</a></footer>
     <script src="/js/security.js"></script>
     <script src="/js/auth/redefinir-senha.js"></script>
-
 </body>
-
 </html>

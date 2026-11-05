@@ -1,1 +1,39 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sair</title></head><body><main><h1>Encerrar sessão?</h1><button id="sair">Sim, sair</button> <a href="/">Cancelar</a><p id="resultado"></p></main><script src="/js/security.js"></script><script src="/js/sair.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Encerrar sessão | Assembleia de Deus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/portal.css?v=4.0.0">
+</head>
+<body class="portal-page">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="portal-topbar">
+        <a class="portal-brand" href="/" aria-label="Assembleia de Deus — página inicial">
+            <svg class="portal-brand-icon" viewBox="0 0 48 58" width="42" height="50" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 3v14M19 8h10M7 31l17-14 17 14M10 29v24h11V40a3 3 0 0 1 6 0v13h11V29M5 53h38"/></svg>
+            <span class="portal-brand-copy"><strong>Assembleia de Deus</strong><small>Lugar de Esperança</small></span>
+        </a>
+        <nav class="portal-nav" aria-label="Navegação do site"><a href="/">Início</a><a href="/privacidade">Privacidade</a></nav>
+    </header>
+    <main class="portal-main auth-main" id="conteudo">
+        <section class="portal-card auth-card auth-card-compact" aria-labelledby="tituloSair">
+            <header class="portal-heading auth-heading">
+                <span class="auth-symbol" aria-hidden="true"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                <p class="portal-eyebrow">Sua conta</p>
+                <h1 id="tituloSair">Encerrar sessão?</h1>
+                <p>Confirme para sair da sua conta com segurança.</p>
+            </header>
+            <div class="auth-actions"><button id="sair" type="button" class="portal-button">Sim, sair<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button><a href="/" class="portal-button-secondary">Cancelar</a></div>
+            <p id="resultado" class="auth-status" role="status" aria-live="polite"></p>
+        </section>
+    </main>
+    <footer class="portal-footer"><p>Assembleia de Deus · Lugar de Esperança</p><a href="/privacidade">Privacidade e seus dados</a></footer>
+    <script src="/js/security.js"></script>
+    <script src="/js/sair.js"></script>
+</body>
+</html>

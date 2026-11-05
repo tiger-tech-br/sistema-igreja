@@ -48,6 +48,9 @@ const campoNascimento =
 const qrCode =
     document.getElementById("qrCode");
 
+const qrStatus =
+    document.getElementById("perfilQrStatus");
+
 function configurarVoltarPerfil() {
 
     if (!linkVoltarPerfil) {
@@ -234,26 +237,26 @@ function renderizarPerfil(membro) {
 
     );
 
-    if (
+    qrCode.hidden = true;
+    qrCode.removeAttribute("src");
+    if (qrStatus) qrStatus.hidden = false;
 
-        membro.qr_code &&
-
-        membro.qr_code.trim() !== ""
-
-    ) {
-
-        qrCode.src =
-
-            membro.qr_code;
-
-    }
-
-    else {
-
-        qrCode.src =
-
-            "/images/qrcode-exemplo.png";
-
+    if (typeof membro.qr_code === "string" && membro.qr_code.trim()) {
+        if (qrStatus) qrStatus.textContent = "Carregando seu QR Code...";
+        qrCode.onload = () => {
+            qrCode.hidden = false;
+            if (qrStatus) qrStatus.hidden = true;
+        };
+        qrCode.onerror = () => {
+            qrCode.hidden = true;
+            if (qrStatus) {
+                qrStatus.hidden = false;
+                qrStatus.textContent = "Não foi possível carregar seu QR Code. Tente novamente em instantes.";
+            }
+        };
+        qrCode.src = membro.qr_code;
+    } else if (qrStatus) {
+        qrStatus.textContent = "Seu QR Code não está disponível. Consulte Privacidade e seus dados para verificar suas autorizações.";
     }
 
 }
