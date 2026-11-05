@@ -1,3 +1,5 @@
+import { renderCredential } from '/js/credencial-view.js';
+
 // =====================================
 // ELEMENTOS
 // =====================================
@@ -28,73 +30,17 @@ const id =
     params.get("id");
 
 // =====================================
-// UTILITARIOS
-// =====================================
-
-function formatarData(data) {
-
-    if (!data) {
-
-        return "Nao informada";
-
-    }
-
-    if (String(data).includes("/")) {
-
-        return data;
-
-    }
-
-    return new Date(data)
-        .toLocaleDateString("pt-BR");
-
-}
-
-function mostrarTexto(elemento, valor, padrao = "") {
-
-    elemento.textContent =
-        valor || padrao;
-
-}
-
-// =====================================
 // RENDERIZAR MEMBRO
 // =====================================
 
 function renderizarMembro(membro) {
-
-    mostrarTexto(
-        campoNome,
-        membro.nome,
-        "Membro nao informado"
-    );
-
-    if (membro.cargo) {
-
-        areaCargo.hidden = false;
-
-        mostrarTexto(
-            campoCargo,
-            membro.cargo
-        );
-
-    } else {
-
-        areaCargo.hidden = true;
-
-        campoCargo.textContent = "";
-
-    }
-
-    mostrarTexto(
-        campoMatricula,
-        membro.matricula,
-        "Nao informada"
-    );
-
-    campoValidade.textContent =
-        formatarData(membro.validade);
-
+    renderCredential(membro, {
+        name: campoNome,
+        role: campoCargo,
+        roleArea: areaCargo,
+        registration: campoMatricula,
+        validity: campoValidade
+    });
 }
 
 // =====================================

@@ -3,7 +3,7 @@ const { ipKeyGenerator } = require('express-rate-limit');
 const pool = require('../database/connection');
 
 // Persistent and atomic: all application instances share the same budget.
-function accountLimiter(scope, max = 8, seconds = 900) {
+function accountLimiter(scope, max = 8, seconds = 900, { ipMax = max } = {}) {
     return async (req, res, next) => {
         try {
             const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase().slice(0, 150) : '';
@@ -17,7 +17,8 @@ function accountLimiter(scope, max = 8, seconds = 900) {
                     hits = CASE WHEN security_rate_limits.expires_at <= NOW() THEN 1 ELSE security_rate_limits.hits + 1 END,
                     expires_at = CASE WHEN security_rate_limits.expires_at <= NOW() THEN EXCLUDED.expires_at ELSE security_rate_limits.expires_at END
                     RETURNING hits`, [key, seconds]);
-                if (rows[0].hits > max) {
+                const identityMax = identity.startsWith('ip:') ? ipMax : max;
+                if (rows[0].hits > identityMax) {
                     res.set('Retry-After', String(seconds));
                     return res.status(429).json({ success: false, message: 'Muitas tentativas. Aguarde alguns minutos.' });
                 }

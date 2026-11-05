@@ -10,6 +10,7 @@ const admin = require('./middlewares/auth');
 const member = require('./middlewares/authMembro');
 const { csrfProtection, csrfToken, refreshIdentity } = require('./middlewares/security');
 const { createLeitorRouter } = require('./routes/leitorRoutes');
+const { createAppMembroRouter } = require('./routes/appMembroRoutes');
 
 function createApp({ sessionStore } = {}) {
     const production = process.env.NODE_ENV === 'production' || Boolean(process.env.RAILWAY_ENVIRONMENT);
@@ -44,11 +45,17 @@ function createApp({ sessionStore } = {}) {
     });
     app.use(compression());
     app.use(rateLimit({ windowMs: 60000, limit: 300, standardHeaders: 'draft-8', legacyHeaders: false,
+        // Shared church Wi-Fi: this self-only endpoint has its own authenticated per-member limit.
+        skip: req => req.method === 'GET' && req.path === '/api/app-membro/presenca',
         message: { success: false, message: 'Muitas requisições. Tente novamente em um minuto.' } }));
     app.use(express.json({ limit: '20kb' }));
     app.use(express.urlencoded({ extended: false, limit: '20kb', parameterLimit: 30 }));
     app.use('/api/leitor', createLeitorRouter());
+    app.use('/api/app-membro', createAppMembroRouter());
     app.use('/leitor', express.static(path.join(__dirname, 'leitor-qrcode', 'dist'), {
+        dotfiles: 'deny', index: 'index.html', fallthrough: false
+    }));
+    app.use('/minha-credencial', express.static(path.join(__dirname, 'membro-app', 'dist'), {
         dotfiles: 'deny', index: 'index.html', fallthrough: false
     }));
     app.use(session({ name: 'igreja.sid', store: sessionStore || new PgSession({ pool, tableName: 'user_sessions', createTableIfMissing: true }),

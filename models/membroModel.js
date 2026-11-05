@@ -29,6 +29,19 @@ module.exports = {
     },
     buscarPorEmail: email => one('SELECT * FROM membros WHERE LOWER(email) = $1 LIMIT 1', [email]),
     buscarPorId: id => one('SELECT ' + profile + ' FROM membros WHERE id = $1', [id]),
+    buscarIdentidadeApp: id => one(`SELECT id,nome,cargo,ministerio,matricula,
+        TO_CHAR(validade,'DD/MM/YYYY') AS validade,auth_version,email_verificado,consent_at,consent_revoked_at
+        FROM membros WHERE id=$1`, [id]),
+    async lerEstadoLeitura(id) {
+        const state = await one(`SELECT s.revision::TEXT AS revision,s.already_recorded,
+            a.periodo,TO_CHAR(a.data,'DD/MM/YYYY') AS data,TO_CHAR(a.horario,'HH24:MI:SS') AS horario
+            FROM member_scan_state s LEFT JOIN acessos a ON a.id=s.acesso_id AND a.membro_id=s.membro_id
+            WHERE s.membro_id=$1`, [id]);
+        return state ? { revision: state.revision, attendance: state.periodo ? {
+            periodo: state.periodo, data: state.data, horario: state.horario,
+            alreadyRecorded: Boolean(state.already_recorded)
+        } : null } : { revision: '0', attendance: null };
+    },
     buscarPorMatricula: value => one('SELECT id FROM membros WHERE matricula = $1', [value]),
     listar: async () => (await pool.query('SELECT ' + profile + ' FROM membros ORDER BY nome')).rows,
     listarNomes: async () => (await pool.query('SELECT id,nome FROM membros WHERE email_verificado = TRUE AND consent_revoked_at IS NULL ORDER BY nome')).rows,
@@ -71,16 +84,24 @@ module.exports = {
             if (inserted.rowCount) {
                 await client.query("INSERT INTO security_audit(actor_id,action,target_id) VALUES ($1,'attendance_recorded',$2)", [actor,id]);
             }
-            const record = await client.query(`SELECT periodo,TO_CHAR(data,'DD/MM/YYYY') AS data,
+            const record = await client.query(`SELECT id AS acesso_id,periodo,TO_CHAR(data,'DD/MM/YYYY') AS data,
                 TO_CHAR(horario,'HH24:MI:SS') AS horario FROM acessos
                 WHERE membro_id=$1 AND data=(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE
                 AND periodo=CASE
                     WHEN (NOW() AT TIME ZONE 'America/Sao_Paulo')::TIME < TIME '12:00:00' THEN 'manha'
                     WHEN (NOW() AT TIME ZONE 'America/Sao_Paulo')::TIME < TIME '18:00:00' THEN 'tarde'
                     ELSE 'noite' END`, [id]);
+            const { acesso_id, ...attendance } = record.rows[0];
+            // Repeated readings confirm the existing presence but still notify an open member app.
+            // The receipt commits atomically with attendance and works across server instances.
+            await client.query(`INSERT INTO member_scan_state (membro_id,revision,acesso_id,already_recorded,scanned_at)
+                VALUES ($1,1,$2,$3,NOW()) ON CONFLICT (membro_id) DO UPDATE SET
+                revision=member_scan_state.revision+1,acesso_id=EXCLUDED.acesso_id,
+                already_recorded=EXCLUDED.already_recorded,scanned_at=EXCLUDED.scanned_at`,
+                [id, acesso_id, !inserted.rowCount]);
             await client.query('COMMIT');
             const { nome, cargo, ministerio, matricula } = member.rows[0];
-            return { id, nome, cargo, ministerio, matricula, ...record.rows[0], alreadyRecorded: !inserted.rowCount };
+            return { id, nome, cargo, ministerio, matricula, ...attendance, alreadyRecorded: !inserted.rowCount };
         } catch (error) { await client.query('ROLLBACK'); throw error; }
         finally { client.release(); }
     },

@@ -7,6 +7,7 @@ const { passwordValid, tokenValid, adultDate } = require('../utils/security');
 const { VERSION, privacyConfig } = require('../config/privacy');
 const gerarValidade = require('../utils/validade');
 const pool = require('../database/connection');
+const { memberCredentialResult } = require('../services/memberCredentialService');
 const text = (value,max=300) => typeof value === 'string' && value.length <= max ? value.trim() : '';
 const emailOf = value => text(value,150).toLowerCase();
 const emailValid = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -127,11 +128,9 @@ exports.validar = safe(async (req,res) => {
         if (!member) return fail(res,'Membro não encontrado.',404);
         return ok(res,{id:member.id,nome:member.nome,cargo:member.cargo,matricula:member.matricula,validade:member.validade});
     }
-    if (!member || !member.email_verificado || member.consent_revoked_at || !member.consent_at) return fail(res,'Credencial indisponível.',404);
-    const [day,month,year]=member.validade.split('/');
-    const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-    if (year+'-'+month+'-'+day < today) return fail(res,'Credencial expirada.',403);
-    ok(res,{id:member.id,nome:member.nome,cargo:member.cargo,matricula:member.matricula,validade:member.validade});
+    const credential = memberCredentialResult(member);
+    if (!credential.success) return fail(res,credential.message,credential.status);
+    ok(res,credential.data);
 });
 exports.presenca = safe(async (req,res) => {
     const attendance = await model.registrarAcesso(req.params.id,req.session.admin.id);

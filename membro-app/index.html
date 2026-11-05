@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#242522">
+  <meta name="description" content="Seu QR Code e sua credencial da Assembleia de Deus. Área exclusiva do membro.">
+  <title>Minha credencial | Assembleia de Deus</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+</head>
+<body>
+  <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="church" viewBox="0 0 64 64"><path d="M32 3v17m-6-11h12M10 59V35l22-17 22 17v24H38V44a6 6 0 0 0-12 0v15H10Zm-6 0h56"/></symbol>
+    <symbol id="logout" viewBox="0 0 24 24"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5m5-13 5 5-5 5M9 12h11"/></symbol>
+    <symbol id="mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 6 8 6 8-6"/></symbol>
+    <symbol id="lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+    <symbol id="eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="back" viewBox="0 0 24 24"><path d="M20 12H4m6-6-6 6 6 6"/></symbol>
+    <symbol id="id-card" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><circle cx="8" cy="10" r="2"/><path d="M4.5 16a3.5 3.5 0 0 1 7 0M15 9h4m-4 4h4"/></symbol>
+  </svg>
+  <main id="app">
+    <section id="loginScreen" class="login-screen">
+      <header class="login-brand">
+        <svg class="church-logo" aria-hidden="true"><use href="#church"/></svg>
+        <h1>Assembleia de Deus</h1><p class="brand-tagline">Lugar de Esperança</p><p class="brand-product">Minha credencial</p>
+      </header>
+      <div class="login-content">
+        <div class="page-intro"><h2>Área do membro</h2><p>Entre para apresentar seu QR Code.</p></div>
+        <form id="loginForm">
+          <label for="email">E-mail</label>
+          <div class="input-wrap"><svg aria-hidden="true"><use href="#mail"/></svg><input id="email" type="email" name="email" autocomplete="username" placeholder="Digite seu e-mail" maxlength="150" required></div>
+          <label for="senha">Senha</label>
+          <div class="input-wrap"><svg aria-hidden="true"><use href="#lock"/></svg><input id="senha" type="password" name="senha" autocomplete="current-password" placeholder="Digite sua senha" required><button id="togglePassword" class="icon-button" type="button" aria-label="Mostrar senha" aria-pressed="false"><svg aria-hidden="true"><use href="#eye"/></svg></button></div>
+          <p id="loginMessage" class="form-message" role="alert" hidden></p>
+          <button id="loginButton" class="button button-gold" type="submit"><span>Entrar</span><svg aria-hidden="true"><use href="#arrow"/></svg></button>
+        </form>
+        <p class="access-help">Use o mesmo e-mail e senha<br>da sua área do membro.</p>
+      </div>
+    </section>
+
+    <section id="memberScreen" class="member-screen" hidden>
+      <header class="member-header">
+        <svg class="church-logo" aria-hidden="true"><use href="#church"/></svg>
+        <div class="member-brand"><h1>Assembleia de Deus</h1><p>Área do membro</p></div>
+        <button id="logoutButton" class="logout-button" type="button"><svg aria-hidden="true"><use href="#logout"/></svg><span>Sair</span></button>
+      </header>
+      <section id="qrScreen" class="member-content" aria-labelledby="qrTitle">
+        <div class="page-intro"><h2 id="qrTitle">Meu QR Code</h2><p>Apresente este código à recepção.</p></div>
+        <article class="qr-card">
+          <span id="memberInitials" class="member-avatar" aria-hidden="true"></span>
+          <h3 id="memberName">Carregando...</h3><p id="memberRole" class="member-role"></p>
+          <div class="qr-frame"><img id="qrImage" alt="Seu QR Code de identificação para a recepção" hidden><p id="qrLoading" role="status">Preparando seu QR Code...</p></div>
+          <p id="memberRegistration" class="registration"></p>
+        </article>
+        <p id="readingStatus" class="reading-status" role="status" data-state="waiting">Preparando leitura</p>
+        <p class="qr-help">Mantenha esta tela aberta. Sua credencial aparecerá após a confirmação.</p>
+        <p id="qrMessage" class="notice" role="alert" hidden></p>
+        <button id="retryQrButton" class="button button-outline" type="button" hidden>Tentar novamente</button>
+      </section>
+      <section id="credentialScreen" class="member-content" aria-labelledby="credentialTitle" hidden>
+        <div class="page-intro"><h2 id="credentialTitle">Minha credencial</h2><p>Identificação do membro</p></div>
+        <article id="credentialCard" class="credential-card" hidden>
+          <div class="credential-brand"><svg class="church-logo" aria-hidden="true"><use href="#church"/></svg><div><strong>Assembleia de Deus</strong><span>Lugar de Esperança</span></div></div>
+          <div class="credential-content">
+            <span id="credentialInitials" class="member-avatar" aria-hidden="true"></span>
+            <h3 id="credentialName"></h3><p id="credentialRoleArea" class="credential-role"><span id="credentialRole"></span></p>
+            <dl class="credential-meta"><div><dt>Matrícula</dt><dd id="credentialRegistration"></dd></div><div><dt>Validade</dt><dd id="credentialValidity"></dd></div></dl>
+            <p class="credential-valid">Credencial válida</p>
+          </div>
+        </article>
+        <p id="credentialLoading" class="credential-loading" role="status">Carregando sua credencial...</p>
+        <p id="credentialMessage" class="notice" role="alert" hidden></p>
+        <button id="retryCredentialButton" class="button button-outline" type="button" hidden>Tentar novamente</button>
+        <button id="backQrButton" class="button button-gold" type="button"><svg aria-hidden="true"><use href="#back"/></svg><span>Voltar ao meu QR Code</span></button>
+      </section>
+    </section>
+
+    <section id="confirmationScreen" class="confirmation-screen" aria-labelledby="confirmationTitle" hidden>
+      <button id="confirmationLogoutButton" class="logout-button confirmation-logout" type="button"><svg aria-hidden="true"><use href="#logout"/></svg><span>Sair</span></button>
+      <div class="confirmation-content" role="status" aria-live="polite">
+        <div class="success-mark"><span class="success-halo" aria-hidden="true"></span><svg class="success-check" viewBox="0 0 120 120" aria-hidden="true"><path d="m27 61 23 23 45-48"/></svg></div>
+        <h2 id="confirmationTitle">Presença confirmada</h2><p id="confirmationDetail">Sua credencial será exibida em instantes.</p>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

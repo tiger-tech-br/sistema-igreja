@@ -1,0 +1,12 @@
+{
+  "name": "Minha credencial — Assembleia de Deus",
+  "short_name": "Minha credencial",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf7f2",
+  "theme_color": "#242522",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

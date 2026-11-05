@@ -1,0 +1,7 @@
+{
+  "appId": "br.com.assembleiadedeus.membro",
+  "appName": "Minha credencial",
+  "webDir": "dist",
+  "server": { "androidScheme": "https", "cleartext": false },
+  "android": { "backgroundColor": "#faf7f2", "allowMixedContent": false }
+}

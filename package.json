@@ -4,8 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "build": "npm run build:css && npm run build:leitor",
+    "build": "npm run build:css && npm run build:leitor && npm run build:membro",
     "build:leitor": "npm --prefix leitor-qrcode ci --include=dev && npm --prefix leitor-qrcode run build:web",
+    "build:membro": "npm --prefix membro-app ci --include=dev && npm --prefix membro-app run build:web",
     "build:css": "sass css/index.scss:css/index.css css/portal.scss:css/portal.css admin/css/admin.scss:admin/css/admin.css --style=compressed --no-source-map",
     "build:css:portal": "sass css/portal.scss css/portal.css --style=compressed --no-source-map",
     "build:css:admin": "sass admin/css/admin.scss admin/css/admin.css --style=compressed --no-source-map",
