@@ -39,7 +39,8 @@ function createApp({ sessionStore } = {}) {
             upgradeInsecureRequests: production ? [] : null
         } }, hsts: production, crossOriginEmbedderPolicy: false }));
     app.use((req, res, next) => {
-        res.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()');
+        const webReader = req.path === '/leitor' || req.path.startsWith('/leitor/');
+        res.set('Permissions-Policy', `camera=${webReader ? '(self)' : '()'}, microphone=(), geolocation=()`);
         res.set('Cache-Control', 'no-store');
         next();
     });
@@ -99,7 +100,7 @@ function createApp({ sessionStore } = {}) {
         [['/admin/presencas.html'], 'presencas.html'],
         [['/admin/privacidade'], 'privacidade.html']
     ]) app.get(urls, admin, page('admin/' + file));
-    app.get(['/scanner', '/admin/scanner.html'], admin, (req, res) => res.redirect('/leitor/'));
+    app.get(['/scanner', '/admin/scanner.html'], admin, (req, res) => res.redirect('/dashboard'));
     // Public credential view is read-only and receives only minimal consented fields.
     app.get(['/validar', '/admin/validar.html'], page('admin/validar.html'));
     const logout = (req, res, next) => req.session.destroy(error => {
