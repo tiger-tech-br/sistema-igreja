@@ -18,7 +18,7 @@ export class ReaderApi {
     this.requests.add(abort);
     try {
       const response = await this.fetcher(this.serverUrl + path, {
-        method: 'POST', credentials: 'omit', cache: 'no-store', signal: abort.signal,
+        method: 'POST', credentials: 'same-origin', cache: 'no-store', signal: abort.signal,
         headers: { 'Content-Type': 'application/json', ...(authenticated ? { Authorization: `Bearer ${this.token || ''}` } : {}) },
         body: JSON.stringify(body ?? {})
       });
@@ -39,6 +39,8 @@ export class ReaderApi {
     }
   }
 
-  login(email, senha) { return this.request('/api/leitor/login', { email, senha }); }
+  login(email, senha, rememberMe = false) { return this.request('/api/leitor/login', { email, senha, rememberMe }); }
+  refresh(refreshToken) { return this.request('/api/leitor/refresh', refreshToken ? { refreshToken } : {}); }
+  logout(refreshToken) { return this.request('/api/leitor/logout', refreshToken ? { refreshToken } : {}); }
   register(id) { return this.request(`/api/leitor/presenca/${id}`, {}, true); }
 }

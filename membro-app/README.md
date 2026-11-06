@@ -2,6 +2,8 @@
 
 Aplicativo Android exclusivo do membro, separado do **Leitor de presenças** do administrador. Nome no aparelho: **Minha credencial**. Pacote: `br.com.assembleiadedeus.membro`. O ícone claro com cartão de identificação diferencia este aplicativo do leitor escuro. Os dois podem ser instalados juntos.
 
+**Atualização 1.1.0, código Android 3:** checkbox **Mantenha-me conectado**. Ao marcar e entrar, o aplicativo restaura o acesso por até 30 dias quando for aberto novamente, sem pedir e-mail e senha. **Sair** apaga o acesso salvo. A correção do QR Code da versão anterior permanece incluída.
+
 **Atualização 1.0.1:** corrige o erro “Illegal invocation” ao iniciar o acompanhamento da leitura depois de carregar a imagem do QR Code. A chamada aos temporizadores do navegador mantém o contexto correto. O APK tem código de versão 2 e pode ser instalado por cima da versão de testes anterior com a mesma assinatura.
 
 ## Fluxo
@@ -47,7 +49,9 @@ As rotas próprias são:
 | `GET /api/app-membro/presenca?after=...` | Consultar somente a confirmação do próprio membro |
 | `GET /api/app-membro/credencial` | Consultar a credencial própria validada |
 
-Nenhuma dessas rotas permite escolher outro membro ou alterar cadastros. O token fica somente na memória, dura duas horas e é conferido contra `auth_version` em cada solicitação. Fechar o processo do aplicativo ou recarregar a versão web exige novo login; ir para segundo plano não encerra necessariamente o processo.
+Nenhuma dessas rotas permite escolher outro membro ou alterar cadastros. O token temporário fica somente na memória, dura duas horas e é conferido contra `auth_version` em cada solicitação. Sem marcar **Mantenha-me conectado**, fechar o processo ou recarregar exige novo login. Com a opção marcada, uma credencial separada permite restaurar e renovar o acesso por até 30 dias sem salvar a senha. Falhas temporárias de conexão preservam a opção; expiração, senha alterada, exclusão e revogação do acesso exigem entrar novamente.
+
+O segredo persistente fica protegido pelo Android Keystore e AES-GCM, isolado do leitor. Na web, fica em cookie HttpOnly; o armazenamento web guarda somente um marcador. A migração adicional é `006_remembered_mobile_sessions.sql`; as rotas de renovação e saída são `POST /api/app-membro/refresh` e `POST /api/app-membro/logout`. Consulte `mobile-shared/README.md`.
 
 QR e credencial exigem e-mail confirmado, consentimento ativo e validade vigente. O cadastro e a recuperação de senha continuam pelos fluxos existentes do site. O registro de presença do leitor mantém suas regras anteriores; esta etapa não altera silenciosamente quem pode ter presença registrada.
 
@@ -80,7 +84,7 @@ npm run build:apk
 
 O comando compila a interface, sincroniza o projeto Android, executa `assembleDebug` e entrega:
 
-`artifacts/minha-credencial-v1.0.1-debug.apk`
+`artifacts/minha-credencial-v1.1.0-debug.apk`
 
 Para abrir o projeto Android existente:
 

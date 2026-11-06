@@ -18,7 +18,7 @@ export class MemberApi {
     this.requests.add(abort);
     try {
       const response = await this.fetcher(this.serverUrl + '/api/app-membro' + path, {
-        method, credentials: 'omit', cache: 'no-store', signal: abort.signal,
+        method, credentials: 'same-origin', cache: 'no-store', signal: abort.signal,
         headers: { ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
           ...(authenticated ? { Authorization: `Bearer ${this.token || ''}` } : {}) },
         ...(body !== undefined ? { body: JSON.stringify(body) } : {})
@@ -42,7 +42,9 @@ export class MemberApi {
     }
   }
 
-  login(email, senha) { return this.request('/login', { method: 'POST', body: { email, senha }, authenticated: false }); }
+  login(email, senha, rememberMe = false) { return this.request('/login', { method: 'POST', body: { email, senha, rememberMe }, authenticated: false }); }
+  refresh(refreshToken) { return this.request('/refresh', { method: 'POST', body: refreshToken ? { refreshToken } : {}, authenticated: false }); }
+  logout(refreshToken) { return this.request('/logout', { method: 'POST', body: refreshToken ? { refreshToken } : {}, authenticated: false }); }
   qrCode() { return this.request('/qrcode', { method: 'POST', body: {} }); }
   presence(cursor) { return this.request('/presenca?after=' + encodeURIComponent(cursor)); }
   credential() { return this.request('/credencial'); }

@@ -1,13 +1,21 @@
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { SERVER_URL } from './config.js';
 import { MemberApi } from './api.js';
 import { PresenceObserver } from './presence-observer.js';
 import { renderCredential } from '../../js/credencial-view.js';
+import { SavedSession } from '../../mobile-shared/session.js';
 import './styles.css';
 
 const $ = id => document.getElementById(id);
 const api = new MemberApi(SERVER_URL);
+const savedSession = new SavedSession({
+  app: 'membro', serverUrl: SERVER_URL, native: Capacitor.isNativePlatform(),
+  secure: registerPlugin('SecureSession')
+});
+let savedRecord = null;
+let restoreTask = null;
+let forgetTask = Promise.resolve();
 let epoch = 0;
 let qrRequest = 0;
 let credentialRequest = 0;
@@ -37,7 +45,7 @@ function showView(next) {
 function validSession() {
   if (!api.token) return false;
   if (Date.now() >= expiresAt) {
-    logout('Seu acesso expirou. Entre novamente.');
+    renewOrLogout('Seu acesso expirou. Entre novamente.');
     return false;
   }
   return true;
@@ -58,7 +66,7 @@ const observer = new PresenceObserver({
   read: cursor => api.presence(cursor),
   online: () => navigator.onLine !== false,
   onState: state => {
-    if (state.kind === 'expired') return logout(state.message);
+    if (state.kind === 'expired') return renewOrLogout(state.message, true);
     if (view !== 'qr' || !api.token) return;
     if (state.kind === 'confirmed') return confirmPresence(state.attendance);
     if (state.kind === 'waiting') {
@@ -136,7 +144,8 @@ async function loadQrCode() {
     $('qrImage').src = result.qrDataUrl;
   } catch (error) {
     if (currentEpoch !== epoch || request !== qrRequest || view !== 'qr') return;
-    if (error.status === 401 || error.status === 403) return logout(error.message);
+    if (error.status === 401) return renewOrLogout(error.message, true);
+    if (error.status === 403) return logout(error.message);
     $('qrLoading').textContent = 'Seu QR Code ainda não está disponível.';
     readingStatus('QR Code indisponível', 'error');
     qrMessage(error.message || 'Não foi possível carregar seu QR Code.', true);
@@ -181,7 +190,7 @@ async function loadCredential() {
     $('credentialCard').hidden = false;
   } catch (error) {
     if (currentEpoch !== epoch || request !== credentialRequest || view !== 'credential') return;
-    if (error.status === 401) return logout(error.message);
+    if (error.status === 401) return renewOrLogout(error.message, true);
     $('credentialMessage').textContent = error.message || 'Sua credencial não pôde ser conferida. Tente novamente.';
     $('credentialMessage').hidden = false;
     $('retryCredentialButton').hidden = false;
@@ -190,7 +199,7 @@ async function loadCredential() {
   }
 }
 
-function logout(message = '') {
+function resetLogin(message = '') {
   epoch++;
   qrRequest++;
   credentialRequest++;
@@ -220,26 +229,118 @@ function logout(message = '') {
   showView('login');
 }
 
+function logout(message = '') {
+  const previous = savedRecord;
+  savedRecord = null;
+  $('rememberMe').checked = false;
+  resetLogin(message);
+  forgetTask = (async () => {
+    try { await savedSession.clear(); }
+    catch { $('loginMessage').textContent = 'Não foi possível apagar o acesso salvo neste aparelho. Tente novamente.'; $('loginMessage').hidden = false; }
+    await api.logout(previous?.refreshToken).catch(() => {});
+  })();
+}
+
+function accessDetails(access) {
+  const expiration = new Date(access?.expiresAt).getTime();
+  if (typeof access?.token !== 'string' || !access.token || !Number.isFinite(expiration) || expiration <= Date.now() || !/^[1-9]\d{0,9}$/.test(String(access.membro?.id))) {
+    throw new Error('O servidor devolveu um acesso inválido. Tente novamente.');
+  }
+  return { expiration, id: String(access.membro.id) };
+}
+
+function useAccess(access) {
+  const details = accessDetails(access);
+  clearTimeout(expiryTimer);
+  api.token = access.token;
+  expiresAt = details.expiration;
+  memberId = details.id;
+  $('senha').value = '';
+  $('memberName').textContent = access.membro.nome || 'Membro';
+  expiryTimer = setTimeout(() => renewOrLogout('Seu acesso expirou. Entre novamente.'), Math.min(expiresAt - Date.now(), 86400000));
+}
+
+function renewOrLogout(message, rejected = false) {
+  if (!savedRecord || (rejected && restoreTask)) return logout(message);
+  observer.pause();
+  return restoreSavedAccess();
+}
+
+function restoreSavedAccess() {
+  if (restoreTask) return restoreTask;
+  const currentEpoch = epoch;
+  restoreTask = (async () => {
+    try {
+      await forgetTask;
+      if (currentEpoch !== epoch) return;
+      const record = await savedSession.load();
+      if (currentEpoch !== epoch) return;
+      if (!record) {
+        savedRecord = null;
+        if (api.token && Date.now() >= expiresAt) logout('Seu acesso expirou. Entre novamente.');
+        return;
+      }
+      savedRecord = record;
+      $('rememberMe').checked = true;
+      $('loginButton').disabled = true;
+      $('loginButton').querySelector('span').textContent = 'Retomando acesso...';
+      observer.pause();
+      const access = await api.refresh(record.refreshToken);
+      if (currentEpoch !== epoch) return;
+      useAccess(access);
+      await loadQrCode();
+    } catch (error) {
+      if (currentEpoch !== epoch) return;
+      if (error.status === 401 || error.status === 403) logout(error.message);
+      else resetLogin(error.message || 'Não foi possível retomar o acesso salvo. Verifique a conexão.');
+    } finally {
+      if (currentEpoch === epoch) {
+        $('loginButton').disabled = false;
+        $('loginButton').querySelector('span').textContent = 'Entrar';
+      }
+    }
+  })().finally(() => { restoreTask = null; });
+  return restoreTask;
+}
+
 $('loginForm').addEventListener('submit', async event => {
   event.preventDefault();
   const currentEpoch = ++epoch;
   $('loginButton').disabled = true;
   $('loginButton').querySelector('span').textContent = 'Entrando...';
   $('loginMessage').hidden = true;
+  const rememberMe = $('rememberMe').checked;
+  let access;
   try {
-    const access = await api.login($('email').value.trim(), $('senha').value);
+    await forgetTask;
     if (currentEpoch !== epoch) return;
-    const expiration = new Date(access.expiresAt).getTime();
-    if (typeof access.token !== 'string' || !access.token || !Number.isFinite(expiration) || expiration <= Date.now() || !/^[1-9]\d{0,9}$/.test(String(access.membro?.id))) throw new Error('O servidor devolveu um acesso inválido. Tente novamente.');
-    api.token = access.token;
-    expiresAt = expiration;
-    memberId = String(access.membro.id);
-    $('senha').value = '';
-    $('memberName').textContent = access.membro.nome || 'Membro';
-    expiryTimer = setTimeout(() => logout('Seu acesso expirou. Entre novamente.'), Math.min(expiration - Date.now(), 86400000));
+    api.clear();
+    access = await api.login($('email').value.trim(), $('senha').value, rememberMe);
+    if (currentEpoch !== epoch) {
+      if (access?.refreshToken) await api.logout(access.refreshToken).catch(() => {});
+      return;
+    }
+    accessDetails(access);
+    const previous = savedRecord;
+    const nextSavedRecord = rememberMe ? await savedSession.save(access) : (await savedSession.clear(), null);
+    if (currentEpoch !== epoch) {
+      if (access?.refreshToken) await api.logout(access.refreshToken).catch(() => {});
+      return;
+    }
+    savedRecord = nextSavedRecord;
+    if (Capacitor.isNativePlatform() && previous?.refreshToken && previous.refreshToken !== savedRecord?.refreshToken) {
+      api.logout(previous.refreshToken).catch(() => {});
+    }
+    useAccess(access);
     await loadQrCode();
   } catch (error) {
     if (currentEpoch !== epoch) return;
+    if (access?.refreshExpiresAt) {
+      forgetTask = (async () => {
+        await savedSession.clear().catch(() => {});
+        await api.logout(access.refreshToken).catch(() => {});
+      })();
+    }
     $('loginMessage').textContent = error.message || 'Não foi possível entrar. Verifique a conexão.';
     $('loginMessage').hidden = false;
   } finally {
@@ -270,6 +371,7 @@ $('retryQrButton').addEventListener('click', () => {
 
 function setForeground(active) {
   foreground = active;
+  if (active && !api.token && savedRecord) { restoreSavedAccess(); return; }
   if (active && api.token && !validSession()) return;
   if (!active) observer.pause();
   else if (view === 'qr' && qrReady) observer.resume();
@@ -287,6 +389,7 @@ window.addEventListener('offline', () => {
 });
 window.addEventListener('online', () => {
   if (view === 'qr' && foreground && qrReady) { observer.pause(); observer.resume(); }
+  else if (view === 'login' && savedRecord) restoreSavedAccess();
 });
 if (Capacitor.isNativePlatform()) {
   App.addListener('appStateChange', ({ isActive }) => setForeground(isActive)).catch(() => {});
@@ -295,3 +398,4 @@ if (Capacitor.isNativePlatform()) {
     else App.minimizeApp().catch(() => {});
   }).catch(() => {});
 }
+restoreSavedAccess();

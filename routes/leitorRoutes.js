@@ -1,5 +1,7 @@
 const express = require('express');
 const { createLeitorTokenService } = require('../services/leitorTokenService');
+const { createRememberSessionService } = require('../services/rememberSessionService');
+const { createRememberSessionTransport } = require('../services/rememberSessionTransport');
 
 const fail = (res, status, message) => res.status(status).json({ success: false, message });
 const validId = value => /^[1-9]\d{0,9}$/.test(String(value));
@@ -19,6 +21,8 @@ function createLeitorRouter(options = {}) {
     const comparePassword = options.comparePassword || require('bcrypt').compare;
     const registerAttendance = options.registerAttendance || require('../models/membroModel').registrarAcesso;
     const limit = options.limit || require('../middlewares/accountLimiter');
+    const rememberedSessions = options.rememberSessionService || createRememberSessionService({ now: options.now });
+    const rememberTransport = createRememberSessionTransport({ app: 'leitor', appOrigin });
 
     router.use((req, res, next) => {
         res.set('Cache-Control', 'no-store');
@@ -50,8 +54,40 @@ function createLeitorRouter(options = {}) {
             }
             const admin = await findAdminByEmail(email);
             if (!admin || !await comparePassword(senha, admin.senha)) return fail(res, 401, 'E-mail ou senha inválidos.');
+            const previous = rememberTransport.isWeb(req) && rememberTransport.readCookie(req);
+            if (previous) {
+                await rememberedSessions.revoke('leitor', previous);
+                rememberTransport.clear(req, res);
+            }
             const access = tokenService.issue(admin);
-            return res.json({ success: true, data: { ...access, admin: { nome: admin.nome } }, message: 'Leitor autorizado.' });
+            const remembered = req.body?.rememberMe === true
+                ? rememberTransport.publish(req, res, await rememberedSessions.issue('leitor', admin)) : {};
+            return res.json({ success: true, data: { ...access, ...remembered, admin: { nome: admin.nome } }, message: 'Leitor autorizado.' });
+        } catch (error) { next(error); }
+    });
+
+    router.post('/refresh', limit('scanner-refresh', 300), async (req, res, next) => {
+        try {
+            if (!req.is('application/json')) return fail(res, 415, 'Envie os dados de acesso em JSON.');
+            const remembered = await rememberedSessions.restore('leitor', rememberTransport.read(req), findAdminById);
+            if (!remembered) {
+                rememberTransport.clear(req, res);
+                return fail(res, 401, 'Seu acesso salvo expirou. Entre novamente.');
+            }
+            const { identity, ...refresh } = remembered;
+            return res.json({ success: true, data: {
+                ...tokenService.issue(identity), ...rememberTransport.publish(req, res, refresh, { setCookie: false }),
+                admin: { nome: identity.nome }
+            } });
+        } catch (error) { next(error); }
+    });
+
+    router.post('/logout', async (req, res, next) => {
+        try {
+            if (!req.is('application/json')) return fail(res, 415, 'Envie os dados de acesso em JSON.');
+            await rememberedSessions.revoke('leitor', rememberTransport.read(req));
+            rememberTransport.clear(req, res);
+            return res.json({ success: true, data: { loggedOut: true } });
         } catch (error) { next(error); }
     });
 

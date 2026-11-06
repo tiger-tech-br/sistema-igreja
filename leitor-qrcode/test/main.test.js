@@ -18,7 +18,8 @@ async function settle(until = () => false) {
   }
 }
 
-function fixture({ startGate, stopGate, native = false, register = async id => ({ id, nome: 'Membro de teste', periodo: 'noite', horario: '19:42:00' }) } = {}) {
+function fixture({ startGate, stopGate, native = false, storage = { record: null }, loadGate, saveError,
+  refresh, logoutGate, register = async id => ({ id, nome: 'Membro de teste', periodo: 'noite', horario: '19:42:00' }) } = {}) {
   const elements = new Map();
   const docHandlers = new Map();
   const windowHandlers = new Map();
@@ -29,6 +30,7 @@ function fixture({ startGate, stopGate, native = false, register = async id => (
   let nextTimer = 0;
   let loginCalls = 0;
   let minimized = 0;
+  const savedCalls = { loads: 0, saves: [], clears: 0, refreshes: [], logouts: [], logins: [], events: [] };
   class FixtureDate extends Date {
     constructor(...args) { super(...(args.length ? args : [clock])); }
     static now() { return clock; }
@@ -45,6 +47,7 @@ function fixture({ startGate, stopGate, native = false, register = async id => (
     for (const match of attributes.matchAll(/([\w-]+)="([^"]*)"/g)) values.set(match[1], match[2]);
     const result = {
       id, tag, dataset: {}, textContent: '', value: '', disabled: false,
+      checked: /\bchecked(?:\s|>|$)/.test(attributes),
       hidden: /\bhidden(?:\s|>|$)/.test(attributes),
       type: values.get('type') || (tag === 'button' ? 'submit' : ''),
       addEventListener(name, handler) { handlers.set(name, handler); },
@@ -68,15 +71,49 @@ function fixture({ startGate, stopGate, native = false, register = async id => (
   };
   class FakeApi {
     constructor() { this.token = null; }
-    async login() { loginCalls++; return { token: 'fixture-only', expiresAt: new Date(clock + 7200000).toISOString() }; }
+    async login(email, senha, rememberMe) {
+      loginCalls++;
+      savedCalls.events.push('login');
+      savedCalls.logins.push({ email, senha, rememberMe });
+      return { token: 'fixture-only', expiresAt: new Date(clock + 7200000).toISOString(),
+        ...(rememberMe ? { refreshToken: 'saved-fixture-token', refreshExpiresAt: new Date(clock + 30 * 86400000).toISOString() } : {}) };
+    }
+    async refresh(token) {
+      savedCalls.refreshes.push(token);
+      if (refresh) return refresh(token, clock);
+      return { token: 'restored-fixture-token', expiresAt: new Date(clock + 7200000).toISOString(),
+        refreshExpiresAt: storage.record?.refreshExpiresAt };
+    }
+    async logout(token) {
+      savedCalls.logouts.push(token);
+      savedCalls.events.push('logout-start');
+      if (logoutGate) await logoutGate.promise;
+      savedCalls.events.push('logout-end');
+      return { loggedOut: true };
+    }
     register(id) { return register(id); }
-    clear() { this.token = null; }
+    clear() { this.token = null; savedCalls.events.push('clear-api'); }
+  }
+  class FakeSavedSession {
+    async load() {
+      savedCalls.loads++;
+      if (loadGate) await loadGate.promise;
+      return storage.record ? { ...storage.record } : null;
+    }
+    async save(access) {
+      savedCalls.saves.push(access);
+      if (saveError) throw saveError;
+      storage.record = { refreshToken: access.refreshToken, refreshExpiresAt: access.refreshExpiresAt };
+      return { ...storage.record };
+    }
+    async clear() { savedCalls.clears++; storage.record = null; }
   }
   const context = vm.createContext({
     document,
     window: { addEventListener(name, handler) { windowHandlers.set(name, handler); } },
     navigator: { onLine: true, vibrate() {} },
     Capacitor: { isNativePlatform: () => native },
+    registerPlugin: () => ({}), SavedSession: FakeSavedSession,
     App: {
       async addListener(name, handler) { appHandlers.set(name, handler); },
       async minimizeApp() { minimized++; }
@@ -89,8 +126,11 @@ function fixture({ startGate, stopGate, native = false, register = async id => (
   });
   vm.runInContext(script, context, { filename: 'main.js' });
   return {
-    camera, elements, classes, get loginCalls() { return loginCalls; }, get minimized() { return minimized; },
+    camera, elements, classes, storage, savedCalls,
+    async ready() { await settle(); },
+    get loginCalls() { return loginCalls; }, get minimized() { return minimized; },
     async login() {
+      await settle();
       elements.get('email').value = 'fixture@example.invalid';
       elements.get('senha').value = 'fixture-only';
       await elements.get('loginForm').fire('submit');
@@ -367,4 +407,182 @@ test('Mostrar senha é botão comum: alterna a visibilidade sem enviar o formul�
   assert.equal(screen.elements.get('senha').type, 'password');
   assert.equal(toggle.getAttribute('aria-pressed'), 'false');
   assert.equal(screen.loginCalls, 0);
+});
+
+test('Mantenha-me conectado começa desmarcado e o login temporário não é salvo', async () => {
+  const storage = { record: null };
+  const screen = fixture({ storage });
+  await screen.ready();
+  assert.equal(screen.elements.get('rememberMe').type, 'checkbox');
+  assert.equal(screen.elements.get('rememberMe').checked, false);
+  assert.equal(screen.savedCalls.refreshes.length, 0);
+  await screen.login();
+  assert.equal(screen.savedCalls.logins[0].rememberMe, false);
+  assert.equal(screen.savedCalls.saves.length, 0);
+  assert.equal(storage.record, null);
+  const reopened = fixture({ storage });
+  await reopened.ready();
+  assert.equal(reopened.elements.get('loginScreen').hidden, false);
+  assert.equal(reopened.savedCalls.refreshes.length, 0);
+});
+
+test('a opção marcada salva apenas a credencial persistente e reabre na tela inicial sem câmera', async () => {
+  const storage = { record: null };
+  const screen = fixture({ native: true, storage });
+  await screen.ready();
+  screen.elements.get('rememberMe').checked = true;
+  await screen.login();
+  assert.equal(screen.savedCalls.logins[0].rememberMe, true);
+  assert.equal(screen.savedCalls.saves.length, 1);
+  assert.deepEqual(Object.keys(storage.record).sort(), ['refreshExpiresAt', 'refreshToken']);
+  assert.equal(storage.record.refreshToken, 'saved-fixture-token');
+  assert.equal(JSON.stringify(storage.record).includes('fixture-only'), false, 'nem senha nem token de acesso são persistidos');
+  assert.equal(screen.elements.get('senha').value, '');
+  const reopened = fixture({ native: true, storage });
+  await reopened.ready();
+  assert.equal(reopened.loginCalls, 0);
+  assert.deepEqual(reopened.savedCalls.refreshes, ['saved-fixture-token']);
+  assert.equal(reopened.elements.get('homeScreen').hidden, false);
+  assert.equal(reopened.elements.get('loginScreen').hidden, true);
+  assert.equal(reopened.elements.get('rememberMe').checked, true);
+  assert.equal(reopened.camera.starts, 0);
+  await reopened.openScanner();
+  assert.equal(reopened.camera.starts, 1);
+});
+
+test('Sair apaga o acesso salvo, revoga a credencial e impede a restauração ao reabrir', async () => {
+  const storage = { record: null };
+  const screen = fixture({ storage });
+  await screen.ready();
+  screen.elements.get('rememberMe').checked = true;
+  await screen.login();
+  await screen.click('homeLogoutButton');
+  assert.equal(storage.record, null);
+  assert.equal(screen.elements.get('rememberMe').checked, false);
+  assert.deepEqual(screen.savedCalls.logouts, ['saved-fixture-token']);
+  const reopened = fixture({ storage });
+  await reopened.ready();
+  assert.equal(reopened.elements.get('loginScreen').hidden, false);
+  assert.equal(reopened.savedCalls.refreshes.length, 0);
+});
+
+test('a renovação após duas horas mantém o leitor e a câmera da sessão lembrada', async () => {
+  const screen = fixture();
+  await screen.ready();
+  screen.elements.get('rememberMe').checked = true;
+  await screen.login();
+  await screen.openScanner();
+  await screen.expire();
+  assert.deepEqual(screen.savedCalls.refreshes, ['saved-fixture-token']);
+  assert.equal(screen.elements.get('scannerScreen').hidden, false);
+  assert.equal(screen.elements.get('loginScreen').hidden, true);
+  assert.equal(screen.camera.starts, 1);
+  assert.equal(screen.camera.stops, 0);
+  assert.equal(screen.storage.record.refreshToken, 'saved-fixture-token');
+});
+
+test('enquanto renova um acesso vencido, a câmera não envia uma presença com o token antigo', async () => {
+  const gate = pending();
+  const registrations = [];
+  const screen = fixture({ refresh: () => gate.promise, register: async id => { registrations.push(id); return { id, nome: 'Confirmado' }; } });
+  await screen.ready();
+  screen.elements.get('rememberMe').checked = true;
+  await screen.login();
+  await screen.openScanner();
+  await screen.expire();
+  screen.camera.onRead(`${server}/validar?id=1`);
+  await settle();
+  assert.deepEqual(registrations, []);
+  assert.equal(screen.savedCalls.refreshes.length, 1, 'uma renovação por vez');
+  gate.resolve({ token: 'renewed-fixture', expiresAt: new Date(Date.now() + 14400000).toISOString() });
+  await settle();
+  screen.camera.onRead(`${server}/validar?id=1`);
+  await settle();
+  assert.deepEqual(registrations, ['1']);
+});
+
+test('falha de conexão ao restaurar mantém a credencial salva e retoma quando a conexão volta', async () => {
+  const storage = { record: { refreshToken: 'saved-on-device', refreshExpiresAt: new Date(Date.now() + 86400000).toISOString() } };
+  let attempts = 0;
+  const screen = fixture({ storage, refresh: async (token, clock) => {
+    if (++attempts === 1) throw new Error('Sem conexão com o servidor');
+    return { token: 'restored', expiresAt: new Date(clock + 7200000).toISOString() };
+  } });
+  await screen.ready();
+  assert.equal(screen.elements.get('loginScreen').hidden, false);
+  assert.match(screen.elements.get('loginMessage').textContent, /Sem conexão/);
+  assert.equal(screen.elements.get('rememberMe').checked, true);
+  assert.equal(storage.record.refreshToken, 'saved-on-device');
+  assert.equal(screen.savedCalls.logouts.length, 0);
+  await screen.windowEvent('online');
+  assert.equal(attempts, 2);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.camera.starts, 0);
+});
+
+test('credencial salva expirada ou recusada é removida e exige novo login', async () => {
+  const expiredStorage = { record: { refreshToken: 'expired', refreshExpiresAt: new Date(Date.now() - 1).toISOString() } };
+  const expired = fixture({ storage: expiredStorage });
+  await expired.ready();
+  assert.equal(expiredStorage.record, null);
+  assert.equal(expired.savedCalls.refreshes.length, 0);
+  assert.equal(expired.elements.get('loginScreen').hidden, false);
+  const revokedStorage = { record: { refreshToken: 'revoked', refreshExpiresAt: new Date(Date.now() + 86400000).toISOString() } };
+  const revoked = fixture({ storage: revokedStorage, refresh: async () => {
+    const error = new Error('Acesso revogado'); error.status = 401; throw error;
+  } });
+  await revoked.ready();
+  assert.equal(revokedStorage.record, null);
+  assert.equal(revoked.elements.get('rememberMe').checked, false);
+  assert.match(revoked.elements.get('loginMessage').textContent, /revogado/);
+  assert.equal(revoked.camera.starts, 0);
+});
+
+test('Sair durante a restauração ignora a resposta pendente e não abre a tela inicial', async () => {
+  const gate = pending();
+  const storage = { record: { refreshToken: 'pending-refresh', refreshExpiresAt: new Date(Date.now() + 86400000).toISOString() } };
+  const screen = fixture({ storage, refresh: () => gate.promise });
+  await screen.ready();
+  assert.equal(screen.savedCalls.refreshes.length, 1);
+  await screen.click('homeLogoutButton');
+  gate.resolve({ token: 'must-not-enter', expiresAt: new Date(Date.now() + 7200000).toISOString() });
+  await settle();
+  assert.equal(storage.record, null);
+  assert.equal(screen.elements.get('loginScreen').hidden, false);
+  assert.equal(screen.elements.get('homeScreen').hidden, true);
+  assert.equal(screen.camera.starts, 0);
+});
+
+test('falha ao salvar o acesso não simula persistência e permite optar pelo login temporário', async () => {
+  const screen = fixture({ saveError: new Error('Armazenamento indisponível') });
+  await screen.ready();
+  screen.elements.get('rememberMe').checked = true;
+  await screen.login();
+  assert.equal(screen.elements.get('loginScreen').hidden, false);
+  assert.match(screen.elements.get('loginMessage').textContent, /Não foi possível salvar/);
+  assert.equal(screen.storage.record, null);
+  assert.deepEqual(screen.savedCalls.logouts, ['saved-fixture-token']);
+  screen.elements.get('rememberMe').checked = false;
+  await screen.login();
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.storage.record, null);
+});
+
+test('um novo login espera a saída anterior terminar antes de receber outro cookie', async () => {
+  const logoutGate = pending();
+  const screen = fixture({ logoutGate });
+  await screen.ready();
+  screen.elements.get('rememberMe').checked = true;
+  await screen.login();
+  await screen.click('homeLogoutButton');
+  const entering = screen.login();
+  await settle();
+  assert.equal(screen.loginCalls, 1);
+  logoutGate.resolve();
+  await entering;
+  assert.equal(screen.loginCalls, 2);
+  const finish = screen.savedCalls.events.indexOf('logout-end');
+  const lastClear = screen.savedCalls.events.lastIndexOf('clear-api');
+  assert.ok(finish >= 0 && lastClear > finish);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
 });

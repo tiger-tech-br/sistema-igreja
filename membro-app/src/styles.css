@@ -9,3 +9,33 @@ form label{display:block;font-size:19px;font-weight:700;margin:20px 0 10px}.inpu
 @media(prefers-reduced-motion:reduce){.success-halo,.success-check,.success-check path,.confirmation-content h2,.confirmation-content p{animation:none}.success-halo{display:none}.success-check path{stroke-dashoffset:0}}
 @media(min-width:700px){body{background:#e7e3da}.login-screen,.member-screen{box-shadow:0 3px 25px #24252224}.login-content{padding:35px 40px}.login-brand{padding:35px 25px}.member-brand h1{font-size:24px}.member-content{padding:32px 36px}.qr-frame{max-width:330px}.qr-card{padding-top:25px}.member-content .page-intro p{font-size:20px}}
 @media(max-width:360px){.login-content{padding-inline:19px}.member-header{padding-inline:14px;gap:9px}.member-header .church-logo{width:37px}.member-brand{padding-left:9px}.member-brand h1{font-size:17px}.member-brand p{font-size:14px}.member-content{padding:22px 15px}.qr-card{padding-inline:14px}.qr-frame{min-height:200px}.credential-brand{gap:9px;padding-inline:12px}.credential-brand>div{padding-left:9px}.credential-brand strong{font-size:17px}.credential-brand span{font-size:14px}.credential-meta dd{font-size:16px}.reading-status{font-size:17px}}
+form label.remember-choice{display:flex;align-items:center;gap:10px;min-height:44px;margin:15px 0 0;font-size:17px;font-weight:400;line-height:1.4;cursor:pointer}
+.remember-choice input{width:22px;height:22px;margin:0;accent-color:#ad852d;flex-shrink:0;cursor:pointer}
+
+.login-content {
+  padding-top: 30px;
+  padding-bottom: calc(32px + var(--safe-bottom));
+}
+.login-content .page-intro { margin-bottom: 30px; }
+#loginForm > label:not(.remember-choice) { margin: 24px 0 10px; }
+#loginForm > label:first-child { margin-top: 0; }
+.login-content .input-wrap { min-height: 62px; }
+.login-content .input-wrap input { min-height: 60px; line-height: 1.4; }
+.login-content .input-wrap:focus-within {
+  border-color: #b88a22;
+  outline: 3px solid #b88a22;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px #c19b4212;
+}
+.login-content .input-wrap input:focus,
+.login-content .input-wrap input:focus-visible { outline: none; box-shadow: none; }
+.login-content .input-wrap .icon-button { min-width: 44px; min-height: 44px; justify-content: center; align-items: center; }
+#loginForm .remember-choice { min-height: 48px; margin-top: 22px; padding: 3px 0; gap: 12px; font-weight: 500; line-height: 1.5; }
+#loginForm .remember-choice span { min-width: 0; }
+#loginForm .button-gold { min-height: 56px; margin-top: 24px; }
+#loginForm .form-message { margin-top: 16px; line-height: 1.55; }
+.login-content .access-help { margin: 32px auto 0; max-width: 400px; line-height: 1.65; }
+.login-content .access-help a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 6px 4px; text-underline-offset: 3px; }
+@media (min-width: 700px) {
+  .login-content { padding-top: 36px; padding-bottom: calc(36px + var(--safe-bottom)); }
+}

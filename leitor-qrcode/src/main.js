@@ -1,13 +1,16 @@
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { SERVER_URL } from './config.js';
 import { ReaderApi } from './api.js';
 import { ScanController } from './scan-controller.js';
 import { createCamera } from './camera.js';
+import { SavedSession } from '../../mobile-shared/session.js';
 import './styles.css';
 
 const $ = id => document.getElementById(id);
 const api = new ReaderApi(SERVER_URL);
+const savedSession = new SavedSession({ app: 'leitor', serverUrl: SERVER_URL,
+  native: Capacitor.isNativePlatform(), secure: registerPlugin('SecureSession') });
 let sessionEpoch = 0;
 let expiryTimer;
 let sessionExpiresAt = 0;
@@ -18,6 +21,10 @@ let cameraFailure = '';
 let foreground = !document.hidden;
 let torch = false;
 let activeScreen = 'login';
+let rememberedSession = null;
+let sessionTask = null;
+let forgetTask = Promise.resolve();
+let loginPending = false;
 const periodLabels = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
 
 function showScreen(screen) {
@@ -31,10 +38,95 @@ function showScreen(screen) {
 function hasValidSession() {
   if (!api.token) return false;
   if (Date.now() >= sessionExpiresAt) {
-    logout('Seu acesso expirou. Entre novamente.');
+    renewAccess();
     return false;
   }
   return true;
+}
+
+function validateAccess(result) {
+  const expiration = new Date(result?.expiresAt).getTime();
+  if (typeof result?.token !== 'string' || !result.token || !Number.isFinite(expiration) || expiration <= Date.now()) {
+    throw new Error('O servidor devolveu um acesso inválido. Tente novamente.');
+  }
+  return expiration;
+}
+
+function applyAccess(result, initial = true) {
+  const expiration = validateAccess(result);
+  api.token = result.token;
+  sessionExpiresAt = expiration;
+  clearTimeout(expiryTimer);
+  $('senha').value = '';
+  if (initial) {
+    showScreen('home');
+    cameraWanted = false;
+    $('cameraPlaceholder').hidden = false;
+    controller.activate();
+  } else if (!controller.active) controller.activate();
+  connection(navigator.onLine === false ? 'Sem conexão' : 'Conectado', navigator.onLine === false ? 'offline' : 'online');
+  const renewEarly = rememberedSession ? 5000 : 0;
+  expiryTimer = setTimeout(renewAccess, Math.max(1, Math.min(expiration - Date.now() - renewEarly, 86400000)));
+}
+
+function renewAccess() {
+  if (!rememberedSession) return logout('Seu acesso expirou. Entre novamente.');
+  return restoreSavedAccess(true);
+}
+
+function restoreSavedAccess(renewing = false) {
+  if (loginPending) return Promise.resolve(false);
+  if (sessionTask) return sessionTask.promise;
+  const epoch = sessionEpoch;
+  const task = { promise: null };
+  sessionTask = task;
+  if (activeScreen === 'login') {
+    $('loginButton').disabled = true;
+    $('loginButton').querySelector('span').textContent = 'Retomando acesso…';
+  }
+  task.promise = (async () => {
+    try {
+      const saved = rememberedSession || await savedSession.load();
+      if (epoch !== sessionEpoch) return false;
+      if (!saved) {
+        if (renewing) logout('Seu acesso expirou. Entre novamente.');
+        return false;
+      }
+      const refreshExpiration = new Date(saved.refreshExpiresAt).getTime();
+      if (!Number.isFinite(refreshExpiration) || refreshExpiration <= Date.now()) {
+        logout('Seu acesso salvo expirou. Entre novamente.');
+        return false;
+      }
+      rememberedSession = saved;
+      $('rememberMe').checked = true;
+      const result = await api.refresh(saved.refreshToken);
+      if (epoch !== sessionEpoch) return false;
+      validateAccess(result);
+      // The saved credential has a fixed validity and is not rotated on renewal.
+      // Keeping it unchanged also preserves login through a lost network response.
+      applyAccess(result, !renewing || activeScreen === 'login');
+      $('loginMessage').hidden = true;
+      syncCamera();
+      return true;
+    } catch (error) {
+      if (epoch !== sessionEpoch) return false;
+      if (error.status === 401 || error.status === 403) {
+        logout(error.message || 'Seu acesso salvo foi encerrado. Entre novamente.');
+      } else if (renewing && api.token && Date.now() < sessionExpiresAt) {
+        expiryTimer = setTimeout(() => restoreSavedAccess(true), Math.max(1000, Math.min(30000, sessionExpiresAt - Date.now())));
+      } else {
+        resetLogin(error.message || 'Não foi possível retomar seu acesso. Verifique a conexão.', false);
+      }
+      return false;
+    } finally {
+      if (sessionTask === task) sessionTask = null;
+      if (epoch === sessionEpoch && activeScreen === 'login') {
+        $('loginButton').disabled = false;
+        $('loginButton').querySelector('span').textContent = 'Entrar';
+      }
+    }
+  })();
+  return task.promise;
 }
 
 function openScanner() {
@@ -83,7 +175,7 @@ const controller = new ScanController({
   register: id => api.register(id),
   online: () => navigator.onLine !== false,
   onState: state => {
-    if (state.kind === 'expired') return logout(state.message);
+    if (state.kind === 'expired') return rememberedSession ? restoreSavedAccess(true) : logout(state.message);
     if (state.kind === 'sending') {
       showScanMessage(state.message, 'sending');
       $('nextReading').textContent = 'Confirmando a próxima presença…';
@@ -135,7 +227,7 @@ function syncCamera() {
         $('restartCameraButton').hidden = true;
         cameraFailure = '';
         $('cameraMessage').textContent = 'Preparando câmera…';
-        camera ||= await createCamera({ onRead: raw => { if (cameraWanted && activeScreen === 'scanner' && foreground && api.token) controller.read(raw); }, onError: cameraError });
+        camera ||= await createCamera({ onRead: raw => { if (cameraWanted && activeScreen === 'scanner' && foreground && hasValidSession()) controller.read(raw); }, onError: cameraError });
         if (epoch !== sessionEpoch || !cameraWanted || !foreground || !api.token) continue;
         await camera.start();
         if (epoch !== sessionEpoch || !cameraWanted || !foreground || !api.token) {
@@ -164,8 +256,10 @@ function syncCamera() {
   return cameraTask;
 }
 
-function logout(message = '') {
+function resetLogin(message = '', forget = true) {
   sessionEpoch++;
+  sessionTask = null;
+  loginPending = false;
   clearTimeout(expiryTimer);
   sessionExpiresAt = 0;
   controller.deactivate();
@@ -186,34 +280,65 @@ function logout(message = '') {
   $('waitingState').hidden = false;
   showScanMessage('');
   document.documentElement.classList.remove('native-camera-active');
+  if (forget) {
+    const remembered = rememberedSession;
+    const refresh = remembered ? Promise.resolve(remembered) : savedSession.load().catch(() => null);
+    rememberedSession = null;
+    $('rememberMe').checked = false;
+    // Removal is queued before another login can save a new credential.
+    const removal = savedSession.clear();
+    forgetTask = Promise.allSettled([refresh, removal]).then(async results => {
+      const saved = results[0].status === 'fulfilled' ? results[0].value : null;
+      await api.logout(saved?.refreshToken).catch(() => {});
+    });
+  }
+}
+
+function logout(message = '') {
+  resetLogin(message, true);
 }
 
 $('loginForm').addEventListener('submit', async event => {
   event.preventDefault();
   const epoch = ++sessionEpoch;
+  loginPending = true;
+  sessionTask = null;
+  clearTimeout(expiryTimer);
+  const rememberMe = $('rememberMe').checked === true;
   $('loginButton').disabled = true;
   $('loginButton').querySelector('span').textContent = 'Verificando acesso…';
   $('loginMessage').hidden = true;
   try {
-    const result = await api.login($('email').value.trim(), $('senha').value);
+    await forgetTask;
     if (epoch !== sessionEpoch) return;
-    const expiration = new Date(result.expiresAt).getTime();
-    if (typeof result.token !== 'string' || !result.token || !Number.isFinite(expiration) || expiration <= Date.now()) throw new Error('O servidor devolveu um acesso inválido. Tente novamente.');
-    api.token = result.token;
-    sessionExpiresAt = expiration;
+    api.clear();
+    const result = await api.login($('email').value.trim(), $('senha').value, rememberMe);
+    if (epoch !== sessionEpoch) return;
+    validateAccess(result);
     $('senha').value = '';
-    showScreen('home');
-    $('cameraPlaceholder').hidden = false;
-    controller.activate();
-    connection(navigator.onLine === false ? 'Sem conexão' : 'Conectado', navigator.onLine === false ? 'offline' : 'online');
-    expiryTimer = setTimeout(() => logout('Seu acesso expirou. Entre novamente.'), Math.min(expiration - Date.now(), 86400000));
-    cameraWanted = false;
+    if (rememberMe) {
+      rememberedSession = { refreshToken: result.refreshToken, refreshExpiresAt: result.refreshExpiresAt };
+      let saved;
+      try { saved = await savedSession.save(result); }
+      catch {
+        if (epoch === sessionEpoch) logout('Não foi possível salvar o acesso neste aparelho. Entre novamente sem marcar Mantenha-me conectado.');
+        return;
+      }
+      if (epoch !== sessionEpoch) return;
+      rememberedSession = saved;
+    } else {
+      await savedSession.clear();
+      if (epoch !== sessionEpoch) return;
+      rememberedSession = null;
+    }
+    applyAccess(result);
   } catch (error) {
     if (epoch !== sessionEpoch) return;
     $('loginMessage').textContent = error.message || 'Não foi possível entrar. Verifique a conexão.';
     $('loginMessage').hidden = false;
   } finally {
     if (epoch === sessionEpoch) {
+      loginPending = false;
       $('loginButton').disabled = false;
       $('loginButton').querySelector('span').textContent = 'Entrar';
     }
@@ -249,13 +374,17 @@ function updatePeriod() {
 }
 function setForeground(value) {
   foreground = value;
-  if (value && api.token && Date.now() >= sessionExpiresAt) return logout('Seu acesso expirou. Entre novamente.');
+  if (value && api.token && Date.now() >= sessionExpiresAt) return renewAccess();
+  if (value && !api.token && rememberedSession && !sessionTask) restoreSavedAccess();
   syncCamera();
   if (value) updatePeriod();
 }
 document.addEventListener('visibilitychange', () => setForeground(!document.hidden));
 window.addEventListener('offline', () => { connection('Sem conexão', 'offline'); if (api.token) showScanMessage('Sem conexão. Nenhuma leitura será confirmada até o servidor responder.'); });
-window.addEventListener('online', () => connection('Aguardando confirmação', 'neutral'));
+window.addEventListener('online', () => {
+  connection('Aguardando confirmação', 'neutral');
+  if (foreground && !api.token && rememberedSession) restoreSavedAccess();
+});
 window.addEventListener('pagehide', () => setForeground(false));
 window.addEventListener('pageshow', event => { if (event.persisted && api.token) setForeground(!document.hidden); });
 if (Capacitor.isNativePlatform()) {
@@ -267,3 +396,4 @@ if (Capacitor.isNativePlatform()) {
 }
 updatePeriod();
 setInterval(updatePeriod, 60000);
+restoreSavedAccess();

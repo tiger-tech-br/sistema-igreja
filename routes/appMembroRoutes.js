@@ -2,6 +2,8 @@ const express = require('express');
 const { rateLimit } = require('express-rate-limit');
 const { createAppMembroTokenService } = require('../services/appMembroTokenService');
 const { memberCredentialResult } = require('../services/memberCredentialService');
+const { createRememberSessionService } = require('../services/rememberSessionService');
+const { createRememberSessionTransport } = require('../services/rememberSessionTransport');
 
 const fail = (res, status, message) => res.status(status).json({ success: false, message });
 const validEmail = value => typeof value === 'string' && value.length <= 150 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -22,6 +24,8 @@ function createAppMembroRouter(options = {}) {
         return 'data:image/png;base64,' + buffer.toString('base64');
     });
     const limit = options.limit || require('../middlewares/accountLimiter');
+    const rememberedSessions = options.rememberSessionService || createRememberSessionService({ now });
+    const rememberTransport = createRememberSessionTransport({ app: 'membro', appOrigin });
     const ownLimiter = (name, count) => rateLimit({
         windowMs: 60000, limit: count, identifier: name,
         // A church Wi-Fi must not make members share one polling budget.
@@ -64,10 +68,42 @@ function createAppMembroRouter(options = {}) {
             const member = await findMemberByEmail(email);
             if (!member?.senha || !await comparePassword(senha, member.senha)) return fail(res, 401, 'E-mail ou senha inválidos.');
             if (!member.email_verificado) return fail(res, 403, 'Confirme seu e-mail. Para reenviar a confirmação, use Esqueci minha senha no site da igreja.');
+            const previous = rememberTransport.isWeb(req) && rememberTransport.readCookie(req);
+            if (previous) {
+                await rememberedSessions.revoke('membro', previous);
+                rememberTransport.clear(req, res);
+            }
             const access = tokenService.issue(member);
+            const remembered = req.body?.rememberMe === true
+                ? rememberTransport.publish(req, res, await rememberedSessions.issue('membro', member)) : {};
             return res.json({ success: true, data: {
-                ...access, membro: { id: String(member.id), nome: member.nome }
+                ...access, ...remembered, membro: { id: String(member.id), nome: member.nome }
             }, message: 'Acesso realizado.' });
+        } catch (error) { next(error); }
+    });
+
+    router.post('/refresh', limit('member-app-refresh', 300), async (req, res, next) => {
+        try {
+            if (!req.is('application/json')) return fail(res, 415, 'Envie os dados de acesso em JSON.');
+            const remembered = await rememberedSessions.restore('membro', rememberTransport.read(req), findMemberById);
+            if (!remembered) {
+                rememberTransport.clear(req, res);
+                return fail(res, 401, 'Seu acesso salvo expirou. Entre novamente.');
+            }
+            const { identity, ...refresh } = remembered;
+            return res.json({ success: true, data: {
+                ...tokenService.issue(identity), ...rememberTransport.publish(req, res, refresh, { setCookie: false }),
+                membro: { id: String(identity.id), nome: identity.nome }
+            } });
+        } catch (error) { next(error); }
+    });
+
+    router.post('/logout', async (req, res, next) => {
+        try {
+            if (!req.is('application/json')) return fail(res, 415, 'Envie os dados de acesso em JSON.');
+            await rememberedSessions.revoke('membro', rememberTransport.read(req));
+            rememberTransport.clear(req, res);
+            return res.json({ success: true, data: { loggedOut: true } });
         } catch (error) { next(error); }
     });
 

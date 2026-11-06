@@ -119,7 +119,7 @@ test('cliente do membro usa somente endpoints próprios, Bearer em memória e n�
   assert.equal(calls[0].options.headers.Authorization,undefined);
   for(const call of calls.slice(1)){
     assert.equal(call.options.headers.Authorization,'Bearer member-fixture-token');
-    assert.equal(call.options.credentials,'omit');
+    assert.equal(call.options.credentials,'same-origin');
     assert.equal(call.options.cache,'no-store');
   }
   assert.equal(calls[2].url,'https://igreja.example/api/app-membro/presenca?after=12');

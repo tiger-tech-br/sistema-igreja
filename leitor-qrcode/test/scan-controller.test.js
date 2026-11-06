@@ -75,12 +75,12 @@ test('offline não envia presença e 401 exige novo login', async () => {
   assert.equal(await controller.read(qr(2)), 'inactive');
 });
 
-test('cliente usa Bearer sem cookies, não guarda senha e rejeita erro HTTP', async () => {
+test('cliente usa Bearer e cookies só da própria origem, não guarda senha e rejeita erro HTTP', async () => {
   const calls = [];
   const api = new ReaderApi(serverUrl, async (url, options) => { calls.push({ url, options }); return { ok: false, status: 401, json: async () => ({ success: false, message: 'Acesso expirado' }) }; });
   api.token = 'token-em-memoria';
   await assert.rejects(api.register(42), error => error.status === 401);
-  assert.equal(calls[0].options.credentials, 'omit');
+  assert.equal(calls[0].options.credentials, 'same-origin');
   assert.equal(calls[0].options.headers.Authorization, 'Bearer token-em-memoria');
   assert.equal(calls[0].url, `${serverUrl}/api/leitor/presenca/42`);
   api.clear();
@@ -98,4 +98,29 @@ test('fetch padrão preserva o receiver exigido pelo navegador', async t => {
   api.token = 'fixture-only';
   const result = await api.register(42);
   assert.equal(result.id, '42');
+});
+
+test('acesso salvo usa endpoints próprios sem reaproveitar o token Bearer vencido', async () => {
+  const calls = [];
+  const api = new ReaderApi(serverUrl, async (url, options) => {
+    calls.push({ url, options, body: JSON.parse(options.body) });
+    return { ok: true, status: 200, json: async () => ({ success: true, data: { loggedOut: true } }) };
+  });
+  api.token = 'expired-access-token';
+  await api.login('fixture@example.test', 'fixture-password', true);
+  await api.refresh('saved-fixture');
+  await api.logout('saved-fixture');
+  await api.refresh();
+  assert.deepEqual(calls.map(call => new URL(call.url).pathname), [
+    '/api/leitor/login', '/api/leitor/refresh', '/api/leitor/logout', '/api/leitor/refresh'
+  ]);
+  assert.equal(calls[0].body.rememberMe, true);
+  assert.deepEqual(calls[1].body, { refreshToken: 'saved-fixture' });
+  assert.deepEqual(calls[2].body, { refreshToken: 'saved-fixture' });
+  assert.deepEqual(calls[3].body, {});
+  for (const call of calls) {
+    assert.equal(call.options.headers.Authorization, undefined);
+    assert.equal(call.options.credentials, 'same-origin');
+  }
+  assert.equal(api.token, 'expired-access-token', 'o cliente só troca o acesso depois da validação da tela');
 });

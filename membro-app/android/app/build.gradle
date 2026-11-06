@@ -3,12 +3,13 @@ apply plugin: 'com.android.application'
 android {
     namespace = "br.com.assembleiadedeus.membro"
     compileSdk = rootProject.ext.compileSdkVersion
+    sourceSets.main.java.srcDir '../../../mobile-shared/android'
     defaultConfig {
         applicationId "br.com.assembleiadedeus.membro"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

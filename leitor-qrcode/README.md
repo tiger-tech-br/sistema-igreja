@@ -2,6 +2,8 @@
 
 Aplicativo exclusivo para administradores autorizados: entrar com a conta administrativa, ler o QR Code do membro e confirmar a presença no servidor do Sistema Igreja. A câmera permanece aberta entre as leituras para atender o próximo membro rapidamente.
 
+**Atualização 1.2.0:** checkbox **Mantenha-me conectado**, restauração automática do acesso por até 30 dias e área da câmera mais alta para facilitar o enquadramento. Ao reabrir com o acesso salvo, a tela inicial é exibida sem pedir e-mail e senha; a câmera continua sendo aberta pelo botão **Escanear QRCode**.
+
 Este é um projeto independente de interface e aplicativo Android, com `package.json`, dependências e compilação próprios. Ele está na subpasta `leitor-qrcode` do mesmo repositório para facilitar a entrega conjunta da API. Utiliza os cadastros e o banco existentes por meio do servidor; o APK não se conecta diretamente ao PostgreSQL.
 
 **Gerar o APK não atualiza automaticamente o servidor.** A API `/api/leitor` precisa estar implantada no servidor escolhido para o APK autenticar e registrar presenças naquele endereço. Ao atualizar este projeto, publique também as alterações correspondentes no servidor.
@@ -18,7 +20,7 @@ Este é um projeto independente de interface e aplicativo Android, com `package.
 - Avisos de QR inválido, conexão indisponível, demora do servidor e acesso expirado.
 - Aplicativo Android e versão web que compartilham a mesma interface e regras de envio.
 
-O leitor não contém gestão de membros nem substitui o painel administrativo. O aplicativo futuro do membro, que mostrará o próprio QR Code e abrirá a credencial após confirmação, é uma etapa separada. O aviso automático para esse aplicativo ainda não faz parte deste leitor.
+O leitor não contém gestão de membros nem substitui o painel administrativo. O aplicativo **Minha credencial** do membro é um projeto separado e recebe a confirmação de leitura pelo servidor compartilhado.
 
 ## Ferramentas e requisitos no Windows
 
@@ -135,7 +137,7 @@ O script `scripts/build-android.mjs`:
 2. Atualiza `android/local.properties` com o caminho local do SDK.
 3. Compila os arquivos web e sincroniza o Capacitor.
 4. Executa a compilação Android `assembleDebug`.
-5. Copia o APK para `leitor-qrcode/artifacts/igreja-leitor-debug.apk`.
+5. Copia o APK para `leitor-qrcode/artifacts/igreja-leitor-v1.2.0-debug.apk`.
 
 Se a instalação do SDK ou do Studio estiver em outro local, ajuste as variáveis para aquela sessão do PowerShell e repita a geração:
 
@@ -149,7 +151,7 @@ O arquivo gerado é um **APK de testes, assinado com chave de depuração**. Ser
 
 ## Instalar o APK no Android
 
-1. Transfira `artifacts/igreja-leitor-debug.apk` para o telefone.
+1. Transfira `artifacts/igreja-leitor-v1.2.0-debug.apk` para o telefone.
 2. Abra esse arquivo pelo aplicativo de arquivos do aparelho.
 3. Se o Android pedir permissão para instalar dessa origem, permita apenas ao aplicativo usado para abrir esse APK conhecido. Depois da instalação, essa permissão pode ser desativada novamente.
 4. Abra **Leitor de presenças** e use **Entrar** com uma conta administrativa autorizada.
@@ -157,12 +159,12 @@ O arquivo gerado é um **APK de testes, assinado com chave de depuração**. Ser
 6. Apresente um QR Code de membro e aguarde a confirmação enviada pelo servidor. A câmera continua aberta para o próximo membro.
 7. Use **Voltar** para fechar a câmera e retornar à tela inicial mantendo a conta conectada. **Sair**, disponível na tela inicial e na câmera, encerra o acesso e retorna ao login.
 
-Esta atualização Android é a versão **1.1**, código **2**. O identificador do aplicativo e a assinatura de testes permanecem os mesmos, permitindo atualizar a instalação anterior com essa assinatura.
+Esta atualização Android é a versão **1.2.0**, código **3**. O identificador do aplicativo e a assinatura de testes permanecem os mesmos, permitindo atualizar a instalação anterior com essa assinatura.
 
 Como alternativa, com telefone conectado por USB e depuração autorizada, o APK pode ser instalado pelo Platform Tools:
 
 ```powershell
-& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r '.\artifacts\igreja-leitor-debug.apk'
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r '.\artifacts\igreja-leitor-v1.2.0-debug.apk'
 ```
 
 A versão final deverá usar uma chave de assinatura própria, mantida em local privado, com cópia de segurança e senhas fora do repositório. Esse preparo será feito em uma etapa posterior; não compartilhe a chave nem a senha no aplicativo. Atualizações do mesmo aplicativo devem manter a assinatura correspondente. Consulte a [documentação de assinatura Android](https://developer.android.com/studio/publish/app-signing).
@@ -205,10 +207,12 @@ O retorno do segundo plano respeita a tela escolhida: se estiver na tela inicial
 
 - O login usa uma conta de administrador já existente no Sistema Igreja.
 - A API do leitor fornece um token com escopo exclusivo de registro de presença e validade de duas horas.
-- Esse token fica apenas na memória do aplicativo. Ao encerrar/reabrir o aplicativo, ou ao recarregar a página, é necessário entrar novamente. Ir para segundo plano não equivale necessariamente a encerrar o processo.
+- Esse token de acesso fica apenas na memória. Sem marcar **Mantenha-me conectado**, fechar o processo ou recarregar exige novo login. Com a opção marcada, uma credencial separada permite restaurar e renovar o acesso por até 30 dias, sem gravar a senha.
 - O leitor não cria uma sessão administrativa do painel e não usa cookies para autorizar a leitura.
 - O servidor verifica se o administrador ainda existe e se sua versão de autenticação continua válida antes de registrar.
-- Sair elimina o token local. A validade de uma eventual cópia do token termina com sua expiração ou revogação da identidade no servidor.
+- **Sair** elimina o acesso salvo e o token local e solicita a revogação da credencial persistente ao servidor. Uma eventual cópia do token temporário conserva a semântica anterior: expira em até duas horas ou com a revogação da identidade.
+
+O segredo persistente usa Android Keystore e AES-GCM no APK, com registro privado e chave isolados por aplicativo. No navegador, fica em cookie HttpOnly; o armazenamento web contém somente um marcador sem segredo. Consulte `mobile-shared/README.md`. O servidor precisa aplicar a migração `006_remembered_mobile_sessions.sql` para oferecer login salvo. Não há nova biblioteca ou variável de ambiente.
 
 As rotas novas são `POST /api/leitor/login`, `GET /api/leitor/sessao` e `POST /api/leitor/presenca/:id`. A API permite a origem web de `APP_URL` e a origem Android do Capacitor, `https://localhost`, sem liberar todas as origens e sem desativar as proteções do painel.
 
