@@ -9,6 +9,7 @@ function dashboard() {
     const elements = new Map();
     const events = {};
     let poll;
+    let pollingInterval;
     let requestCount = 0;
     let respond = async () => ({ ok: true, status: 200, json: async () => ({ success: true, data: { totalMembros: 12, totalPresencas: 3, ultimosAcessos: records } }) });
     class Element {
@@ -33,10 +34,10 @@ function dashboard() {
     };
     vm.runInContext(source, vm.createContext({ document, Intl, Date, Object, Map, Array, String, Number, Math, JSON, Error,
         fetch: async (...args) => { requestCount++; return respond(...args); },
-        window: { setInterval: callback => { poll = callback; } }
+        window: { setInterval: (callback, interval) => { poll = callback; pollingInterval = interval; } }
     }));
     return { document, records, events, get: document.getElementById,
-        poll: () => poll(), requests: () => requestCount, respond: fn => { respond = fn; } };
+        poll: () => poll(), interval: () => pollingInterval, requests: () => requestCount, respond: fn => { respond = fn; } };
 }
 
 const settle = () => new Promise(resolve => setImmediate(resolve));
@@ -52,6 +53,10 @@ test('dashboard has no camera or scanner navigation and keeps profile access', (
         const html = fs.readFileSync(path.join(__dirname, '../admin', file), 'utf8');
         assert.doesNotMatch(html, /período|manhã|tarde|noite|\d{2}h às \d{2}h/i);
     }
+    const html = fs.readFileSync(path.join(__dirname, '../admin/dashboard.html'), 'utf8');
+    assert.match(html, /<h2 id="tituloPresencas">Lista de Presenças<\/h2>/);
+    assert.match(html, /<p id="erroPresencas" class="attendance-error" role="status" hidden><\/p>/);
+    assert.doesNotMatch(html, /Atualização automática|atualizacaoAutomatica|live-status|Conectando|Presenças de hoje/);
     assert.doesNotMatch(source, /Html5Qrcode|getUserMedia|dashboard:attendance/);
     assert.doesNotMatch(source, /Atualizado agora|dashboardStatus/);
     assert.match(source, /\/admin\/perfil\?id=/);
@@ -62,6 +67,9 @@ test('dashboard shows every daily record and unique members, preserves data on f
     state.events.DOMContentLoaded();
     await settle();
     assert.equal(state.requests(), 1, 'initial load happens even when the tab is inactive');
+    assert.equal(state.interval(), 1000, 'the daily list still refreshes every second');
+    assert.equal(state.get('erroPresencas').hidden, true, 'successful refresh has no visible status');
+    assert.equal(state.get('erroPresencas').textContent, '');
     assert.equal(state.get('totalMembros').textContent, 12);
     assert.equal(state.get('totalPresencas').textContent, 3);
     assert.equal(state.get('totalMembrosPresentes').textContent, 2, 'a member with two valid attendance records counts once as present');
@@ -83,15 +91,21 @@ test('dashboard shows every daily record and unique members, preserves data on f
     assert.equal(table.children.length, 4);
     assert.equal(state.get('totalMembrosPresentes').textContent, 3);
     assert.equal(state.get('resumoRegistrosHoje').textContent, 4);
-    assert.equal(state.get('atualizacaoAutomatica').dataset.state, 'success');
+    assert.equal(state.get('erroPresencas').hidden, true);
     state.respond(async () => { throw new Error('Sem conexão'); });
     await state.poll();
     assert.equal(table.children.length, 4, 'last known attendance remains visible during connection loss');
     assert.equal(state.get('totalMembros').textContent, 12);
-    assert.equal(state.get('atualizacaoAutomatica').dataset.state, 'error');
+    assert.equal(state.get('erroPresencas').hidden, false);
+    assert.equal(state.get('erroPresencas').textContent, 'Sem conexão');
+    state.respond(async () => ({ ok: true, status: 200, json: async () => ({ success: true, data: { totalMembros: 12, totalPresencas: 4, ultimosAcessos: state.records } }) }));
+    await state.poll();
+    assert.equal(state.get('erroPresencas').hidden, true, 'a recovered connection hides the error again');
+    assert.equal(state.get('erroPresencas').textContent, '');
     state.respond(async () => ({ ok: false, status: 401, json: async () => ({ success: false }) }));
     await state.poll();
-    assert.equal(state.get('atualizacaoAutomatica').textContent, 'Sessão expirada. Entre novamente.');
+    assert.equal(state.get('erroPresencas').hidden, false);
+    assert.equal(state.get('erroPresencas').textContent, 'Sessão expirada. Entre novamente.');
     const before = state.requests();
     await state.poll();
     assert.equal(state.requests(), before, 'expired session stops repeated unauthorized requests');

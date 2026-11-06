@@ -330,13 +330,7 @@ table caption { padding-bottom: 18px; text-align: left; color: $muted; font-size
 .overview-grid .panel-heading h2 { font-size: 27px; }
 .overview-grid .panel-heading p { font-size: 15px; }
 .overview-attendance { display: flex; flex-direction: column; min-height: 620px; }
-.overview-attendance-title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
-.overview-attendance-title .live-status { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: $muted; font-size: 14px; font-weight: 500; }
-.live-status::before { content: ''; width: 10px; height: 10px; flex: 0 0 10px; border-radius: 50%; background: #92968c; }
-.overview-attendance-title .live-status[data-state="success"] { color: $success; }
-.live-status[data-state="success"]::before { background: $success; }
-.overview-attendance-title .live-status[data-state="error"] { color: $danger; }
-.live-status[data-state="error"]::before { background: $danger; }
+.overview-attendance .panel-heading .attendance-error { margin-top: 12px; color: $danger; }
 .overview-filters { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; margin: 5px 0 25px; }
 .date-chip { display: inline-flex; align-items: center; gap: 12px; min-height: 45px; padding: 8px 13px; border: 1px solid $line; border-radius: 8px; color: $ink; font-size: 15px; white-space: nowrap; }
 .date-chip > i { color: $muted; font-size: 19px; }
@@ -372,8 +366,7 @@ table caption { padding-bottom: 18px; text-align: left; color: $muted; font-size
   .overview-side { grid-template-columns: 1fr; }
   .overview-grid .panel-heading h2 { font-size: 24px; }
   .admin-overview .stats-grid { grid-template-columns: 1fr; }
-  .overview-attendance-title, .overview-filters { justify-content: center; }
-  .overview-attendance-title { flex-direction: column; gap: 10px; }
+  .overview-filters { justify-content: center; }
   .overview-attendance .panel-heading { text-align: center; }
   .overview-attendance-footer { flex-direction: column; justify-content: center; }
   .overview-management { text-align: center; }

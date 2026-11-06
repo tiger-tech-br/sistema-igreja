@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link rel="stylesheet" href="/admin/css/admin.css?v=3.2.0">
+    <link rel="stylesheet" href="/admin/css/admin.css?v=3.2.1">
 </head>
 <body class="admin-overview">
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -51,8 +51,9 @@
                 <div class="overview-grid">
                     <section class="panel overview-attendance" aria-labelledby="tituloPresencas">
                         <div class="panel-heading">
-                            <div class="overview-attendance-title"><h2 id="tituloPresencas">Presenças de hoje</h2><p id="atualizacaoAutomatica" class="live-status" role="status" data-state="neutral">Conectando…</p></div>
+                            <h2 id="tituloPresencas">Lista de Presenças</h2>
                             <p>Registros recebidos pelo aplicativo da recepção</p>
+                            <p id="erroPresencas" class="attendance-error" role="status" hidden></p>
                         </div>
                         <div class="overview-filters">
                             <div class="date-chip" aria-label="Data das presenças, hoje"><i class="fa-regular fa-calendar" aria-hidden="true"></i><time id="dataPresencas">Hoje</time></div>
@@ -81,6 +82,6 @@
     </div>
     <script src="/js/security.js"></script>
     <script src="/admin/js/layout/menu.js?v=3.0.0"></script>
-    <script src="/admin/js/dashboard/dashboard.js?v=3.2.0"></script>
+    <script src="/admin/js/dashboard/dashboard.js?v=3.2.1"></script>
 </body>
 </html>

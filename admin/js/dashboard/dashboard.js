@@ -1,7 +1,7 @@
 (() => {
     const byId = (id) => document.getElementById(id);
     const table = byId('tabelaUltimos');
-    const automatic = byId('atualizacaoAutomatica');
+    const errorStatus = byId('erroPresencas');
     let loading = false;
     let sessionExpired = false;
     let hasData = false;
@@ -14,10 +14,10 @@
         if (element && element.textContent !== String(value)) element.textContent = value;
     }
 
-    function message(state, detail = '') {
-        if (automatic) {
-            automatic.dataset.state = state;
-            automatic.textContent = state === 'success' ? 'Atualização automática' : state === 'error' ? detail || 'Atualização interrompida' : 'Conectando…';
+    function showError(detail = '') {
+        if (errorStatus) {
+            errorStatus.textContent = detail;
+            errorStatus.hidden = !detail;
         }
     }
 
@@ -119,9 +119,9 @@
             if (Number.isFinite(Number(total))) text('totalPresencas', Number(total));
             renderAttendance();
             renderSummary();
-            message('success');
+            showError();
         } catch (error) {
-            message('error', sessionExpired ? 'Sessão expirada. Entre novamente.' : error.message || 'Não foi possível atualizar o painel. Tentando novamente…');
+            showError(sessionExpired ? 'Sessão expirada. Entre novamente.' : error.message || 'Não foi possível atualizar o painel. Tentando novamente…');
             if (!hasData && table) {
                 const cell = table.querySelector('td');
                 if (cell) cell.textContent = sessionExpired ? 'Entre novamente para consultar as presenças.' : 'Não foi possível carregar as presenças. Tentando novamente…';
