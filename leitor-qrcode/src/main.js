@@ -25,7 +25,6 @@ let rememberedSession = null;
 let sessionTask = null;
 let forgetTask = Promise.resolve();
 let loginPending = false;
-const periodLabels = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
 
 function showScreen(screen) {
   activeScreen = screen;
@@ -166,7 +165,7 @@ function renderAttendance(member) {
   $('memberRole').textContent = [member.cargo || 'Membro', member.ministerio ? `Ministério de ${member.ministerio}` : null].filter(Boolean).join(' • ');
   $('memberRegistration').textContent = member.matricula ? `Matrícula ${member.matricula}` : '';
   $('memberRegistration').hidden = !member.matricula;
-  $('memberTime').textContent = [periodLabels[member.periodo], member.data, member.horario].filter(Boolean).join(' • ');
+  $('memberTime').textContent = [member.data, member.horario].filter(Boolean).join(' • ');
   $('nextReading').textContent = cameraWanted ? 'Pronto para a próxima leitura' : 'Ative a câmera para continuar';
 }
 
@@ -368,16 +367,11 @@ $('torchButton').addEventListener('click', async () => {
   } catch { showScanMessage('A lanterna não está disponível nesta câmera.'); }
 });
 
-function updatePeriod() {
-  const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Sao_Paulo', hour: '2-digit', hourCycle: 'h23' }).format(new Date()));
-  $('currentPeriod').textContent = hour < 12 ? 'Manhã' : hour < 18 ? 'Tarde' : 'Noite';
-}
 function setForeground(value) {
   foreground = value;
   if (value && api.token && Date.now() >= sessionExpiresAt) return renewAccess();
   if (value && !api.token && rememberedSession && !sessionTask) restoreSavedAccess();
   syncCamera();
-  if (value) updatePeriod();
 }
 document.addEventListener('visibilitychange', () => setForeground(!document.hidden));
 window.addEventListener('offline', () => { connection('Sem conexão', 'offline'); if (api.token) showScanMessage('Sem conexão. Nenhuma leitura será confirmada até o servidor responder.'); });
@@ -394,6 +388,4 @@ if (Capacitor.isNativePlatform()) {
     else App.minimizeApp().catch(() => {});
   }).catch(() => {});
 }
-updatePeriod();
-setInterval(updatePeriod, 60000);
 restoreSavedAccess();

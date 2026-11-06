@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link rel="stylesheet" href="/admin/css/admin.css?v=3.1.0">
+    <link rel="stylesheet" href="/admin/css/admin.css?v=3.2.0">
 </head>
 <body class="admin-page admin-attendance-page">
     <div class="overlay" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
         <aside class="sidebar" id="adminSidebar">
             <a class="sidebar-brand" href="/dashboard" aria-label="Visão geral da igreja">
                 <i class="sidebar-symbol fa-solid fa-church" aria-hidden="true"></i>
-                <span class="sidebar-brand-title">Assembleia de Deus</span>
+                <span class="sidebar-brand-title">Assembléia de Deus</span>
                 <span class="sidebar-brand-subtitle">Gestão de membros</span>
             </a>
             <nav aria-label="Navegação administrativa">
@@ -29,7 +29,6 @@
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <div class="sidebar-user"><span class="admin-avatar" aria-hidden="true">AD</span><span>Administrador</span></div>
                 <a class="sidebar-logout" href="/logout-admin"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Sair</a>
             </div>
         </aside>
@@ -39,13 +38,12 @@
                 <div class="admin-account"><span>Administrador</span><span class="admin-avatar" aria-hidden="true">AD</span></div>
             </header>
             <div class="page-content">
-            <div class="admin-page-heading page-heading"><div class="page-heading-copy page-intro"><h1>Presenças</h1><p>Acompanhe as presenças registradas hoje, por membro e período.</p></div></div>
+            <div class="admin-page-heading page-heading"><div class="page-heading-copy page-intro"><h1>Presenças</h1><p>Acompanhe os membros e os horários das presenças registradas hoje.</p></div></div>
             <section class="presencas">
-                <div class="attendance-toolbar"><p>Até três presenças por membro por dia: uma em cada período, no horário de São Paulo.</p><button type="button" id="atualizar" class="btn btn-secondary"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>Atualizar lista</button></div>
-                <div class="attendance-periods" aria-label="Horários dos períodos"><span><i class="fa-solid fa-sun" aria-hidden="true"></i>Manhã · 00h–11h59</span><span><i class="fa-solid fa-cloud-sun" aria-hidden="true"></i>Tarde · 12h–17h59</span><span><i class="fa-solid fa-moon" aria-hidden="true"></i>Noite · 18h–23h59</span></div>
+                <div class="attendance-toolbar"><p>Registros recebidos pelo aplicativo da recepção.</p><button type="button" id="atualizar" class="btn btn-secondary"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>Atualizar lista</button></div>
                 <p id="status" class="attendance-status" role="status">Carregando presenças...</p>
                 <div class="tabela-container admin-panel panel">
-                    <table><caption>Presenças registradas hoje</caption><thead><tr><th scope="col">Nome</th><th scope="col">Cargo</th><th scope="col">Ministério</th><th scope="col">Data</th><th scope="col">Período</th><th scope="col">Primeira leitura no período</th></tr></thead><tbody id="presencas"></tbody></table>
+                    <table><caption>Presenças registradas hoje</caption><thead><tr><th scope="col">Nome</th><th scope="col">Cargo</th><th scope="col">Ministério</th><th scope="col">Data</th><th scope="col">Horário</th></tr></thead><tbody id="presencas"></tbody></table>
                 </div>
             </section>
             </div>
@@ -53,6 +51,6 @@
     </div>
     <script src="/js/security.js"></script>
     <script src="/admin/js/layout/menu.js?v=3.0.0"></script>
-    <script src="/admin/js/presencas.js"></script>
+    <script src="/admin/js/presencas.js?v=3.2.0"></script>
 </body>
 </html>

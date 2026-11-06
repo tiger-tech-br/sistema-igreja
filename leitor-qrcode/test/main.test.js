@@ -337,13 +337,32 @@ test('a última presença confirmada continua visível após uma leitura com fal
   screen.camera.onRead(`${server}/validar?id=1`);
   await settle(() => screen.elements.get('lastAttendance').hidden === false);
   assert.equal(screen.elements.get('memberName').textContent, 'Primeiro membro');
+  assert.equal(screen.elements.get('memberTime').textContent, '04/11/2026 • 19:42:00');
   screen.camera.onRead(`${server}/validar?id=2`);
   await settle(() => !screen.elements.get('scanMessage').hidden && screen.elements.get('scanMessage').dataset.state === 'error');
   assert.equal(screen.elements.get('lastAttendance').hidden, false);
   assert.equal(screen.elements.get('memberName').textContent, 'Primeiro membro');
+  assert.equal(screen.elements.get('memberTime').textContent, '04/11/2026 • 19:42:00');
   assert.match(screen.elements.get('scanMessage').textContent, /Falha de conexão/);
   assert.equal(screen.camera.starts, 1);
   assert.equal(screen.camera.stops, 0);
+});
+
+test('a confirmação mostra somente a data e o horário registrados, inclusive na leitura repetida', async () => {
+  assert.doesNotMatch(html, /Período|Manhã|Tarde|Noite|currentPeriod/);
+  for (const [periodo, horario] of [['manha', '09:12:31'], ['tarde', '14:18:42'], ['noite', '19:42:00']]) {
+    const screen = fixture({ native: true, register: async id => ({
+      id, nome: 'Membro confirmado', periodo, data: '04/11/2026', horario, alreadyRecorded: true
+    }) });
+    await screen.login();
+    await screen.openScanner();
+    screen.camera.onRead(`${server}/validar?id=1`);
+    await settle(() => screen.elements.get('lastAttendance').hidden === false);
+    assert.equal(screen.elements.get('confirmationText').textContent, 'Presença já confirmada');
+    assert.equal(screen.elements.get('memberTime').textContent, `04/11/2026 • ${horario}`);
+    assert.equal(screen.camera.starts, 1);
+    assert.equal(screen.camera.stops, 0);
+  }
 });
 
 test('sair durante a abertura da câmera encerra a abertura pendente e mantém o login', async () => {

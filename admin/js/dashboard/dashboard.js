@@ -1,14 +1,10 @@
 (() => {
     const byId = (id) => document.getElementById(id);
     const table = byId('tabelaUltimos');
-    const status = byId('dashboardStatus');
     const automatic = byId('atualizacaoAutomatica');
-    const periodButtons = Array.from(document.querySelectorAll('[data-periodo]'));
-    const periodNames = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
     let loading = false;
     let sessionExpired = false;
     let hasData = false;
-    let selectedPeriod = null;
     let attendance = [];
     let tableSignature = null;
     let displayedDay = null;
@@ -18,14 +14,10 @@
         if (element && element.textContent !== String(value)) element.textContent = value;
     }
 
-    function message(value, state = 'neutral') {
-        if (status) {
-            status.textContent = value;
-            status.dataset.state = state;
-        }
+    function message(state, detail = '') {
         if (automatic) {
             automatic.dataset.state = state;
-            automatic.textContent = state === 'success' ? 'Atualização automática' : state === 'error' ? 'Atualização interrompida' : 'Conectando…';
+            automatic.textContent = state === 'success' ? 'Atualização automática' : state === 'error' ? detail || 'Atualização interrompida' : 'Conectando…';
         }
     }
 
@@ -34,21 +26,16 @@
         return words.length ? (words[0][0] + (words.length > 1 ? words.at(-1)[0] : '')).toLocaleUpperCase('pt-BR') : '—';
     }
 
-    function updatePeriod() {
+    function updateDate() {
         const now = new Date();
         const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now);
         const date = Object.fromEntries(parts.map(part => [part.type, part.value]));
         const day = `${date.year}-${date.month}-${date.day}`;
-        const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Sao_Paulo', hour: '2-digit', hourCycle: 'h23' }).format(now));
-        const period = hour < 12 ? 'manha' : hour < 18 ? 'tarde' : 'noite';
-        text('periodoAtual', periodNames[period]);
-        text('periodoHorario', { manha: '00h às 11h59', tarde: '12h às 17h59', noite: '18h às 23h59' }[period]);
         text('dataPresencas', new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: 'short', year: 'numeric' }).format(now));
         if (byId('dataPresencas')) byId('dataPresencas').dateTime = day;
         if (displayedDay !== day) {
             const changedDay = displayedDay !== null;
             displayedDay = day;
-            selectedPeriod = period;
             if (changedDay) {
                 attendance = [];
                 hasData = false;
@@ -56,33 +43,27 @@
                 renderAttendance();
                 renderSummary();
             }
-            updateButtons();
         }
-    }
-
-    function updateButtons() {
-        for (const button of periodButtons) button.setAttribute('aria-pressed', String(button.dataset.periodo === selectedPeriod));
     }
 
     function renderAttendance() {
         if (!table) return;
-        const records = attendance.filter(record => record.periodo === selectedPeriod);
-        const signature = JSON.stringify([selectedPeriod, records, hasData]);
+        const signature = JSON.stringify([attendance, hasData]);
         if (signature === tableSignature) return;
         tableSignature = signature;
         table.replaceChildren();
-        text('totalPeriodo', `${records.length} ${records.length === 1 ? 'registro' : 'registros'} no período`);
-        if (!records.length) {
+        text('totalRegistrosHoje', `${attendance.length} ${attendance.length === 1 ? 'registro' : 'registros'} hoje`);
+        if (!attendance.length) {
             const row = document.createElement('tr');
             const cell = document.createElement('td');
-            cell.colSpan = 5;
+            cell.colSpan = 4;
             cell.className = 'empty-table';
-            cell.textContent = hasData ? `Nenhuma presença registrada no período da ${String(periodNames[selectedPeriod] || '').toLocaleLowerCase('pt-BR')}.` : 'Carregando presenças…';
+            cell.textContent = hasData ? 'Nenhuma presença registrada hoje.' : 'Carregando presenças…';
             row.appendChild(cell);
             table.appendChild(row);
             return;
         }
-        for (const record of records) {
+        for (const record of attendance) {
             const row = document.createElement('tr');
             const nameCell = document.createElement('td');
             const id = String(record.id ?? '');
@@ -108,12 +89,6 @@
                 cell.textContent = value || '—';
                 row.appendChild(cell);
             }
-            const periodCell = document.createElement('td');
-            const badge = document.createElement('span');
-            badge.className = 'period-badge';
-            badge.textContent = periodNames[record.periodo] || '—';
-            periodCell.appendChild(badge);
-            row.appendChild(periodCell);
             const time = document.createElement('td');
             time.textContent = record.horario || '—';
             row.appendChild(time);
@@ -122,18 +97,13 @@
     }
 
     function renderSummary() {
-        const counts = { manha: 0, tarde: 0, noite: 0 };
-        for (const record of attendance) if (Object.hasOwn(counts, record.periodo)) counts[record.periodo]++;
-        const largest = Math.max(1, ...Object.values(counts));
-        for (const [period, count] of Object.entries(counts)) {
-            text(`quantidade-${period}`, hasData ? count : '—');
-            const progress = byId(`barra-${period}`);
-            if (progress) { progress.max = largest; progress.value = count; }
-        }
+        const memberIds = new Set(attendance.map(record => String(record.id ?? '')).filter(id => /^[1-9]\d{0,9}$/.test(id)));
+        text('totalMembrosPresentes', hasData ? memberIds.size : '—');
+        text('resumoRegistrosHoje', hasData ? attendance.length : '—');
     }
 
     async function loadDashboard(force = false) {
-        updatePeriod();
+        updateDate();
         if (loading || sessionExpired || (!force && document.hidden)) return;
         loading = true;
         try {
@@ -149,9 +119,9 @@
             if (Number.isFinite(Number(total))) text('totalPresencas', Number(total));
             renderAttendance();
             renderSummary();
-            message('Atualizado agora', 'success');
+            message('success');
         } catch (error) {
-            message(sessionExpired ? 'Sessão expirada. Entre novamente.' : error.message || 'Não foi possível atualizar o painel. Tentando novamente…', 'error');
+            message('error', sessionExpired ? 'Sessão expirada. Entre novamente.' : error.message || 'Não foi possível atualizar o painel. Tentando novamente…');
             if (!hasData && table) {
                 const cell = table.querySelector('td');
                 if (cell) cell.textContent = sessionExpired ? 'Entre novamente para consultar as presenças.' : 'Não foi possível carregar as presenças. Tentando novamente…';
@@ -159,11 +129,6 @@
         } finally { loading = false; }
     }
 
-    for (const button of periodButtons) button.addEventListener('click', () => {
-        selectedPeriod = button.dataset.periodo;
-        updateButtons();
-        renderAttendance();
-    });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) loadDashboard(); });
     document.addEventListener('DOMContentLoaded', () => {
         loadDashboard(true);
