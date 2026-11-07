@@ -50,7 +50,7 @@
         <form id="registrationForm" novalidate>
           <fieldset class="form-block"><legend>Dados pessoais</legend>
             <div class="field-group"><label for="registrationName">Nome completo</label><div class="input-wrap"><input id="registrationName" name="nome" type="text" autocomplete="name" maxlength="150" placeholder="Como você se chama?" required></div></div>
-            <div class="field-group"><label for="registrationBirth">Data de nascimento</label><div class="input-wrap"><input id="registrationBirth" name="dataNascimento" type="date" min="1900-01-01" autocomplete="bday" aria-describedby="birthHelp" required></div><p id="birthHelp" class="field-hint">Cadastro para pessoas com 18 anos ou mais.</p></div>
+            <div class="field-group"><label for="registrationBirth">Data de nascimento</label><div class="input-wrap"><input id="registrationBirth" name="dataNascimento" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" autocomplete="bday" aria-describedby="birthHelp" required></div><p id="birthHelp" class="field-hint">Digite no formato DD/MM/AAAA. Cadastro para pessoas com 18 anos ou mais.</p></div>
           </fieldset>
           <fieldset class="form-block"><legend>Seu acesso</legend>
             <div class="field-group"><label for="registrationEmail">E-mail</label><div class="input-wrap"><svg aria-hidden="true"><use href="#mail"/></svg><input id="registrationEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="150" placeholder="Digite seu e-mail" required></div></div>

@@ -2,6 +2,8 @@
 
 Aplicativo Android exclusivo do membro, separado do **Leitor de presenças** do administrador. Nome no aparelho: **Minha credencial**. Pacote: `br.com.assembleiadedeus.membro`. O ícone claro com cartão de identificação diferencia este aplicativo do leitor escuro. Os dois podem ser instalados juntos.
 
+**Atualização 1.2.1, código Android 6:** nascimento digitado diretamente no formato **DD/MM/AAAA**, com teclado numérico e barras automáticas, no APK e no navegador. O calendário nativo foi substituído para facilitar o preenchimento. As validações de data e idade permanecem iguais. A preferência de interface está registrada no `AGENTS.md` do projeto.
+
 **Atualização 1.2.0, código Android 5:** cadastro pelo próprio aplicativo, com formulário de nome, nascimento, e-mail, senha e autorizações. Após o cadastro, a conta fica liberada e o aplicativo volta ao login, sem pedir aprovação da administração ou confirmação por e-mail. Depois de entrar, o membro apresenta seu QR Code e continua com o fluxo de confirmação e credencial existente. A área **Minha conta** permite excluir o próprio cadastro mediante senha atual.
 
 **Atualização 1.1.1, código Android 4:** nome da igreja padronizado para **Assembléia de Deus** nas telas e no manifesto web. A regra interna das presenças e o fluxo QR Code → confirmação → credencial permanecem iguais, sem indicação de períodos nas telas.
@@ -92,7 +94,7 @@ npm run build:apk
 
 O comando compila a interface, sincroniza o projeto Android, executa `assembleDebug` e entrega:
 
-`artifacts/minha-credencial-v1.2.0-debug.apk`
+`artifacts/minha-credencial-v1.2.1-debug.apk`
 
 Para abrir o projeto Android existente:
 

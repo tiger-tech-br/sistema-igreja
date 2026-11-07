@@ -198,16 +198,36 @@ function closeRegistration() {
   if (email) $('email').value = email;
 }
 
+function maskBirthDate(event) {
+  const input = $('registrationBirth');
+  const raw = input.value;
+  const cursor = typeof input.selectionStart === 'number' ? input.selectionStart : raw.length;
+  const beforeCursor = Math.min(raw.slice(0, cursor).replace(/\D/g, '').length, 8);
+  const digits = raw.replace(/\D/g, '').slice(0, 8);
+  const formatted = [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4, 8)].filter(Boolean).join('/');
+  let position = 0;
+  let seen = 0;
+  while (position < formatted.length && seen < beforeCursor) {
+    if (/\d/.test(formatted[position])) seen++;
+    position++;
+  }
+  // Forward deletion can remove an inserted slash. Move past it so the next
+  // Delete reaches a digit; Backspace naturally stays before the slash.
+  if (event.inputType === 'deleteContentForward' && formatted[position] === '/') position++;
+  input.value = formatted;
+  input.setSelectionRange?.(position, position);
+}
+
 function registrationData() {
   const nome = $('registrationName').value.trim();
   const email = $('registrationEmail').value.trim().toLowerCase();
   const senha = $('registrationPassword').value;
-  const birth = $('registrationBirth').value;
+  const birth = $('registrationBirth').value.trim();
   if (!/^[A-Za-zÀ-ÿ\s]{3,150}$/.test(nome)) throw new Error('Informe seu nome completo com pelo menos 3 letras.');
   if (email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Informe um e-mail válido.');
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birth);
+  const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(birth);
   if (!match) throw new Error('Informe uma data de nascimento válida.');
-  const [, yearText, monthText, dayText] = match;
+  const [, dayText, monthText, yearText] = match;
   const [year, month, day] = [yearText, monthText, dayText].map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
   const today = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).map(part => [part.type, part.value]));
@@ -604,6 +624,7 @@ $('registrationCancelButton').addEventListener('click', closeRegistration);
 $('registrationLoginButton').addEventListener('click', closeRegistration);
 $('retryRegistrationConfigButton').addEventListener('click', loadRegistrationConfig);
 $('registrationForm').addEventListener('submit', submitRegistration);
+$('registrationBirth').addEventListener('input', maskBirthDate);
 $('qrAccountButton').addEventListener('click', openAccount);
 $('credentialAccountButton').addEventListener('click', openAccount);
 $('accountBackButton').addEventListener('click', closeAccount);

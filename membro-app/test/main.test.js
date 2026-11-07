@@ -462,11 +462,78 @@ test('a QR request rejected immediately after restore cannot deadlock or renew i
 });
 
 function fillRegistration(screen, overrides={}) {
-  const values={registrationName:'Maria de teste',registrationBirth:'1990-01-01',registrationEmail:'  MARIA@example.test  ',registrationPassword:'senha-exclusiva-teste',registrationConfirmPassword:'senha-exclusiva-teste',...overrides};
+  const values={registrationName:'Maria de teste',registrationBirth:'01/01/1990',registrationEmail:'  MARIA@example.test  ',registrationPassword:'senha-exclusiva-teste',registrationConfirmPassword:'senha-exclusiva-teste',...overrides};
   for(const [id,value] of Object.entries(values))screen.elements.get(id).value=value;
   screen.elements.get('registrationNotice').checked=true;
   screen.elements.get('registrationConsent').checked=true;
 }
+
+test('nascimento usa digitação numérica DD/MM/AAAA sem calendário e máscara aceita apagar, corrigir e colar',async()=>{
+  const screen=fixture();await screen.ready();await screen.click('openRegistrationButton');
+  const birth=screen.elements.get('registrationBirth');
+  assert.equal(birth.type,'text');
+  assert.equal(birth.getAttribute('inputmode'),'numeric');
+  assert.equal(birth.getAttribute('maxlength'),'10');
+  assert.equal(birth.getAttribute('placeholder'),'DD/MM/AAAA');
+  birth.selectionStart=0;birth.selectionEnd=0;
+  birth.setSelectionRange=function(start,end){this.selectionStart=start;this.selectionEnd=end;};
+  const edit=async(value,cursor,inputType='insertText')=>{birth.value=value;birth.selectionStart=cursor;birth.selectionEnd=cursor;await birth.fire('input',{inputType});};
+  for(const digit of '01021992'){
+    const cursor=birth.selectionStart;
+    await edit(birth.value.slice(0,cursor)+digit+birth.value.slice(birth.selectionEnd),cursor+1);
+  }
+  assert.equal(birth.value,'01/02/1992');
+  assert.equal(birth.selectionStart,10);
+  await edit(birth.value.slice(0,-1),9,'deleteContentBackward');
+  assert.equal(birth.value,'01/02/199');
+  await edit(birth.value+'2',10);
+  assert.equal(birth.value,'01/02/1992');
+  await edit('29'+birth.value.slice(2),2,'insertReplacementText');
+  assert.equal(birth.value,'29/02/1992');
+  assert.equal(birth.selectionStart,2,'corrigir o dia não joga o cursor para o fim');
+  await edit('2902/1992',2,'deleteContentBackward');
+  assert.equal(birth.selectionStart,2,'Backspace na barra reposiciona antes dela para poder continuar apagando');
+  await edit('2'+birth.value.slice(2),1,'deleteContentBackward');
+  assert.equal(birth.value.replace(/\D/g,'').length,7);
+  await edit('',0,'deleteContentBackward');
+  assert.equal(birth.value,'');
+  await edit(' 29-02.2000abc123456',20,'insertFromPaste');
+  assert.equal(birth.value,'29/02/2000');
+  assert.equal(birth.selectionStart,10);
+  await edit('15/06/1990',10,'insertFromPaste');
+  assert.equal(birth.value,'15/06/1990');
+});
+
+test('nascimento digitado valida calendário real e bissexto e envia DD/MM/AAAA sem conversão de fuso',async()=>{
+  const screen=fixture();await screen.ready();await screen.click('openRegistrationButton');
+  for(const invalid of ['31/04/1990','29/02/1900','29/02/1991','00/12/1990','01/13/1990','01/01/1899','1990-01-01','1/1/1990']){
+    fillRegistration(screen,{registrationBirth:invalid});
+    await screen.elements.get('registrationForm').fire('submit');await settle();
+    assert.equal(screen.calls.register.length,0,invalid);
+    assert.equal(screen.elements.get('registrationMessage').hidden,false,invalid);
+  }
+  fillRegistration(screen,{registrationBirth:'29/02/2000'});
+  await screen.elements.get('registrationForm').fire('submit');await settle();
+  assert.equal(screen.calls.register.length,1);
+  assert.equal(screen.calls.register[0].data.dataNascimento,'29/02/2000');
+  assert.equal(screen.elements.get('loginScreen').hidden,false);
+});
+
+test('limite de 18 anos para data digitada segue o dia atual de São Paulo',async()=>{
+  const screen=fixture();await screen.ready();await screen.click('openRegistrationButton');
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date()).map(part=>[part.type,part.value]));
+  const year=Number(parts.year)-18;
+  const month=Number(parts.month),day=Number(parts.day);
+  const tomorrow=new Date(Date.UTC(year,month-1,day+1));
+  const format=date=>`${String(date.getUTCDate()).padStart(2,'0')}/${String(date.getUTCMonth()+1).padStart(2,'0')}/${date.getUTCFullYear()}`;
+  fillRegistration(screen,{registrationBirth:format(tomorrow)});
+  await screen.elements.get('registrationForm').fire('submit');await settle();
+  assert.equal(screen.calls.register.length,0);
+  assert.match(screen.elements.get('registrationMessage').textContent,/18 anos/);
+  fillRegistration(screen,{registrationBirth:`${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`});
+  await screen.elements.get('registrationForm').fire('submit');await settle();
+  assert.equal(screen.calls.register.length,1);
+});
 
 test('cadastro usa somente os dados mínimos e retorna ao login sem autenticar nem abrir credencial',async()=>{
   const screen=fixture({native:true});
@@ -493,8 +560,8 @@ test('cadastro usa somente os dados mínimos e retorna ao login sem autenticar n
 test('cadastro valida idade, datas inexistentes, senha em bytes, confirmação e as duas autorizações antes de enviar',async()=>{
   const screen=fixture();await screen.ready();await screen.click('openRegistrationButton');
   const cases=[
-    [{registrationBirth:'2020-01-01'},/18 anos/],
-    [{registrationBirth:'1990-02-31'},/data de nascimento/],
+    [{registrationBirth:'01/01/2020'},/18 anos/],
+    [{registrationBirth:'31/02/1990'},/data de nascimento/],
     [{registrationName:'12'},/nome completo/],
     [{registrationEmail:'email-inválido'},/e-mail válido/],
     [{registrationPassword:'curta',registrationConfirmPassword:'curta'},/12 caracteres/],
