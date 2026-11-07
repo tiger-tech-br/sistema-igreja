@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link rel="stylesheet" href="/css/portal.css?v=4.1.0">
+    <link rel="stylesheet" href="/css/portal.css?v=4.2.0">
 </head>
 <body class="portal-page member-profile">
     <a class="portal-skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -18,7 +18,7 @@
             <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 3v17m-6-11h12M10 59V35l22-17 22 17v24H38V44a6 6 0 0 0-12 0v15H10Zm-6 0h56"/></svg>
             <span><strong>Assembléia de Deus</strong><small>Lugar de Esperança</small></span>
         </a>
-        <nav class="portal-nav" aria-label="Navegação da área do membro">
+        <nav class="portal-nav" id="perfilNavegacao" aria-label="Navegação da área do membro">
             <a href="/">Início</a>
             <a href="/perfil" aria-current="page">Meu perfil</a>
             <a href="/membros">Membros</a>
@@ -28,7 +28,7 @@
     </header>
     <main id="conteudo" class="portal-main perfil-page">
         <header class="portal-heading member-page-heading">
-            <div><span class="portal-eyebrow">Área do membro</span><h1>Meu perfil</h1><p>Seu vínculo com a igreja e sua credencial em um só lugar.</p></div>
+            <div><span class="portal-eyebrow">Área do membro</span><h1 id="tituloPerfil">Meu perfil</h1><p id="descricaoPerfil">Seu vínculo com a igreja e sua credencial em um só lugar.</p></div>
             <div class="perfil-acoes"><a href="/" class="portal-button portal-button-secondary btn-voltar-home" id="linkVoltarPerfil"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Voltar ao início</span></a></div>
         </header>
         <section class="portal-card perfil-card member-identity" aria-label="Identificação do membro">
@@ -66,12 +66,24 @@
                     <div class="info"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i><div><strong>Validade</strong><span id="validade"></span></div></div>
                 </div>
                 <a class="member-privacy-link" href="/privacidade"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>Privacidade e seus dados</a>
-                <a class="member-delete-link" href="/privacidade#excluir-cadastro"><i class="fa-solid fa-user-xmark" aria-hidden="true"></i>Excluir meu cadastro</a>
+                <div class="member-account-action" id="exclusaoAutenticada" hidden><button class="portal-button account-delete-start" id="abrirExclusao" type="button" aria-controls="excluir-conta" aria-expanded="false"><i class="fa-solid fa-user-xmark" aria-hidden="true"></i>Excluir minha conta</button></div>
             </aside>
         </div>
+        <section class="portal-card account-deletion profile-account-deletion" id="excluir-conta" aria-labelledby="tituloExclusao" data-member-deletion hidden>
+            <h2 id="tituloExclusao">Excluir minha conta</h2>
+            <p id="exclusaoLogin" class="account-delete-login" hidden>Entre na sua conta pela <a href="/">Área do membro</a> para continuar.</p>
+            <form id="formExclusao" hidden>
+                <p class="account-delete-warning">Esta ação exclui definitivamente seu cadastro, suas presenças e suas solicitações de privacidade. Seu QR Code deixará de funcionar e você sairá da conta.</p>
+                <label for="senhaExclusao">Confirme sua senha atual<input id="senhaExclusao" type="password" autocomplete="current-password" required></label>
+                <div class="account-delete-actions"><button class="portal-button portal-button-secondary" id="cancelarExclusao" type="button">Cancelar</button><button class="portal-button account-delete-confirm" id="confirmarExclusao" type="submit">Excluir definitivamente</button></div>
+            </form>
+            <p id="resultadoExclusao" class="privacy-feedback" role="status"></p>
+            <a id="exclusaoConcluida" class="portal-button portal-button-secondary" href="/" hidden>Voltar ao início</a>
+        </section>
     </main>
     <footer class="portal-footer perfil-privacidade"><p>Assembléia de Deus <span aria-hidden="true">·</span> Lugar de Esperança</p><a href="/privacidade">Privacidade e seus dados</a></footer>
     <script src="/js/security.js"></script>
-    <script src="/js/perfil/perfil.js?v=4.0.0"></script>
+    <script src="/js/perfil/perfil.js?v=4.2.0"></script>
+    <script src="/js/excluir-conta.js?v=2.0.0"></script>
 </body>
 </html>

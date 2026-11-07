@@ -7,9 +7,12 @@
     const confirm = byId('confirmarExclusao');
     const cancel = byId('cancelarExclusao');
     const result = byId('resultadoExclusao');
+    const panel = byId('excluir-conta');
     let submitting = false;
     let deleted = false;
     start.addEventListener('click', () => {
+        panel.hidden = false;
+        start.setAttribute('aria-expanded', 'true');
         start.hidden = true;
         form.hidden = false;
         result.textContent = '';
@@ -20,6 +23,8 @@
         form.reset();
         form.hidden = true;
         start.hidden = false;
+        panel.hidden = true;
+        start.setAttribute('aria-expanded', 'false');
         result.textContent = '';
         start.focus();
     });
@@ -39,6 +44,7 @@
             if (!response.ok || !data.success || data.data?.deleted !== true) throw new Error(data.message || 'Não foi possível excluir seu cadastro.');
             deleted = true;
             form.reset();
+            form.hidden = true;
             byId('exclusaoAutenticada').hidden = true;
             byId('exclusaoLogin').hidden = true;
             byId('exclusaoConcluida').hidden = false;

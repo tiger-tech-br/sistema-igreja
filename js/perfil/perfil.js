@@ -51,6 +51,8 @@ const qrCode =
 const qrStatus =
     document.getElementById("perfilQrStatus");
 
+let perfilExcluido = false;
+
 function configurarVoltarPerfil() {
 
     if (!linkVoltarPerfil) {
@@ -140,6 +142,7 @@ function mostrarCampo(
 // =====================================
 
 function renderizarPerfil(membro) {
+    if (perfilExcluido) return;
 
     mostrarCampo(
 
@@ -244,10 +247,12 @@ function renderizarPerfil(membro) {
     if (typeof membro.qr_code === "string" && membro.qr_code.trim()) {
         if (qrStatus) qrStatus.textContent = "Carregando seu QR Code...";
         qrCode.onload = () => {
+            if (perfilExcluido) return;
             qrCode.hidden = false;
             if (qrStatus) qrStatus.hidden = true;
         };
         qrCode.onerror = () => {
+            if (perfilExcluido) return;
             qrCode.hidden = true;
             if (qrStatus) {
                 qrStatus.hidden = false;
@@ -267,6 +272,7 @@ function renderizarPerfil(membro) {
 // =====================================
 
 async function carregarPerfil() {
+    if (perfilExcluido) return;
 
     try {
 
@@ -285,6 +291,8 @@ async function carregarPerfil() {
         const resultado =
 
             await resposta.json();
+
+        if (perfilExcluido) return;
 
         if (!resposta.ok) {
 
@@ -305,6 +313,7 @@ async function carregarPerfil() {
         );
 
     } catch (erro) {
+        if (perfilExcluido) return;
 
         console.error(erro);
 
@@ -340,3 +349,19 @@ document.addEventListener(
     }
 
 );
+
+document.addEventListener('member:deleted', () => {
+    perfilExcluido = true;
+    for (const element of [campoNome, campoCargo, campoMatricula, campoValidade, campoCelular, campoTelefone, campoEmail, campoEndereco, campoMinisterio, campoSexo, campoEstadoCivil, campoNascimento]) element.textContent = '';
+    qrCode.onload = null;
+    qrCode.onerror = null;
+    qrCode.removeAttribute('src');
+    qrCode.hidden = true;
+    if (qrStatus) { qrStatus.textContent = ''; qrStatus.hidden = true; }
+    document.querySelectorAll('.member-identity, .member-profile-grid').forEach(element => { element.hidden = true; });
+    document.querySelectorAll('#perfilNavegacao a[href="/perfil"], #perfilNavegacao a[href="/membros"], #perfilNavegacao a[href="/logout"]').forEach(element => { element.hidden = true; });
+    const title = document.getElementById('tituloPerfil');
+    const description = document.getElementById('descricaoPerfil');
+    if (title) title.textContent = 'Conta excluída';
+    if (description) description.textContent = 'Seu cadastro foi removido e você saiu da conta.';
+});

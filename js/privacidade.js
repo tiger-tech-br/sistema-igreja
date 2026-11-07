@@ -1,30 +1,23 @@
 const result=document.getElementById('resultado');
 let privacyVersion;
-let accountDeleted=false;
 async function load() {
-    if(accountDeleted)return;
     document.getElementById('areaConsentimento').hidden=true;
     const config=await fetch('/api/privacidade/config').then(r=>r.json());
-    if(accountDeleted)return;
     privacyVersion=config.version;
     document.getElementById('textoAviso').textContent=config.noticeText;
     document.getElementById('textoConsentimento').textContent=config.consentText;
     document.getElementById('responsavel').textContent=config.configured ? `Controlador: ${config.controller}. Contato: ${config.contact}. Aviso ${config.version}.` : 'As informações de contato do responsável ainda não estão disponíveis.';
     const response=await fetch('/api/privacidade/solicitacoes');
-    if(accountDeleted)return;
     const box=document.getElementById('solicitacoes'); box.replaceChildren();
     const accessNote=document.querySelector('.privacy-access-note');
     if(accessNote) accessNote.hidden=response.status!==401;
     if(response.status===401){box.textContent='Entre na sua conta para baixar dados ou registrar e acompanhar solicitações.';return;}
     const profileResponse=await fetch('/api/membros/perfil');
-    if(accountDeleted)return;
     if(profileResponse.ok){
         const profile=await profileResponse.json();
-        if(accountDeleted)return;
         document.getElementById('areaConsentimento').hidden=!config.configured || !profile.data || Boolean(profile.data.consent_at && !profile.data.consent_revoked_at);
     }
     const data=await response.json();
-    if(accountDeleted)return;
     if(!(data.data||[]).length){const empty=document.createElement('p');empty.textContent='Você ainda não registrou solicitações de privacidade.';box.appendChild(empty);}
     for(const item of data.data||[]){const p=document.createElement('p');p.textContent=`${item.criado_em} — ${item.tipo} — ${item.status}${item.resposta?' — '+item.resposta:''} — protocolo ${item.id}`;box.appendChild(p);}
 }
@@ -43,15 +36,3 @@ document.getElementById('formConsentimento').addEventListener('submit',async eve
     finally {button.disabled=false;}
 });
 load().catch(()=>{result.textContent='Não foi possível carregar a área de privacidade.';});
-document.addEventListener('member:deleted',()=>{
-    accountDeleted=true;
-    document.getElementById('areaConsentimento').hidden=true;
-    document.getElementById('formSolicitacao').hidden=true;
-    const download=document.querySelector('.privacy-download');
-    if(download) download.hidden=true;
-    document.getElementById('solicitacoes').replaceChildren();
-    document.getElementById('solicitacoes').textContent='Seu cadastro e suas solicitações foram excluídos.';
-    result.textContent='';
-    const accessNote=document.querySelector('.privacy-access-note');
-    if(accessNote) accessNote.hidden=true;
-});

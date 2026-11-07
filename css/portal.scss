@@ -119,10 +119,15 @@ body.portal-page { margin: 0; min-height: 100dvh; display: flex; flex-direction:
 // A exclusão fica acessível, com espaço para ler a consequência e cancelar.
 .account-deletion { scroll-margin-top: 30px; }
 .account-delete-login { padding: 15px; border-radius: 9px; background: #f7f8f5; font-size: 14px; }
-.account-deletion .account-delete-start { width: 100%; }
+.member-account-action { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--portal-line); }
+.member-account-action .account-delete-start { width: 100%; }
+.profile-account-deletion { margin-top: 26px; padding: 28px; }
+.profile-account-deletion > h2 { margin-bottom: 20px; }
+.profile-account-deletion form { display: grid; gap: 18px; }
+.profile-account-deletion label { display: grid; gap: 9px; }
 .account-delete-warning { padding: 16px; border: 1px solid #ead8d0; border-radius: 9px; background: #fff8f5; color: #753c27; font-size: 15px; line-height: 1.7; }
 .account-delete-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
 .account-delete-actions > button { flex: 1 1 150px; }
-.portal-page .account-delete-confirm { background: #86432e; border-color: #86432e; color: white !important; }
-.portal-page .account-delete-confirm:hover { background: #6e3422; }
-.member-delete-link { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--portal-line); color: #85432e; font-size: 15px; text-decoration: underline; text-underline-offset: 4px; }
+.portal-page .account-delete-start, .portal-page .account-delete-confirm { background: #b83232; border-color: #b83232; color: white !important; }
+.portal-page .account-delete-start:hover, .portal-page .account-delete-confirm:hover { background: #a22b2b; border-color: #a22b2b; }
+@media (max-width: 620px) { .profile-account-deletion { padding: 23px 20px; } }
