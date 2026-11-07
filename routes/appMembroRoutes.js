@@ -4,6 +4,9 @@ const { createAppMembroTokenService } = require('../services/appMembroTokenServi
 const { memberCredentialResult } = require('../services/memberCredentialService');
 const { createRememberSessionService } = require('../services/rememberSessionService');
 const { createRememberSessionTransport } = require('../services/rememberSessionTransport');
+const { createMemberRegistrationService } = require('../services/memberRegistrationService');
+const { memberHasAccess } = require('../services/memberAccessService');
+const { privacyConfig } = require('../config/privacy');
 
 const fail = (res, status, message) => res.status(status).json({ success: false, message });
 const validEmail = value => typeof value === 'string' && value.length <= 150 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -26,6 +29,11 @@ function createAppMembroRouter(options = {}) {
     const limit = options.limit || require('../middlewares/accountLimiter');
     const rememberedSessions = options.rememberSessionService || createRememberSessionService({ now });
     const rememberTransport = createRememberSessionTransport({ app: 'membro', appOrigin });
+    const registration = options.registrationService || createMemberRegistrationService({
+        createMember: options.createMember, privacyConfig: options.privacyConfig, ...options.registrationOptions
+    });
+    const registrationConfig = options.privacyConfig || privacyConfig;
+    const deleteOwn = options.deleteOwn || (input => require('../services/memberAccountService').createMemberAccountService().deleteOwn(input));
     const ownLimiter = (name, count) => rateLimit({
         windowMs: 60000, limit: count, identifier: name,
         // A church Wi-Fi must not make members share one polling budget.
@@ -57,6 +65,20 @@ function createAppMembroRouter(options = {}) {
         return res.sendStatus(204);
     });
 
+    router.get('/cadastro/config', (req, res) => res.json({ success: true, data: registrationConfig() }));
+
+    router.post('/cadastro', limit('member-app-signup', 5, 900, { ipMax: 100 }), async (req, res, next) => {
+        try {
+            if (!req.is('application/json')) return fail(res, 415, 'Envie os dados do cadastro em JSON.');
+            const { member } = await registration.register(req.body, { immediate: true });
+            return res.status(201).json({ success: true, data: { registered: true, email: member.email },
+                message: 'Cadastro realizado. Entre com seu e-mail e senha para acessar seu QR Code.' });
+        } catch (error) {
+            if ([400,409,503].includes(error.status)) return fail(res, error.status, error.message);
+            next(error);
+        }
+    });
+
     router.post('/login', limit('member-app-login', 8, 900, { ipMax: 300 }), async (req, res, next) => {
         try {
             if (!req.is('application/json')) return fail(res, 415, 'Envie os dados de acesso em JSON.');
@@ -67,7 +89,7 @@ function createAppMembroRouter(options = {}) {
             }
             const member = await findMemberByEmail(email);
             if (!member?.senha || !await comparePassword(senha, member.senha)) return fail(res, 401, 'E-mail ou senha inválidos.');
-            if (!member.email_verificado) return fail(res, 403, 'Confirme seu e-mail. Para reenviar a confirmação, use Esqueci minha senha no site da igreja.');
+            if (!memberHasAccess(member)) return fail(res, 403, 'Confirme seu e-mail. Para reenviar a confirmação, use Esqueci minha senha no site da igreja.');
             const previous = rememberTransport.isWeb(req) && rememberTransport.readCookie(req);
             if (previous) {
                 await rememberedSessions.revoke('membro', previous);
@@ -114,11 +136,23 @@ function createAppMembroRouter(options = {}) {
             if (!identity) return fail(res, 401, 'Seu acesso expirou. Entre novamente.');
             const member = await findMemberById(identity.id);
             if (!member || member.auth_version !== identity.authVersion) return fail(res, 401, 'Seu acesso foi encerrado. Entre novamente.');
-            if (!member.email_verificado) return fail(res, 403, 'Confirme seu e-mail antes de usar a credencial.');
+            if (!memberHasAccess(member)) return fail(res, 403, 'Confirme seu e-mail antes de usar a credencial.');
             req.appMembro = { id: identity.id, expiresAt: identity.expiresAt, member };
             return next();
         } catch (error) { next(error); }
     }
+
+    router.post('/excluir-conta', authenticate, limit('member-app-delete', 5, 900, { ipMax: 100 }), async (req, res, next) => {
+        try {
+            if (!req.is('application/json')) return fail(res, 415, 'Envie a confirmação em JSON.');
+            const data = await deleteOwn({ id: req.appMembro.id, senha: req.body?.senha });
+            rememberTransport.clear(req, res);
+            return res.json({ success: true, data, message: 'Seu cadastro foi excluído.' });
+        } catch (error) {
+            if ([400,401].includes(error.status)) return fail(res, error.status, error.message);
+            next(error);
+        }
+    });
 
     function requireCredential(req, res) {
         const credential = memberCredentialResult(req.appMembro.member, { now });

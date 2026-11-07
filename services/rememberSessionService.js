@@ -1,4 +1,5 @@
 const crypto = require('node:crypto');
+const { memberHasAccess } = require('./memberAccessService');
 
 const REMEMBER_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const validApp = app => app === 'leitor' || app === 'membro';
@@ -42,7 +43,7 @@ function createRememberSessionService({ pool, now = Date.now } = {}) {
         if (!remembered || remembered.revoked_at || new Date(remembered.expires_at).getTime() <= now()) return null;
         const identity = await findIdentity(app === 'leitor' ? remembered.admin_id : remembered.membro_id);
         if (!identity || identity.auth_version !== remembered.auth_version ||
-            (app === 'membro' && !identity.email_verificado)) {
+            (app === 'membro' && !memberHasAccess(identity))) {
             await revoke(app, refreshToken);
             return null;
         }

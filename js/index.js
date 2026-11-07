@@ -777,6 +777,8 @@ document.addEventListener(
 
                 </a>
 
+                <a href="/privacidade#excluir-cadastro"><i class="fa-solid fa-user-xmark" aria-hidden="true"></i><span>Excluir meu cadastro</span></a>
+
                 <a
                     href="#"
                     id="btnLogout">

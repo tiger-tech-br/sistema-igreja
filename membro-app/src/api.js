@@ -12,8 +12,11 @@ export class MemberApi {
     this.requests.clear();
   }
 
-  async request(path, { method = 'GET', body, authenticated = true } = {}) {
+  async request(path, { method = 'GET', body, authenticated = true, signal } = {}) {
     const abort = new AbortController();
+    const cancel = () => abort.abort();
+    if (signal?.aborted) abort.abort();
+    else signal?.addEventListener('abort', cancel, { once: true });
     const timer = setTimeout(() => abort.abort(), 12000);
     this.requests.add(abort);
     try {
@@ -33,11 +36,13 @@ export class MemberApi {
       }
       return result.data;
     } catch (error) {
+      if (signal?.aborted) throw Object.assign(new Error('Solicitação cancelada.'), { name: 'AbortError' });
       if (error.name === 'AbortError') throw new Error('O servidor demorou para responder. Verifique a conexão e tente novamente.');
       if (error instanceof TypeError) throw new Error('Não foi possível acessar o servidor. Verifique a conexão.');
       throw error;
     } finally {
       clearTimeout(timer);
+      signal?.removeEventListener('abort', cancel);
       this.requests.delete(abort);
     }
   }
@@ -45,6 +50,9 @@ export class MemberApi {
   login(email, senha, rememberMe = false) { return this.request('/login', { method: 'POST', body: { email, senha, rememberMe }, authenticated: false }); }
   refresh(refreshToken) { return this.request('/refresh', { method: 'POST', body: refreshToken ? { refreshToken } : {}, authenticated: false }); }
   logout(refreshToken) { return this.request('/logout', { method: 'POST', body: refreshToken ? { refreshToken } : {}, authenticated: false }); }
+  registrationConfig(options = {}) { return this.request('/cadastro/config', { ...options, authenticated: false }); }
+  registerMember(data, options = {}) { return this.request('/cadastro', { ...options, method: 'POST', body: data, authenticated: false }); }
+  deleteAccount(senha, options = {}) { return this.request('/excluir-conta', { ...options, method: 'POST', body: { senha } }); }
   qrCode() { return this.request('/qrcode', { method: 'POST', body: {} }); }
   presence(cursor) { return this.request('/presenca?after=' + encodeURIComponent(cursor)); }
   credential() { return this.request('/credencial'); }

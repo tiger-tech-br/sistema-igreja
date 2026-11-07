@@ -37,7 +37,40 @@
           <p id="loginMessage" class="form-message" role="alert" hidden></p>
           <button id="loginButton" class="button button-gold" type="submit"><span>Entrar</span><svg aria-hidden="true"><use href="#arrow"/></svg></button>
         </form>
+        <div class="signup-entry"><p>Ainda não tem cadastro?</p><button id="openRegistrationButton" class="button button-outline" type="button">Cadastre-se como membro</button></div>
         <p class="access-help">Use o mesmo e-mail e senha<br>da sua área do membro.</p>
+      </div>
+    </section>
+
+    <section id="registrationScreen" class="registration-screen" aria-labelledby="registrationTitle" hidden>
+      <header class="simple-brand"><svg class="church-logo" aria-hidden="true"><use href="#church"/></svg><div><strong>Assembléia de Deus</strong><span>Lugar de Esperança</span></div></header>
+      <div class="form-content">
+        <button id="registrationBackButton" class="back-link" type="button"><svg aria-hidden="true"><use href="#back"/></svg><span>Voltar ao login</span></button>
+        <div class="page-intro"><h2 id="registrationTitle">Faça parte</h2><p>Crie seu cadastro para apresentar seu QR Code e receber sua credencial.</p></div>
+        <form id="registrationForm" novalidate>
+          <fieldset class="form-block"><legend>Dados pessoais</legend>
+            <div class="field-group"><label for="registrationName">Nome completo</label><div class="input-wrap"><input id="registrationName" name="nome" type="text" autocomplete="name" maxlength="150" placeholder="Como você se chama?" required></div></div>
+            <div class="field-group"><label for="registrationBirth">Data de nascimento</label><div class="input-wrap"><input id="registrationBirth" name="dataNascimento" type="date" min="1900-01-01" autocomplete="bday" aria-describedby="birthHelp" required></div><p id="birthHelp" class="field-hint">Cadastro para pessoas com 18 anos ou mais.</p></div>
+          </fieldset>
+          <fieldset class="form-block"><legend>Seu acesso</legend>
+            <div class="field-group"><label for="registrationEmail">E-mail</label><div class="input-wrap"><svg aria-hidden="true"><use href="#mail"/></svg><input id="registrationEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="150" placeholder="Digite seu e-mail" required></div></div>
+            <div class="field-group"><label for="registrationPassword">Crie uma senha</label><div class="input-wrap"><svg aria-hidden="true"><use href="#lock"/></svg><input id="registrationPassword" name="senha" type="password" autocomplete="new-password" minlength="12" aria-describedby="passwordHelp" placeholder="Crie sua senha" required><button id="toggleRegistrationPassword" class="icon-button" type="button" aria-label="Mostrar nova senha" aria-pressed="false"><svg aria-hidden="true"><use href="#eye"/></svg></button></div><p id="passwordHelp" class="field-hint">Use uma senha pessoal com pelo menos 12 caracteres.</p></div>
+            <div class="field-group"><label for="registrationConfirmPassword">Confirme a senha</label><div class="input-wrap"><svg aria-hidden="true"><use href="#lock"/></svg><input id="registrationConfirmPassword" name="confirmarSenha" type="password" autocomplete="new-password" placeholder="Digite a senha novamente" required></div></div>
+          </fieldset>
+          <fieldset class="form-block privacy-block"><legend>Privacidade e autorização</legend>
+            <p class="block-description">Leia com atenção antes de concluir.</p>
+            <p id="registrationController" class="privacy-contact" hidden></p>
+            <a id="registrationPrivacyLink" class="text-link" href="#" target="_blank" rel="noopener noreferrer">Ler o Aviso de Privacidade</a>
+            <p id="registrationConfigStatus" class="config-status" role="status">Carregando as informações de privacidade...</p>
+            <button id="retryRegistrationConfigButton" class="button button-outline" type="button" hidden>Tentar carregar novamente</button>
+            <label class="consent-choice" for="registrationNotice"><input id="registrationNotice" name="cienciaPrivacidade" type="checkbox" required><span id="registrationNoticeText">Aguarde o carregamento do aviso.</span></label>
+            <label class="consent-choice" for="registrationConsent"><input id="registrationConsent" name="consentimento" type="checkbox" required><span id="registrationConsentText">Aguarde o carregamento da autorização.</span></label>
+          </fieldset>
+          <p id="registrationMessage" class="form-message" role="alert" hidden></p>
+          <div id="registrationDuplicateActions" class="duplicate-actions" hidden><button id="registrationLoginButton" class="button button-outline" type="button">Ir para o login</button><a id="registrationRecoveryLink" class="text-link" href="#" target="_blank" rel="noopener noreferrer">Recuperar minha senha</a></div>
+          <button id="registrationSubmitButton" class="button button-gold" type="submit" disabled><span>Criar meu cadastro</span><svg aria-hidden="true"><use href="#arrow"/></svg></button>
+        </form>
+        <button id="registrationCancelButton" class="button button-outline form-cancel" type="button">Voltar ao login</button>
       </div>
     </section>
 
@@ -59,6 +92,7 @@
         <p class="qr-help">Mantenha esta tela aberta. Sua credencial aparecerá após a confirmação.</p>
         <p id="qrMessage" class="notice" role="alert" hidden></p>
         <button id="retryQrButton" class="button button-outline" type="button" hidden>Tentar novamente</button>
+        <div class="account-entry"><button id="qrAccountButton" class="button button-outline" type="button"><svg aria-hidden="true"><use href="#id-card"/></svg><span>Minha conta</span></button></div>
       </section>
       <section id="credentialScreen" class="member-content" aria-labelledby="credentialTitle" hidden>
         <div class="page-intro"><h2 id="credentialTitle">Minha credencial</h2><p>Identificação do membro</p></div>
@@ -75,6 +109,19 @@
         <p id="credentialMessage" class="notice" role="alert" hidden></p>
         <button id="retryCredentialButton" class="button button-outline" type="button" hidden>Tentar novamente</button>
         <button id="backQrButton" class="button button-gold" type="button"><svg aria-hidden="true"><use href="#back"/></svg><span>Voltar ao meu QR Code</span></button>
+        <div class="account-entry"><button id="credentialAccountButton" class="button button-outline" type="button"><svg aria-hidden="true"><use href="#id-card"/></svg><span>Minha conta</span></button></div>
+      </section>
+      <section id="accountScreen" class="member-content account-content" aria-labelledby="accountTitle" hidden>
+        <button id="accountBackButton" class="back-link" type="button"><svg aria-hidden="true"><use href="#back"/></svg><span>Voltar</span></button>
+        <div class="page-intro"><h2 id="accountTitle">Minha conta</h2><p>Você tem o controle do seu cadastro.</p></div>
+        <article class="delete-explanation"><h3>Excluir meu cadastro</h3><p>Esta ação é permanente. Seu cadastro, QR Code, credencial e registros de presença vinculados serão excluídos do sistema.</p><p>Para continuar, confirme sua senha e marque a opção abaixo.</p></article>
+        <form id="deleteAccountForm" novalidate>
+          <div class="field-group"><label for="deletePassword">Sua senha atual</label><div class="input-wrap"><svg aria-hidden="true"><use href="#lock"/></svg><input id="deletePassword" type="password" name="senha" autocomplete="current-password" placeholder="Digite sua senha atual" required><button id="toggleDeletePassword" class="icon-button" type="button" aria-label="Mostrar senha atual" aria-pressed="false"><svg aria-hidden="true"><use href="#eye"/></svg></button></div></div>
+          <label class="consent-choice delete-choice" for="deleteConfirmation"><input id="deleteConfirmation" type="checkbox" required><span>Entendo que a exclusão é permanente e quero excluir meu cadastro.</span></label>
+          <p id="deleteAccountMessage" class="form-message" role="alert" hidden></p>
+          <button id="deleteAccountButton" class="button button-danger" type="submit"><span>Excluir meu cadastro</span></button>
+        </form>
+        <button id="cancelDeleteAccountButton" class="button button-outline form-cancel" type="button">Cancelar e voltar</button>
       </section>
     </section>
 

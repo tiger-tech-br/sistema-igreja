@@ -1,7 +1,8 @@
 // Shared by the public credential page and the member application.
 // A credential read never registers attendance.
+const { memberHasAccess } = require('./memberAccessService');
 function memberCredentialResult(member, { now = Date.now } = {}) {
-    if (!member || !member.email_verificado || member.consent_revoked_at || !member.consent_at) {
+    if (!memberHasAccess(member) || member.consent_revoked_at || !member.consent_at) {
         return { success: false, status: 404, message: 'Credencial indisponível.' };
     }
     const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(member.validade || '');

@@ -39,3 +39,56 @@ form label.remember-choice{display:flex;align-items:center;gap:10px;min-height:4
 @media (min-width: 700px) {
   .login-content { padding-top: 36px; padding-bottom: calc(36px + var(--safe-bottom)); }
 }
+
+.signup-entry{margin-top:30px;padding-top:27px;border-top:1px solid #ded9ce;text-align:center}
+.signup-entry>p{font-size:17px;line-height:1.5;color:#575953}
+.signup-entry .button{margin-top:14px;min-height:56px;border-color:#b58d38;color:#715518;background:#fffdf8}
+.registration-screen{min-height:100dvh;max-width:640px;margin:auto;background:var(--cream)}
+.simple-brand{display:flex;align-items:center;justify-content:center;gap:15px;padding:calc(19px + var(--safe-top)) 22px 20px;color:#fff;background:linear-gradient(120deg,#292a26,#1e1f1c)}
+.simple-brand .church-logo{width:42px;height:50px}
+.simple-brand>div{min-width:0;border-left:1px solid #76776e;padding-left:15px}
+.simple-brand strong{display:block;font-size:21px;line-height:1.25}
+.simple-brand span{display:block;font-size:16px;color:#d7d5cd;margin-top:5px}
+.form-content{padding:22px 22px calc(32px + var(--safe-bottom))}
+.back-link{display:inline-flex;align-items:center;gap:9px;min-height:46px;padding:7px 3px;border:0;background:transparent;color:#715518;font-size:17px;font-weight:700;margin-bottom:24px}
+.form-content .page-intro{margin-bottom:32px}
+.form-content .page-intro p{max-width:450px;margin-inline:auto}
+.form-block{min-width:0;margin:0 0 27px;padding:24px 18px 25px;border:1px solid #ded8cb;border-radius:15px;background:#fffdf9;box-shadow:0 2px 4px #24252205}
+.form-block legend{padding:0 9px;font-size:21px;line-height:1.3;font-weight:700;color:#72551b}
+.field-group+.field-group{margin-top:25px}
+.field-group>label{margin:0 0 11px;font-size:18px;line-height:1.35}
+.field-hint{margin-top:10px;font-size:15px;line-height:1.5;color:#62645d}
+.form-content .input-wrap,.account-content .input-wrap{min-height:60px}
+.form-content .input-wrap input,.account-content .input-wrap input{min-height:58px;line-height:1.4}
+.form-content input[type=date]{min-width:0;min-height:58px;width:100%;text-align:left;appearance:none;-webkit-appearance:none}
+.form-content .input-wrap:focus-within,.account-content .input-wrap:focus-within{border-color:#b88a22;outline:3px solid #b88a22;outline-offset:3px;box-shadow:0 0 0 6px #c19b4212}
+.form-content .input-wrap input:focus,.form-content .input-wrap input:focus-visible,.account-content .input-wrap input:focus,.account-content .input-wrap input:focus-visible{outline:none;box-shadow:none}
+.form-content .icon-button,.account-content .icon-button{min-width:44px;min-height:44px;align-items:center;justify-content:center}
+.block-description,.privacy-contact{font-size:16px;line-height:1.6;color:#575953}
+.privacy-contact{margin-top:13px;overflow-wrap:anywhere}
+.text-link{display:inline-flex;align-items:center;min-height:44px;color:#785811;font-size:16px;line-height:1.5;text-underline-offset:4px;padding:8px 0}
+.privacy-block>.text-link{margin-top:12px}
+.config-status{margin:15px 0 3px;padding:13px 14px;border:1px solid #e3d5ae;border-radius:10px;background:#f9f2df;color:#73591d;font-size:16px;line-height:1.55}
+form label.consent-choice{display:flex;align-items:flex-start;gap:13px;margin:22px 0 0;padding:17px 14px;border:1px solid #ded9ce;border-radius:11px;background:#fff;font-size:16px;font-weight:400;line-height:1.6;cursor:pointer}
+.consent-choice input{width:23px;height:23px;flex:none;margin:2px 0 0;accent-color:#ad852d;cursor:pointer}
+.consent-choice span{min-width:0}
+.consent-choice:has(input:disabled){opacity:.65;cursor:default}
+.consent-choice:focus-within{outline:3px solid #b88a22;outline-offset:3px}
+.form-cancel{margin-top:18px;min-height:56px}
+#registrationForm>.button-gold{margin-top:24px;min-height:57px}
+.duplicate-actions{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:20px;padding:16px;border-radius:12px;background:#f2ecdf}
+.duplicate-actions .button{margin:0}
+.form-message[data-state=success]{padding:14px 15px;border:1px solid #bad4b8;border-radius:11px;background:#edf6eb;color:#24612b}
+.account-entry{margin-top:27px;padding-top:22px;border-top:1px solid #ded9ce}
+.account-entry>.button{margin:0;min-height:54px;background:#fffdf8;color:#715518;border-color:#c4b389}
+.account-content .back-link{margin-bottom:20px}
+.account-content .page-intro{margin-bottom:28px}
+.delete-explanation{padding:22px 19px;border:1px solid #e2c9be;border-radius:14px;background:#fffaf6;margin-bottom:28px}
+.delete-explanation h3{font-size:23px;line-height:1.3;color:#7c3129}
+.delete-explanation p{font-size:17px;line-height:1.65;color:#57514b;margin-top:14px}
+#deleteAccountForm>.field-group{margin-top:0}
+form label.delete-choice{margin-top:26px;border-color:#e2c9be;background:#fffaf6}
+.button-danger{margin-top:26px;min-height:56px;background:#922f28;color:#fff}
+#deleteAccountForm .form-message{margin-top:21px;line-height:1.6}
+@media(min-width:700px){.registration-screen{box-shadow:0 3px 25px #24252224}.form-content{padding:26px 36px calc(36px + var(--safe-bottom))}.form-block{padding:27px 24px}.account-content{padding-top:25px}}
+@media(max-width:360px){.form-content{padding-inline:16px}.form-block{padding-inline:14px}.simple-brand strong{font-size:19px}.simple-brand{gap:12px;padding-inline:16px}.simple-brand>div{padding-left:12px}.consent-choice{gap:11px}.delete-explanation{padding:20px 16px}}

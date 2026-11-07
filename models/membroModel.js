@@ -4,7 +4,7 @@ const { hashToken } = require('../utils/security');
 const { VERSION, NOTICE_TEXT, CONSENT_TEXT } = require('../config/privacy');
 const profile = `id, nome, TO_CHAR(data_nascimento, 'DD/MM/YYYY') AS data_nascimento,
     telefone, celular, email, endereco, cargo, ministerio, sexo, estado_civil, matricula,
-    TO_CHAR(validade, 'DD/MM/YYYY') AS validade, qr_code, email_verificado,
+    TO_CHAR(validade, 'DD/MM/YYYY') AS validade, qr_code, email_verificado, cadastro_liberado,
     privacy_notice_version, privacy_notice_at, consent_version, consent_at, consent_revoked_at`;
 const one = async (sql, args) => (await pool.query(sql, args)).rows[0];
 module.exports = {
@@ -12,14 +12,21 @@ module.exports = {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
+            // Old rows may contain mixed-case emails. Serialize signups by normalized
+            // address so website/app requests cannot create two accounts for one login.
+            await client.query("SELECT pg_advisory_xact_lock(hashtext('member-registration:' || LOWER($1)))", [d.email]);
+            const existing = await client.query('SELECT id FROM membros WHERE LOWER(email)=LOWER($1) LIMIT 1', [d.email]);
+            if (existing.rows.length) throw Object.assign(new Error('Cadastro já existente.'), { code: '23505' });
             const result = await client.query(`INSERT INTO membros
                 (nome,data_nascimento,telefone,celular,email,senha,email_verificado,endereco,cargo,ministerio,
                  sexo,estado_civil,matricula,validade,privacy_notice_version,privacy_notice_text,privacy_notice_at,
-                 consent_version,consent_text,consent_at,token_confirmacao,confirmation_expires_at)
-                VALUES ($1,$2,$3,$4,$5,$6,FALSE,$7,NULL,NULL,$8,$9,$10,$11,$12,$13,NOW(),$12,$14,NOW(),$15,NOW()+INTERVAL '24 hours')
+                 consent_version,consent_text,consent_at,token_confirmacao,confirmation_expires_at,cadastro_liberado)
+                VALUES ($1,$2,$3,$4,$5,$6,FALSE,$7,NULL,NULL,$8,$9,$10,$11,$12,$13,NOW(),$12,$14,NOW(),$15,
+                    CASE WHEN $15::TEXT IS NULL THEN NULL ELSE NOW()+INTERVAL '24 hours' END,$16)
                 RETURNING id, nome, email`,
                 [d.nome,d.dataNascimento,d.telefone,d.celular,d.email,await bcrypt.hash(d.senha,12),
-                 d.endereco,d.sexo,d.estadoCivil,d.matricula,d.validade,VERSION,NOTICE_TEXT,CONSENT_TEXT,hashToken(d.confirmationToken)]);
+                 d.endereco,d.sexo,d.estadoCivil,d.matricula,d.validade,VERSION,NOTICE_TEXT,CONSENT_TEXT,
+                 d.confirmationToken ? hashToken(d.confirmationToken) : null,d.cadastroLiberado === true]);
             await client.query(`INSERT INTO privacy_consents (membro_id,version,notice_text,texto) VALUES ($1,$2,$3,$4)`,
                 [result.rows[0].id,VERSION,NOTICE_TEXT,CONSENT_TEXT]);
             await client.query('COMMIT');
@@ -30,7 +37,7 @@ module.exports = {
     buscarPorEmail: email => one('SELECT * FROM membros WHERE LOWER(email) = $1 LIMIT 1', [email]),
     buscarPorId: id => one('SELECT ' + profile + ' FROM membros WHERE id = $1', [id]),
     buscarIdentidadeApp: id => one(`SELECT id,nome,cargo,ministerio,matricula,
-        TO_CHAR(validade,'DD/MM/YYYY') AS validade,auth_version,email_verificado,consent_at,consent_revoked_at
+        TO_CHAR(validade,'DD/MM/YYYY') AS validade,auth_version,email_verificado,cadastro_liberado,consent_at,consent_revoked_at
         FROM membros WHERE id=$1`, [id]),
     async lerEstadoLeitura(id) {
         const state = await one(`SELECT s.revision::TEXT AS revision,s.already_recorded,
@@ -44,7 +51,7 @@ module.exports = {
     },
     buscarPorMatricula: value => one('SELECT id FROM membros WHERE matricula = $1', [value]),
     listar: async () => (await pool.query('SELECT ' + profile + ' FROM membros ORDER BY nome')).rows,
-    listarNomes: async () => (await pool.query('SELECT id,nome FROM membros WHERE email_verificado = TRUE AND consent_revoked_at IS NULL ORDER BY nome')).rows,
+    listarNomes: async () => (await pool.query('SELECT id,nome FROM membros WHERE (email_verificado = TRUE OR cadastro_liberado = TRUE) AND consent_revoked_at IS NULL ORDER BY nome')).rows,
     atualizarQRCode: (id, qr) => one('UPDATE membros SET qr_code = $1 WHERE id = $2 RETURNING id', [qr,id]),
     atualizarDadosAdministrativos: (id,d) => one('UPDATE membros SET cargo = $1, ministerio = $2 WHERE id = $3 RETURNING ' + profile, [d.cargo,d.ministerio,id]),
     async excluir(id, actorId) {
@@ -110,9 +117,9 @@ module.exports = {
         FROM acessos a JOIN membros m ON m.id=a.membro_id
         WHERE a.data=(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE
         ORDER BY a.horario DESC,a.id DESC`)).rows,
-    listarUltimos: async (limit=5) => (await pool.query('SELECT id,nome,cargo FROM membros WHERE email_verificado=TRUE AND consent_revoked_at IS NULL ORDER BY id DESC LIMIT $1', [limit])).rows,
+    listarUltimos: async (limit=5) => (await pool.query('SELECT id,nome,cargo FROM membros WHERE (email_verificado=TRUE OR cadastro_liberado=TRUE) AND consent_revoked_at IS NULL ORDER BY id DESC LIMIT $1', [limit])).rows,
     async dashboard() {
-        const total = await one('SELECT COUNT(*) AS total FROM membros WHERE email_verificado=TRUE AND consent_revoked_at IS NULL');
+        const total = await one('SELECT COUNT(*) AS total FROM membros WHERE (email_verificado=TRUE OR cadastro_liberado=TRUE) AND consent_revoked_at IS NULL');
         const accesses = await pool.query(`SELECT m.id,m.nome,m.cargo,m.ministerio,a.periodo,TO_CHAR(a.data,'DD/MM/YYYY') AS data,TO_CHAR(a.horario,'HH24:MI') AS horario
             FROM acessos a JOIN membros m ON m.id=a.membro_id WHERE a.data=(NOW() AT TIME ZONE 'America/Sao_Paulo')::DATE
             ORDER BY a.horario DESC,a.id DESC`);

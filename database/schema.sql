@@ -36,6 +36,7 @@ CREATE TABLE membros (
     senha VARCHAR(255) NOT NULL,
 
     email_verificado BOOLEAN DEFAULT FALSE,
+    cadastro_liberado BOOLEAN NOT NULL DEFAULT FALSE,
 
     token_confirmacao VARCHAR(255),
 

@@ -27,6 +27,14 @@ let confirmationFinished = false;
 let view = 'login';
 let foreground = !document.hidden;
 let qrReady = false;
+let loginBusy = false;
+let registrationConfig = null;
+let registrationAbort = null;
+let registrationRequest = 0;
+let registrationBusy = false;
+let accountReturnView = 'qr';
+let accountBusy = false;
+let accountAbort = null;
 
 const initials = name => {
   const parts = String(name || 'Membro').trim().split(/\s+/);
@@ -34,12 +42,16 @@ const initials = name => {
 };
 
 function showView(next) {
+  const changed = view !== next;
   view = next;
   $('loginScreen').hidden = next !== 'login';
-  $('memberScreen').hidden = !['qr', 'credential'].includes(next);
+  $('registrationScreen').hidden = next !== 'registration';
+  $('memberScreen').hidden = !['qr', 'credential', 'account'].includes(next);
   $('qrScreen').hidden = next !== 'qr';
   $('credentialScreen').hidden = next !== 'credential';
   $('confirmationScreen').hidden = next !== 'confirmation';
+  $('accountScreen').hidden = next !== 'account';
+  if (changed) window.scrollTo?.(0, 0);
 }
 
 function validSession() {
@@ -86,6 +98,222 @@ const observer = new PresenceObserver({
     }
   }
 });
+
+function formMessage(id, message = '', state = 'error') {
+  $(id).textContent = message;
+  $(id).hidden = !message;
+  $(id).dataset.state = state;
+}
+
+function resetPasswordToggle(input, button, label) {
+  $(input).type = 'password';
+  $(button).setAttribute('aria-pressed', 'false');
+  $(button).setAttribute('aria-label', label);
+}
+
+function clearRegistration() {
+  registrationRequest++;
+  registrationAbort?.abort();
+  registrationAbort = null;
+  registrationConfig = null;
+  registrationBusy = false;
+  for (const id of ['registrationName', 'registrationBirth', 'registrationEmail', 'registrationPassword', 'registrationConfirmPassword']) $(id).value = '';
+  for (const id of ['registrationNotice', 'registrationConsent']) { $(id).checked = false; $(id).disabled = true; }
+  resetPasswordToggle('registrationPassword', 'toggleRegistrationPassword', 'Mostrar nova senha');
+  $('registrationSubmitButton').disabled = true;
+  $('registrationSubmitButton').querySelector('span').textContent = 'Criar meu cadastro';
+  $('registrationDuplicateActions').hidden = true;
+  formMessage('registrationMessage');
+}
+
+function clearAccountForm() {
+  accountAbort?.abort();
+  accountAbort = null;
+  accountBusy = false;
+  $('deletePassword').value = '';
+  $('deleteConfirmation').checked = false;
+  resetPasswordToggle('deletePassword', 'toggleDeletePassword', 'Mostrar senha atual');
+  for (const id of ['deleteAccountButton', 'accountBackButton', 'cancelDeleteAccountButton']) $(id).disabled = false;
+  $('deleteAccountButton').querySelector('span').textContent = 'Excluir meu cadastro';
+  formMessage('deleteAccountMessage');
+}
+
+function configurePublicLinks() {
+  const server = new URL(SERVER_URL);
+  if (server.protocol !== 'https:' && !(server.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(server.hostname))) return;
+  $('registrationPrivacyLink').setAttribute('href', new URL('/privacidade', server).href);
+  $('registrationRecoveryLink').setAttribute('href', new URL('/esqueci-senha', server).href);
+}
+
+async function loadRegistrationConfig() {
+  if (view !== 'registration' || registrationBusy) return;
+  registrationAbort?.abort();
+  registrationAbort = new AbortController();
+  registrationConfig = null;
+  const currentEpoch = epoch;
+  const request = ++registrationRequest;
+  $('registrationSubmitButton').disabled = true;
+  $('retryRegistrationConfigButton').hidden = true;
+  $('registrationConfigStatus').hidden = false;
+  $('registrationConfigStatus').textContent = 'Carregando as informações de privacidade...';
+  $('registrationController').hidden = true;
+  for (const id of ['registrationNotice', 'registrationConsent']) { $(id).checked = false; $(id).disabled = true; }
+  $('registrationNoticeText').textContent = 'Aguarde o carregamento do aviso.';
+  $('registrationConsentText').textContent = 'Aguarde o carregamento da autorização.';
+  formMessage('registrationMessage');
+  try {
+    const config = await api.registrationConfig({ signal: registrationAbort.signal });
+    if (currentEpoch !== epoch || request !== registrationRequest || view !== 'registration') return;
+    if (!config || typeof config.version !== 'string' || !config.version || config.version.length > 100 ||
+      typeof config.noticeText !== 'string' || !config.noticeText || config.noticeText.length > 10000 ||
+      typeof config.consentText !== 'string' || !config.consentText || config.consentText.length > 10000) throw new Error('Não foi possível conferir as informações de privacidade. Tente novamente.');
+    $('registrationNoticeText').textContent = config.noticeText;
+    $('registrationConsentText').textContent = config.consentText;
+    $('registrationController').textContent = [config.controller, config.contact].filter(value => typeof value === 'string' && value).join(' • ');
+    $('registrationController').hidden = !$('registrationController').textContent;
+    if (config.configured !== true) throw new Error('Cadastro temporariamente indisponível. O responsável pela igreja precisa configurar as informações de privacidade.');
+    registrationConfig = { version: config.version };
+    $('registrationConfigStatus').hidden = true;
+    $('registrationSubmitButton').disabled = false;
+    for (const id of ['registrationNotice', 'registrationConsent']) $(id).disabled = false;
+  } catch (error) {
+    if (currentEpoch !== epoch || request !== registrationRequest || view !== 'registration' || error.name === 'AbortError') return;
+    $('registrationConfigStatus').textContent = error.message || 'Não foi possível carregar as informações. Confira a conexão e tente novamente.';
+    $('retryRegistrationConfigButton').hidden = false;
+  }
+}
+
+function openRegistration() {
+  if (view !== 'login' || loginBusy) return;
+  logout();
+  clearRegistration();
+  showView('registration');
+  return loadRegistrationConfig();
+}
+
+function closeRegistration() {
+  if (view !== 'registration') return;
+  const email = $('registrationEmail').value.trim();
+  resetLogin();
+  if (email) $('email').value = email;
+}
+
+function registrationData() {
+  const nome = $('registrationName').value.trim();
+  const email = $('registrationEmail').value.trim().toLowerCase();
+  const senha = $('registrationPassword').value;
+  const birth = $('registrationBirth').value;
+  if (!/^[A-Za-zÀ-ÿ\s]{3,150}$/.test(nome)) throw new Error('Informe seu nome completo com pelo menos 3 letras.');
+  if (email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Informe um e-mail válido.');
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birth);
+  if (!match) throw new Error('Informe uma data de nascimento válida.');
+  const [, yearText, monthText, dayText] = match;
+  const [year, month, day] = [yearText, monthText, dayText].map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const today = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).map(part => [part.type, part.value]));
+  const age = Number(today.year) - year - (Number(today.month) < month || (Number(today.month) === month && Number(today.day) < day) ? 1 : 0);
+  if (year < 1900 || date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day || age < 18) throw new Error('O cadastro é para pessoas com 18 anos ou mais. Confira sua data de nascimento.');
+  if (senha.length < 12 || new TextEncoder().encode(senha).length > 72) throw new Error('Use uma senha com pelo menos 12 caracteres e no máximo 72 bytes.');
+  if (senha !== $('registrationConfirmPassword').value) throw new Error('As senhas não são iguais. Digite a mesma senha nos dois campos.');
+  if (!$('registrationNotice').checked || !$('registrationConsent').checked) throw new Error('Leia o aviso e marque as duas opções de privacidade e autorização para continuar.');
+  if (!registrationConfig) throw new Error('Carregue as informações de privacidade antes de continuar.');
+  return { nome, email, senha, dataNascimento: `${dayText}/${monthText}/${yearText}`, cienciaPrivacidade: true, consentimento: true, privacyVersion: registrationConfig.version };
+}
+
+async function submitRegistration(event) {
+  event.preventDefault();
+  if (view !== 'registration' || registrationBusy) return;
+  formMessage('registrationMessage');
+  $('registrationDuplicateActions').hidden = true;
+  let data;
+  try { data = registrationData(); }
+  catch (error) { formMessage('registrationMessage', error.message); return; }
+  const currentEpoch = epoch;
+  const request = ++registrationRequest;
+  registrationBusy = true;
+  registrationAbort = new AbortController();
+  $('registrationSubmitButton').disabled = true;
+  $('registrationSubmitButton').querySelector('span').textContent = 'Criando cadastro...';
+  try {
+    await forgetTask;
+    if (currentEpoch !== epoch || request !== registrationRequest || view !== 'registration') return;
+    const result = await api.registerMember(data, { signal: registrationAbort.signal });
+    if (currentEpoch !== epoch || request !== registrationRequest || view !== 'registration') return;
+    if (result?.registered !== true) throw new Error('O servidor não confirmou o cadastro. Tente novamente.');
+    const email = data.email;
+    resetLogin('Cadastro realizado! Entre com seu e-mail e senha para apresentar seu QR Code.');
+    $('email').value = email;
+    $('rememberMe').checked = false;
+    $('loginMessage').dataset.state = 'success';
+  } catch (error) {
+    if (currentEpoch !== epoch || request !== registrationRequest || view !== 'registration' || error.name === 'AbortError') return;
+    formMessage('registrationMessage', error.message || 'Não foi possível criar seu cadastro. Confira a conexão e tente novamente.');
+    if (error.status === 409) $('registrationDuplicateActions').hidden = false;
+    if (error.status === 503) {
+      registrationConfig = null;
+      $('retryRegistrationConfigButton').hidden = false;
+    }
+  } finally {
+    if (currentEpoch === epoch && request === registrationRequest && view === 'registration') {
+      registrationBusy = false;
+      $('registrationSubmitButton').disabled = !registrationConfig;
+      $('registrationSubmitButton').querySelector('span').textContent = 'Criar meu cadastro';
+      $('registrationPassword').value = '';
+      $('registrationConfirmPassword').value = '';
+    }
+    data.senha = '';
+  }
+}
+
+function openAccount() {
+  if (!['qr', 'credential'].includes(view) || !validSession()) return;
+  accountReturnView = view;
+  qrRequest++;
+  credentialRequest++;
+  observer.pause();
+  clearAccountForm();
+  showView('account');
+}
+
+function closeAccount() {
+  if (view !== 'account' || accountBusy) return;
+  clearAccountForm();
+  if (!validSession()) return;
+  if (accountReturnView === 'credential') return loadCredential();
+  return loadQrCode();
+}
+
+async function submitDeleteAccount(event) {
+  event.preventDefault();
+  if (view !== 'account' || accountBusy || !validSession()) return;
+  const senha = $('deletePassword').value;
+  if (!senha || new TextEncoder().encode(senha).length > 72) return formMessage('deleteAccountMessage', 'Informe sua senha atual para confirmar a exclusão.');
+  if (!$('deleteConfirmation').checked) return formMessage('deleteAccountMessage', 'Marque a confirmação de exclusão permanente para continuar.');
+  const currentEpoch = epoch;
+  accountBusy = true;
+  accountAbort = new AbortController();
+  for (const id of ['deleteAccountButton', 'accountBackButton', 'cancelDeleteAccountButton']) $(id).disabled = true;
+  $('deleteAccountButton').querySelector('span').textContent = 'Excluindo cadastro...';
+  formMessage('deleteAccountMessage');
+  try {
+    const result = await api.deleteAccount(senha, { signal: accountAbort.signal });
+    if (currentEpoch !== epoch || view !== 'account') return;
+    if (result?.deleted !== true) throw new Error('O servidor não confirmou a exclusão. Tente novamente.');
+    logout('Seu cadastro foi excluído. Seu acesso e os dados deste aplicativo foram removidos.');
+    $('email').value = '';
+    $('loginMessage').dataset.state = 'success';
+  } catch (error) {
+    if (currentEpoch !== epoch || view !== 'account' || error.name === 'AbortError') return;
+    formMessage('deleteAccountMessage', error.message || 'Não foi possível confirmar a exclusão. Confira a conexão e tente novamente.');
+  } finally {
+    if (currentEpoch === epoch && view === 'account') {
+      accountBusy = false;
+      $('deletePassword').value = '';
+      for (const id of ['deleteAccountButton', 'accountBackButton', 'cancelDeleteAccountButton']) $(id).disabled = false;
+      $('deleteAccountButton').querySelector('span').textContent = 'Excluir meu cadastro';
+    }
+  }
+}
 
 async function loadQrCode() {
   if (!validSession()) return;
@@ -210,7 +438,10 @@ function resetLogin(message = '') {
   memberId = null;
   qrReady = false;
   confirmationFinished = false;
+  loginBusy = false;
   observer.stop();
+  clearRegistration();
+  clearAccountForm();
   api.clear();
   $('senha').value = '';
   $('senha').type = 'password';
@@ -224,7 +455,9 @@ function resetLogin(message = '') {
   for (const id of ['memberInitials', 'memberName', 'memberRole', 'memberRegistration', 'credentialInitials', 'credentialName', 'credentialRole', 'credentialRegistration', 'credentialValidity']) $(id).textContent = '';
   $('loginMessage').textContent = message;
   $('loginMessage').hidden = !message;
+  $('loginMessage').dataset.state = 'error';
   $('loginButton').disabled = false;
+  $('openRegistrationButton').disabled = false;
   $('loginButton').querySelector('span').textContent = 'Entrar';
   showView('login');
 }
@@ -288,7 +521,7 @@ function restoreSavedAccess() {
       const access = await api.refresh(record.refreshToken);
       if (currentEpoch !== epoch) return;
       useAccess(access);
-      await loadQrCode();
+      if (view !== 'account') await loadQrCode();
     } catch (error) {
       if (currentEpoch !== epoch) return;
       if (error.status === 401 || error.status === 403) logout(error.message);
@@ -305,10 +538,14 @@ function restoreSavedAccess() {
 
 $('loginForm').addEventListener('submit', async event => {
   event.preventDefault();
+  if (view !== 'login' || loginBusy) return;
+  loginBusy = true;
   const currentEpoch = ++epoch;
   $('loginButton').disabled = true;
+  $('openRegistrationButton').disabled = true;
   $('loginButton').querySelector('span').textContent = 'Entrando...';
   $('loginMessage').hidden = true;
+  $('loginMessage').dataset.state = 'error';
   const rememberMe = $('rememberMe').checked;
   let access;
   try {
@@ -345,7 +582,9 @@ $('loginForm').addEventListener('submit', async event => {
     $('loginMessage').hidden = false;
   } finally {
     if (currentEpoch === epoch) {
+      loginBusy = false;
       $('loginButton').disabled = false;
+      $('openRegistrationButton').disabled = false;
       $('loginButton').querySelector('span').textContent = 'Entrar';
     }
   }
@@ -359,6 +598,25 @@ $('togglePassword').addEventListener('click', () => {
 });
 $('logoutButton').addEventListener('click', () => logout());
 $('confirmationLogoutButton').addEventListener('click', () => logout());
+$('openRegistrationButton').addEventListener('click', openRegistration);
+$('registrationBackButton').addEventListener('click', closeRegistration);
+$('registrationCancelButton').addEventListener('click', closeRegistration);
+$('registrationLoginButton').addEventListener('click', closeRegistration);
+$('retryRegistrationConfigButton').addEventListener('click', loadRegistrationConfig);
+$('registrationForm').addEventListener('submit', submitRegistration);
+$('qrAccountButton').addEventListener('click', openAccount);
+$('credentialAccountButton').addEventListener('click', openAccount);
+$('accountBackButton').addEventListener('click', closeAccount);
+$('cancelDeleteAccountButton').addEventListener('click', closeAccount);
+$('deleteAccountForm').addEventListener('submit', submitDeleteAccount);
+for (const [button, input, label] of [['toggleRegistrationPassword', 'registrationPassword', 'nova senha'], ['toggleDeletePassword', 'deletePassword', 'senha atual']]) {
+  $(button).addEventListener('click', () => {
+    const visible = $(input).type === 'password';
+    $(input).type = visible ? 'text' : 'password';
+    $(button).setAttribute('aria-pressed', String(visible));
+    $(button).setAttribute('aria-label', `${visible ? 'Ocultar' : 'Mostrar'} ${label}`);
+  });
+}
 $('backQrButton').addEventListener('click', loadQrCode);
 $('retryCredentialButton').addEventListener('click', loadCredential);
 $('retryQrButton').addEventListener('click', () => {
@@ -371,7 +629,7 @@ $('retryQrButton').addEventListener('click', () => {
 
 function setForeground(active) {
   foreground = active;
-  if (active && !api.token && savedRecord) { restoreSavedAccess(); return; }
+  if (active && view === 'login' && !api.token && savedRecord) { restoreSavedAccess(); return; }
   if (active && api.token && !validSession()) return;
   if (!active) observer.pause();
   else if (view === 'qr' && qrReady) observer.resume();
@@ -394,8 +652,11 @@ window.addEventListener('online', () => {
 if (Capacitor.isNativePlatform()) {
   App.addListener('appStateChange', ({ isActive }) => setForeground(isActive)).catch(() => {});
   App.addListener('backButton', () => {
-    if (['credential', 'confirmation'].includes(view) && api.token) loadQrCode();
+    if (view === 'registration') closeRegistration();
+    else if (view === 'account') closeAccount();
+    else if (['credential', 'confirmation'].includes(view) && api.token) loadQrCode();
     else App.minimizeApp().catch(() => {});
   }).catch(() => {});
 }
+configurePublicLinks();
 restoreSavedAccess();

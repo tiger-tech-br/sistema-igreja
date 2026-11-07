@@ -3,9 +3,9 @@ const bcrypt = require('bcrypt');
 const model = require('../models/membroModel');
 const { enviarTemplate } = require('../services/emailService');
 const qr = require('../services/qrCodeService');
-const { passwordValid, tokenValid, adultDate } = require('../utils/security');
-const { VERSION, privacyConfig } = require('../config/privacy');
-const gerarValidade = require('../utils/validade');
+const { passwordValid, tokenValid } = require('../utils/security');
+const { createMemberRegistrationService } = require('../services/memberRegistrationService');
+const { memberHasAccess } = require('../services/memberAccessService');
 const pool = require('../database/connection');
 const { memberCredentialResult } = require('../services/memberCredentialService');
 const text = (value,max=300) => typeof value === 'string' && value.length <= max ? value.trim() : '';
@@ -16,6 +16,7 @@ const ok = (res,data,message) => res.json({ success:true,data,message });
 const safe = fn => async (req,res,next) => { try { await fn(req,res); } catch(error) { next(error); } };
 const appUrl = () => (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/,'');
 const genericRecovery = 'Se existir uma conta vinculada a este e-mail, você receberá as instruções. Confira também a pasta de spam.';
+const registration = createMemberRegistrationService();
 function sessionLogin(req,res,member) {
     req.session.regenerate(error => {
         if (error) return fail(res,'Não foi possível iniciar a sessão.',503);
@@ -28,30 +29,14 @@ async function confirmationMail(member,token) {
         dados:{nome:member.nome,link:appUrl()+'/confirmar-email?token='+token} });
 }
 exports.criar = safe(async (req,res) => {
-    if (!privacyConfig().configured) return fail(res,'Cadastro temporariamente indisponível: o responsável deve configurar o contato de privacidade.',503);
-    const d = req.body || {};
-    const name = text(d.nome,150), email = emailOf(d.email), birth = adultDate(d.dataNascimento);
-    if (!/^[A-Za-zÀ-ÿ\s]{3,150}$/.test(name) || !emailValid(email)) return fail(res,'Informe nome e e-mail válidos.');
-    if (!birth) return fail(res,'O cadastro é exclusivo para maiores de 18 anos. Informe uma data válida.');
-    if (!passwordValid(d.senha)) return fail(res,'Use uma senha com pelo menos 12 caracteres e no máximo 72 bytes.');
-    if (d.cienciaPrivacidade !== true || d.consentimento !== true || d.privacyVersion !== VERSION) return fail(res,'Confirme a leitura do Aviso de Privacidade e autorize especificamente o tratamento do vínculo religioso.');
-    const optional = {};
-    for (const field of ['telefone','celular','endereco','sexo','estadoCivil']) {
-        if (d[field] != null && (typeof d[field] !== 'string' || d[field].length > 300)) return fail(res,'Campo opcional inválido.');
-        optional[field] = text(d[field]) || null;
-    }
-    if (optional.celular && optional.celular.replace(/\D/g,'').length !== 11) return fail(res,'Celular inválido.');
-    if (optional.telefone && optional.telefone.replace(/\D/g,'').length !== 10) return fail(res,'Telefone inválido.');
-    if (optional.sexo && !['Masculino','Feminino'].includes(optional.sexo)) return fail(res,'Sexo inválido.');
-    if (optional.estadoCivil && !['Solteiro(a)','Casado(a)','Divorciado(a)','Viúvo(a)'].includes(optional.estadoCivil)) return fail(res,'Estado civil inválido.');
-    const token = crypto.randomBytes(32).toString('hex');
-    // No request-controlled administrative fields reach the model.
     try {
-        const member = await model.criar({ ...optional,nome:name,email,senha:d.senha,dataNascimento:birth,
-            matricula:crypto.randomBytes(12).toString('hex'),validade:gerarValidade(),confirmationToken:token });
-        await confirmationMail(member,token).catch(() => console.error('[EMAIL_CONFIRMATION_FAILED]'));
+        const { member, confirmationToken } = await registration.register(req.body);
+        await confirmationMail(member,confirmationToken).catch(() => console.error('[EMAIL_CONFIRMATION_FAILED]'));
     } catch(error) {
-        if (error.code !== '23505') throw error;
+        if (error.status !== 409) {
+            if ([400,503].includes(error.status)) return fail(res,error.message,error.status);
+            throw error;
+        }
     }
     res.status(202).json({ success:true,message:'Se o cadastro puder ser realizado, enviaremos a confirmação por e-mail. Para reenviar, use Esqueci minha senha.' });
 });
@@ -60,7 +45,7 @@ exports.login = safe(async (req,res) => {
     if (!emailValid(email) || typeof senha !== 'string' || Buffer.byteLength(senha)>72 || !senha.length) return fail(res,'E-mail ou senha inválidos.',401);
     const member = await model.buscarPorEmail(email);
     if (!member?.senha || !await bcrypt.compare(senha,member.senha)) return fail(res,'E-mail ou senha inválidos.',401);
-    if (!member.email_verificado) return fail(res,'Confirme seu e-mail. Para reenviar a confirmação, use Esqueci minha senha.',403);
+    if (!memberHasAccess(member)) return fail(res,'Confirme seu e-mail. Para reenviar a confirmação, use Esqueci minha senha.',403);
     sessionLogin(req,res,member);
 });
 exports.esqueciSenha = safe(async (req,res) => {
@@ -69,7 +54,7 @@ exports.esqueciSenha = safe(async (req,res) => {
     const member = await model.buscarPorEmail(email);
     if (member) {
         const token=crypto.randomBytes(32).toString('hex');
-        if (!member.email_verificado) {
+        if (!memberHasAccess(member)) {
             await model.novoTokenConfirmacao(member.id,token);
             await confirmationMail(member,token).catch(() => console.error('[EMAIL_CONFIRMATION_FAILED]'));
         } else {
@@ -143,7 +128,7 @@ exports.dashboard = safe(async (req,res) => ok(res,await model.dashboard()));
 exports.baixarQRCode = safe(async (req,res) => {
     const member=await model.buscarPorId(req.params.id);
     if (!member) return fail(res,'Membro não encontrado.',404);
-    if (!member.email_verificado) return fail(res,'Para liberar o QR Code, o membro precisa confirmar seu e-mail. Para reenviar a confirmação, use Esqueci minha senha.',403);
+    if (!memberHasAccess(member)) return fail(res,'Para liberar o QR Code, o membro precisa confirmar seu e-mail. Para reenviar a confirmação, use Esqueci minha senha.',403);
     if (member.consent_revoked_at) return fail(res,'O membro revogou o consentimento. Se desejar autorizar novamente, ele deve entrar na própria conta e acessar Privacidade e seus dados.',403);
     // A rota exige administrador e permite imprimir QR Codes de cadastros antigos
     // sem consentimento registrado. A validação e a presença mantêm suas regras.

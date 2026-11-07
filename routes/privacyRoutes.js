@@ -10,6 +10,7 @@ const { VERSION, NOTICE_TEXT, CONSENT_TEXT, privacyConfig } = require('../config
 const { adultDate } = require('../utils/security');
 const safe = fn => async (req,res,next) => { try { await fn(req,res); } catch(error) { next(error); } };
 const invalid = (res,message) => res.status(400).json({success:false,message});
+router.use(require('./memberAccountRoutes').createMemberAccountRouter());
 router.get('/config',(req,res) => res.json(privacyConfig()));
 router.get('/meus-dados',member,limit('export',10),safe(async (req,res) => {
     const id=req.session.membro.id;

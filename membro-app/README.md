@@ -2,6 +2,8 @@
 
 Aplicativo Android exclusivo do membro, separado do **Leitor de presenças** do administrador. Nome no aparelho: **Minha credencial**. Pacote: `br.com.assembleiadedeus.membro`. O ícone claro com cartão de identificação diferencia este aplicativo do leitor escuro. Os dois podem ser instalados juntos.
 
+**Atualização 1.2.0, código Android 5:** cadastro pelo próprio aplicativo, com formulário de nome, nascimento, e-mail, senha e autorizações. Após o cadastro, a conta fica liberada e o aplicativo volta ao login, sem pedir aprovação da administração ou confirmação por e-mail. Depois de entrar, o membro apresenta seu QR Code e continua com o fluxo de confirmação e credencial existente. A área **Minha conta** permite excluir o próprio cadastro mediante senha atual.
+
 **Atualização 1.1.1, código Android 4:** nome da igreja padronizado para **Assembléia de Deus** nas telas e no manifesto web. A regra interna das presenças e o fluxo QR Code → confirmação → credencial permanecem iguais, sem indicação de períodos nas telas.
 
 **Atualização 1.1.0, código Android 3:** checkbox **Mantenha-me conectado**. Ao marcar e entrar, o aplicativo restaura o acesso por até 30 dias quando for aberto novamente, sem pedir e-mail e senha. **Sair** apaga o acesso salvo. A correção do QR Code da versão anterior permanece incluída.
@@ -10,7 +12,7 @@ Aplicativo Android exclusivo do membro, separado do **Leitor de presenças** do 
 
 ## Fluxo
 
-1. O membro entra com o mesmo e-mail e senha da área do membro do Sistema Igreja.
+1. Quem ainda não tem conta usa **Cadastre-se como membro**, preenche os dados e autorizações e volta ao login após a confirmação do servidor. Quem já tem cadastro entra normalmente com o mesmo e-mail e senha da área do membro do Sistema Igreja.
 2. O aplicativo prepara e mostra somente o QR Code desse membro.
 3. O administrador escaneia pelo leitor existente; o servidor registra a presença pela mesma regra de data e período.
 4. Uma confirmação nova do servidor abre a tela verde com um ✓ branco desenhado em SVG e efeito breve. Não usa o emoji com quadrado verde.
@@ -40,13 +42,17 @@ Arquivos do servidor desta etapa incluem:
 - `services/memberCredentialService.js`: validação da credencial compartilhada.
 - `models/membroModel.js`: confirmação persistente, atômica com a presença.
 - `database/migrations/005_member_scan_state.sql`: tabela com uma linha por membro.
+- `database/migrations/007_member_registration_access.sql`: liberação do cadastro independente da verificação de e-mail. O endereço não é registrado como verificado sem ter sido conferido.
 - Integração em `app.js`, compilação em `package.json` e renderer compartilhado em `js/credencial-view.js`.
 
 As rotas próprias são:
 
 | Método e rota | Função |
 | --- | --- |
+| `GET /api/app-membro/cadastro/config` | Obter as informações atuais de privacidade e as autorizações do formulário |
+| `POST /api/app-membro/cadastro` | Criar a conta com acesso liberado, sem iniciar sessão |
 | `POST /api/app-membro/login` | Acessar com a conta existente do membro |
+| `POST /api/app-membro/excluir-conta` | Excluir somente o próprio cadastro autenticado, após conferir a senha atual |
 | `POST /api/app-membro/qrcode` | Preparar o QR próprio e sua referência de leitura |
 | `GET /api/app-membro/presenca?after=...` | Consultar somente a confirmação do próprio membro |
 | `GET /api/app-membro/credencial` | Consultar a credencial própria validada |
@@ -86,7 +92,7 @@ npm run build:apk
 
 O comando compila a interface, sincroniza o projeto Android, executa `assembleDebug` e entrega:
 
-`artifacts/minha-credencial-v1.1.1-debug.apk`
+`artifacts/minha-credencial-v1.2.0-debug.apk`
 
 Para abrir o projeto Android existente:
 
