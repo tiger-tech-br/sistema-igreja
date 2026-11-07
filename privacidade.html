@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/portal.css?v=4.0.0">
+    <link rel="stylesheet" href="/css/portal.css?v=4.1.0">
 </head>
 <body class="portal-page privacy-page">
     <a class="portal-skip" href="#conteudo">Pular para o conteúdo</a>
@@ -25,12 +25,27 @@
             <article class="portal-card privacy-document" aria-label="Aviso de privacidade">
                 <div class="privacy-controller"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg><p id="responsavel">Carregando identificação do responsável...</p></div>
                 <p class="privacy-version"><strong>Versão:</strong> 23 de setembro de 2026.</p>
-                <section><h2>Dados e finalidades</h2><p>Usamos os dados informados para analisar e manter o cadastro de membros, autenticar a conta, emitir a credencial, registrar presenças autorizadas, prestar suporte e administrar a comunidade. Nome, contatos, endereço, data de nascimento, sexo e estado civil são fornecidos no cadastro; cargo e ministério são definidos pela administração. Registros técnicos de segurança e solicitações de privacidade também podem ser mantidos.</p></section>
+                <section><h2>Dados e finalidades</h2><p>Usamos os dados informados para manter o cadastro de membros, autenticar a conta, emitir a credencial, registrar presenças autorizadas, prestar suporte e administrar a comunidade. O cadastro pelo aplicativo pede nome, data de nascimento, e-mail e senha. Contatos, endereço, sexo e estado civil também podem ser informados pelo site; cargo e ministério são definidos pela administração. Registros técnicos de segurança e solicitações de privacidade também podem ser mantidos.</p></section>
                 <section><h2>Dado sensível e consentimento</h2><p>A participação identifica vínculo com uma organização religiosa e recebe proteção reforçada. Novos usuários autorizam esse tratamento em uma opção separada e destacada. O consentimento pode ser revogado a qualquer momento; isso suspende a credencial e novos registros de presença, sem afetar operações anteriores realizadas legitimamente.</p></section>
-                <section><h2>Compartilhamento, segurança e retenção</h2><p>Compartilhamos somente o necessário com fornecedores contratados de hospedagem, banco de dados e envio de e-mail. O CEP pode ser consultado no ViaCEP antes do envio do formulário. Aplicamos controle de acesso, confirmação de e-mail, proteção de senhas e sessões, limitação de tentativas e registros de auditoria. Os dados devem ser mantidos apenas pelo período necessário a cada finalidade e a obrigações legais justificadas, conforme os prazos definidos pelo responsável.</p></section>
-                <section><h2>Seus direitos</h2><p>Você pode consultar seus dados, pedir correção, informação, oposição ou exclusão, e revogar o consentimento. A revogação suspende credencial e novos registros de presença; dados necessários a obrigações legais podem ser retidos com justificativa.</p></section>
+                <section><h2>Compartilhamento, segurança e retenção</h2><p>Compartilhamos somente o necessário com fornecedores contratados de hospedagem, banco de dados e envio de e-mail. No site, o CEP pode ser consultado no ViaCEP antes do envio do formulário. Aplicamos controle de acesso, proteção de senhas e sessões, limitação de tentativas e registros de auditoria. O cadastro pelo site exige confirmação de e-mail; no aplicativo, o acesso é liberado após o preenchimento válido do formulário, sem confirmar a propriedade do e-mail. Os dados devem ser mantidos apenas pelo período necessário a cada finalidade e a obrigações legais justificadas, conforme os prazos definidos pelo responsável.</p></section>
+                <section><h2>Seus direitos</h2><p>Você pode consultar seus dados, pedir correção, informação ou oposição e revogar o consentimento. Para remover sua conta, use <a class="portal-text-link" href="#excluir-cadastro">Excluir meu cadastro</a>: a exclusão é feita na hora, após confirmar sua senha, sem aguardar a administração. A revogação suspende a credencial e novos registros de presença.</p></section>
             </article>
             <aside class="privacy-sidebar" aria-label="Gerenciar seus dados">
+                <section class="portal-card privacy-action-card account-deletion" id="excluir-cadastro" aria-labelledby="tituloExclusao" data-member-deletion>
+                    <h2 id="tituloExclusao">Excluir meu cadastro</h2>
+                    <p>Você pode encerrar sua conta quando quiser, sem solicitar aprovação à igreja.</p>
+                    <p id="exclusaoLogin" class="account-delete-login">Entre na sua conta pela <a href="/">Área do membro</a> para excluir seu cadastro.</p>
+                    <div id="exclusaoAutenticada" hidden>
+                        <button id="abrirExclusao" class="portal-button portal-button-secondary account-delete-start" type="button">Excluir meu cadastro</button>
+                        <form id="formExclusao" hidden>
+                            <p class="account-delete-warning">Esta ação exclui definitivamente seu cadastro, suas presenças e suas solicitações de privacidade. Seu QR Code deixará de funcionar e você sairá da conta.</p>
+                            <label for="senhaExclusao">Confirme sua senha atual<input id="senhaExclusao" type="password" autocomplete="current-password" required></label>
+                            <div class="account-delete-actions"><button class="portal-button portal-button-secondary" id="cancelarExclusao" type="button">Cancelar</button><button class="portal-button account-delete-confirm" id="confirmarExclusao" type="submit">Excluir definitivamente</button></div>
+                        </form>
+                    </div>
+                    <p id="resultadoExclusao" class="privacy-feedback" role="status"></p>
+                    <a id="exclusaoConcluida" class="portal-button portal-button-secondary" href="/" hidden>Voltar ao início</a>
+                </section>
                 <section class="portal-card privacy-action-card" id="areaConsentimento" hidden>
                     <h2>Autorizar o uso dos dados</h2><p>Para liberar sua credencial e seu QR Code, leia o aviso acima e registre sua escolha.</p>
                     <form id="formConsentimento"><label class="privacy-check"><input type="checkbox" id="cienciaPrivacidade" required><span id="textoAviso"></span></label><label class="privacy-check"><input type="checkbox" id="consentimento" required><strong id="textoConsentimento"></strong></label><button class="portal-button" type="submit">Registrar consentimento</button></form>
@@ -47,6 +62,7 @@
     </main>
     <footer class="portal-footer"><p>Assembléia de Deus · Lugar de Esperança</p></footer>
     <script src="/js/security.js"></script>
-    <script src="/js/privacidade.js?v=4.0.0"></script>
+    <script src="/js/privacidade.js?v=4.1.0"></script>
+    <script src="/js/excluir-conta.js?v=1.0.0"></script>
 </body>
 </html>
