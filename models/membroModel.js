@@ -21,7 +21,7 @@ module.exports = {
                 (nome,data_nascimento,telefone,celular,email,senha,email_verificado,endereco,cargo,ministerio,
                  sexo,estado_civil,matricula,validade,privacy_notice_version,privacy_notice_text,privacy_notice_at,
                  consent_version,consent_text,consent_at,token_confirmacao,confirmation_expires_at,cadastro_liberado)
-                VALUES ($1,$2,$3,$4,$5,$6,FALSE,$7,NULL,NULL,$8,$9,$10,$11,$12,$13,NOW(),$12,$14,NOW(),$15,
+                VALUES ($1,$2,$3,$4,$5,$6,FALSE,$7,NULL,NULL,$8,$9,$10,$11,$12,$13,NOW(),$12,$14,NOW(),$15::TEXT,
                     CASE WHEN $15::TEXT IS NULL THEN NULL ELSE NOW()+INTERVAL '24 hours' END,$16)
                 RETURNING id, nome, email`,
                 [d.nome,d.dataNascimento,d.telefone,d.celular,d.email,await bcrypt.hash(d.senha,12),
