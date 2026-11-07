@@ -15,7 +15,7 @@ test('self deletion removes linked data using the real PostgreSQL schema and mig
     await client.connect();
     try {
         await client.query('SET search_path TO pg_temp');
-        const temporary = sql => sql.replace(/\bCREATE TABLE\b/g, 'CREATE TEMP TABLE');
+        const temporary = sql => sql.replace(/^\uFEFF/, '').replace(/\bCREATE TABLE\b/g, 'CREATE TEMP TABLE');
         await client.query(temporary(fs.readFileSync(path.join(__dirname, '../database/schema.sql'), 'utf8')));
         const migrations = path.join(__dirname, '../database/migrations');
         for (const file of fs.readdirSync(migrations).filter(name => /^\d+.*\.sql$/.test(name)).sort()) {
