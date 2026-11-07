@@ -19,6 +19,7 @@
     <symbol id="arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
     <symbol id="back" viewBox="0 0 24 24"><path d="M20 12H4m6-6-6 6 6 6"/></symbol>
     <symbol id="id-card" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><circle cx="8" cy="10" r="2"/><path d="M4.5 16a3.5 3.5 0 0 1 7 0M15 9h4m-4 4h4"/></symbol>
+    <symbol id="refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5m10-3a7 7 0 0 0-12-3L4 9m16 6-3 3A7 7 0 0 1 5 15"/></symbol>
   </svg>
   <main id="app">
     <section id="loginScreen" class="login-screen">
@@ -80,6 +81,7 @@
         <div class="member-brand"><h1>Assembléia de Deus</h1><p>Área do membro</p></div>
         <button id="logoutButton" class="logout-button" type="button"><svg aria-hidden="true"><use href="#logout"/></svg><span>Sair</span></button>
       </header>
+      <div id="pullRefreshIndicator" class="pull-refresh" role="status" aria-live="polite" aria-atomic="true" hidden><svg aria-hidden="true"><use href="#refresh"/></svg><span id="pullRefreshText">Puxe para atualizar</span></div>
       <section id="qrScreen" class="member-content" aria-labelledby="qrTitle">
         <div class="page-intro"><h2 id="qrTitle">Meu QR Code</h2><p>Apresente este código à recepção.</p></div>
         <article class="qr-card">

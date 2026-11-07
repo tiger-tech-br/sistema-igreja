@@ -5,6 +5,7 @@ import { ReaderApi } from './api.js';
 import { ScanController } from './scan-controller.js';
 import { createCamera } from './camera.js';
 import { SavedSession } from '../../mobile-shared/session.js';
+import { PullToRefresh } from '../../mobile-shared/pull-to-refresh.js';
 import './styles.css';
 
 const $ = id => document.getElementById(id);
@@ -25,8 +26,19 @@ let rememberedSession = null;
 let sessionTask = null;
 let forgetTask = Promise.resolve();
 let loginPending = false;
+let pullRefresh;
+let refreshTask = null;
+let refreshRevision = 0;
+let refreshScanMessage = false;
+let scanRevision = 0;
+
+function resetPullRefresh() {
+  refreshRevision++;
+  pullRefresh?.reset();
+}
 
 function showScreen(screen) {
+  if (screen !== activeScreen) resetPullRefresh();
   activeScreen = screen;
   $('loginScreen').hidden = screen !== 'login';
   $('homeScreen').hidden = screen !== 'home';
@@ -174,6 +186,8 @@ const controller = new ScanController({
   register: id => api.register(id),
   online: () => navigator.onLine !== false,
   onState: state => {
+    scanRevision++;
+    refreshScanMessage = false;
     if (state.kind === 'expired') return rememberedSession ? restoreSavedAccess(true) : logout(state.message);
     if (state.kind === 'sending') {
       showScanMessage(state.message, 'sending');
@@ -191,6 +205,87 @@ const controller = new ScanController({
     }
   }
 });
+
+function canRefreshReader() {
+  return foreground && ['home', 'scanner'].includes(activeScreen) && Boolean(api.token) &&
+    !loginPending && !sessionTask && !cameraTask && !controller.busy && !refreshTask;
+}
+
+function refreshReader() {
+  if (!canRefreshReader()) return Promise.resolve();
+  const epoch = sessionEpoch;
+  const revision = refreshRevision;
+  const screen = activeScreen;
+  const readingRevision = scanRevision;
+  const current = () => epoch === sessionEpoch && revision === refreshRevision && screen === activeScreen && foreground;
+  const task = (async () => {
+    try {
+      if (Date.now() >= sessionExpiresAt) {
+        if (!await renewAccess() || !current()) return;
+      }
+      let result;
+      try { result = await api.status(); }
+      catch (error) {
+        if (!current()) return;
+        if (error.status !== 401 || !rememberedSession) throw error;
+        if (!await restoreSavedAccess(true) || !current()) return;
+        result = await api.status();
+      }
+      if (!current()) return;
+      const expiration = new Date(result?.expiresAt).getTime();
+      if (typeof result?.admin?.nome !== 'string' || !result.admin.nome.trim() || !Number.isFinite(expiration) || expiration <= Date.now()) {
+        throw new Error('Não foi possível conferir o acesso ao leitor. Tente novamente.');
+      }
+      if (screen === 'scanner' && scanRevision !== readingRevision) return;
+      connection('Conectado', 'online');
+      $('homeRefreshMessage').hidden = true;
+      $('homeRefreshMessage').textContent = '';
+      if (refreshScanMessage && !controller.busy) { showScanMessage(''); refreshScanMessage = false; }
+      // A running camera and its QR debounce are left untouched. This never
+      // reads/retries a QR or opens the camera from the home screen.
+      if (screen === 'scanner' && !controller.busy && (cameraWanted || cameraFailure)) {
+        cameraWanted = true;
+        await syncCamera();
+      }
+    } catch (error) {
+      if (!current()) return;
+      if (screen === 'scanner' && scanRevision !== readingRevision) return;
+      if (error.status === 401) return logout(error.message || 'Seu acesso expirou. Entre novamente.');
+      connection(navigator.onLine === false ? 'Sem conexão' : 'Falha ao atualizar', navigator.onLine === false ? 'offline' : 'neutral');
+      const message = error.message || 'Não foi possível atualizar a conexão. Tente novamente.';
+      if (screen === 'home') {
+        $('homeRefreshMessage').textContent = message;
+        $('homeRefreshMessage').hidden = false;
+      } else if (!controller.busy) {
+        showScanMessage(message, 'error', !$('retryButton').hidden);
+        refreshScanMessage = true;
+      }
+    }
+  })();
+  refreshTask = task;
+  return task.finally(() => { if (refreshTask === task) refreshTask = null; });
+}
+
+pullRefresh = new PullToRefresh({
+  canRefresh: canRefreshReader,
+  refresh: refreshReader,
+  scrollTop: () => window.scrollY || document.scrollingElement?.scrollTop || 0,
+  onState: ({ phase, distance }) => {
+    for (const screen of ['home', 'scanner']) {
+      const indicator = $(screen + 'RefreshIndicator');
+      indicator.hidden = screen !== activeScreen || phase === 'idle' || (phase !== 'refreshing' && distance <= 10);
+      indicator.dataset.phase = phase;
+      const text = phase === 'refreshing' ? 'Atualizando…' : phase === 'ready' ? 'Solte para atualizar' : 'Puxe para atualizar';
+      if ($(screen + 'RefreshText').textContent !== text) $(screen + 'RefreshText').textContent = text;
+    }
+  }
+});
+for (const id of ['homeScreen', 'scannerScreen']) {
+  $(id).addEventListener('touchstart', event => pullRefresh.start(event), { passive: true });
+  $(id).addEventListener('touchmove', event => pullRefresh.move(event), { passive: false });
+  $(id).addEventListener('touchend', () => pullRefresh.end(), { passive: true });
+  $(id).addEventListener('touchcancel', () => pullRefresh.cancel(), { passive: true });
+}
 
 function cameraError(error) {
   cameraWanted = false;
@@ -256,6 +351,7 @@ function syncCamera() {
 }
 
 function resetLogin(message = '', forget = true) {
+  resetPullRefresh();
   sessionEpoch++;
   sessionTask = null;
   loginPending = false;
@@ -278,6 +374,9 @@ function resetLogin(message = '', forget = true) {
   $('lastAttendance').hidden = true;
   $('waitingState').hidden = false;
   showScanMessage('');
+  $('homeRefreshMessage').hidden = true;
+  $('homeRefreshMessage').textContent = '';
+  refreshScanMessage = false;
   document.documentElement.classList.remove('native-camera-active');
   if (forget) {
     const remembered = rememberedSession;
@@ -369,6 +468,7 @@ $('torchButton').addEventListener('click', async () => {
 
 function setForeground(value) {
   foreground = value;
+  if (!value) resetPullRefresh();
   if (value && api.token && Date.now() >= sessionExpiresAt) return renewAccess();
   if (value && !api.token && rememberedSession && !sessionTask) restoreSavedAccess();
   syncCamera();

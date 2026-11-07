@@ -2,6 +2,8 @@
 
 Aplicativo exclusivo para administradores autorizados: entrar com a conta administrativa, ler o QR Code do membro e confirmar a presença no servidor do Sistema Igreja. A câmera permanece aberta entre as leituras para atender o próximo membro rapidamente.
 
+**Atualização 1.4.0, código Android 5:** puxe a tela de cima para baixo para conferir o acesso e a conexão, na tela inicial ou na câmera. A atualização mantém a conta conectada e a última presença confirmada, sem reenviar leituras. O gesto é ignorado durante operações em andamento.
+
 **Atualização 1.3.0, código Android 4:** nome da igreja padronizado para **Assembléia de Deus** e remoção das indicações de período e faixas de horário das telas. A confirmação mostra a data e o horário real do registro. A regra interna de uma presença por membro de manhã, à tarde e à noite permanece igual.
 
 **Atualização 1.2.0:** checkbox **Mantenha-me conectado**, restauração automática do acesso por até 30 dias e área da câmera mais alta para facilitar o enquadramento. Ao reabrir com o acesso salvo, a tela inicial é exibida sem pedir e-mail e senha; a câmera continua sendo aberta pelo botão **Escanear QRCode**.
@@ -139,7 +141,7 @@ O script `scripts/build-android.mjs`:
 2. Atualiza `android/local.properties` com o caminho local do SDK.
 3. Compila os arquivos web e sincroniza o Capacitor.
 4. Executa a compilação Android `assembleDebug`.
-5. Copia o APK para `leitor-qrcode/artifacts/igreja-leitor-v1.3.0-debug.apk`.
+5. Copia o APK para `leitor-qrcode/artifacts/igreja-leitor-v1.4.0-debug.apk`.
 
 Se a instalação do SDK ou do Studio estiver em outro local, ajuste as variáveis para aquela sessão do PowerShell e repita a geração:
 
@@ -153,7 +155,7 @@ O arquivo gerado é um **APK de testes, assinado com chave de depuração**. Ser
 
 ## Instalar o APK no Android
 
-1. Transfira `artifacts/igreja-leitor-v1.3.0-debug.apk` para o telefone.
+1. Transfira `artifacts/igreja-leitor-v1.4.0-debug.apk` para o telefone.
 2. Abra esse arquivo pelo aplicativo de arquivos do aparelho.
 3. Se o Android pedir permissão para instalar dessa origem, permita apenas ao aplicativo usado para abrir esse APK conhecido. Depois da instalação, essa permissão pode ser desativada novamente.
 4. Abra **Leitor de presenças** e use **Entrar** com uma conta administrativa autorizada.
@@ -161,12 +163,12 @@ O arquivo gerado é um **APK de testes, assinado com chave de depuração**. Ser
 6. Apresente um QR Code de membro e aguarde a confirmação enviada pelo servidor. A câmera continua aberta para o próximo membro.
 7. Use **Voltar** para fechar a câmera e retornar à tela inicial mantendo a conta conectada. **Sair**, disponível na tela inicial e na câmera, encerra o acesso e retorna ao login.
 
-Esta atualização Android é a versão **1.3.0**, código **4**. O identificador do aplicativo e a assinatura de testes permanecem os mesmos, permitindo atualizar a instalação anterior com essa assinatura.
+Esta atualização Android é a versão **1.4.0**, código **5**. O identificador do aplicativo e a assinatura de testes permanecem os mesmos, permitindo atualizar a instalação anterior com essa assinatura.
 
 Como alternativa, com telefone conectado por USB e depuração autorizada, o APK pode ser instalado pelo Platform Tools:
 
 ```powershell
-& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r '.\artifacts\igreja-leitor-v1.3.0-debug.apk'
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r '.\artifacts\igreja-leitor-v1.4.0-debug.apk'
 ```
 
 A versão final deverá usar uma chave de assinatura própria, mantida em local privado, com cópia de segurança e senhas fora do repositório. Esse preparo será feito em uma etapa posterior; não compartilhe a chave nem a senha no aplicativo. Atualizações do mesmo aplicativo devem manter a assinatura correspondente. Consulte a [documentação de assinatura Android](https://developer.android.com/studio/publish/app-signing).

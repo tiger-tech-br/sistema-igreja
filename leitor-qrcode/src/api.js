@@ -12,15 +12,15 @@ export class ReaderApi {
     this.requests.clear();
   }
 
-  async request(path, body, authenticated = false) {
+  async request(path, body, authenticated = false, { method = 'POST' } = {}) {
     const abort = new AbortController();
     const timer = setTimeout(() => abort.abort(), 10000);
     this.requests.add(abort);
     try {
       const response = await this.fetcher(this.serverUrl + path, {
-        method: 'POST', credentials: 'same-origin', cache: 'no-store', signal: abort.signal,
-        headers: { 'Content-Type': 'application/json', ...(authenticated ? { Authorization: `Bearer ${this.token || ''}` } : {}) },
-        body: JSON.stringify(body ?? {})
+        method, credentials: 'same-origin', cache: 'no-store', signal: abort.signal,
+        headers: { ...(method !== 'GET' ? { 'Content-Type': 'application/json' } : {}), ...(authenticated ? { Authorization: `Bearer ${this.token || ''}` } : {}) },
+        ...(method !== 'GET' ? { body: JSON.stringify(body ?? {}) } : {})
       });
       const result = await response.json().catch(() => null);
       if (!response.ok || result?.success !== true || !result.data) {
@@ -30,7 +30,7 @@ export class ReaderApi {
       }
       return result.data;
     } catch (error) {
-      if (error.name === 'AbortError') throw new Error('A resposta demorou. A presença pode ter sido recebida; tente novamente para confirmar sem duplicar.');
+      if (error.name === 'AbortError') throw new Error(method === 'GET' ? 'O servidor demorou para atualizar a conexão. Tente novamente.' : 'A resposta demorou. A presença pode ter sido recebida; tente novamente para confirmar sem duplicar.');
       if (error instanceof TypeError) throw new Error('Não foi possível acessar o servidor. Verifique a conexão.');
       throw error;
     } finally {
@@ -43,4 +43,5 @@ export class ReaderApi {
   refresh(refreshToken) { return this.request('/api/leitor/refresh', refreshToken ? { refreshToken } : {}); }
   logout(refreshToken) { return this.request('/api/leitor/logout', refreshToken ? { refreshToken } : {}); }
   register(id) { return this.request(`/api/leitor/presenca/${id}`, {}, true); }
+  status() { return this.request('/api/leitor/sessao', undefined, true, { method: 'GET' }); }
 }

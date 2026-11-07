@@ -124,3 +124,27 @@ test('acesso salvo usa endpoints próprios sem reaproveitar o token Bearer venci
   }
   assert.equal(api.token, 'expired-access-token', 'o cliente só troca o acesso depois da validação da tela');
 });
+
+test('atualizar a conexão usa somente GET de sessão autenticado, sem corpo ou presença', async () => {
+  const calls = [];
+  const api = new ReaderApi(serverUrl, async (url, options) => {
+    calls.push({ url, options });
+    return { ok: true, status: 200, json: async () => ({ success: true, data: { admin: { nome: 'Administrador' }, expiresAt: '2027-01-01T12:00:00Z' } }) };
+  });
+  api.token = 'access-token';
+  const result = await api.status();
+  assert.equal(result.admin.nome, 'Administrador');
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, `${serverUrl}/api/leitor/sessao`);
+  assert.equal(calls[0].options.method, 'GET');
+  assert.equal(calls[0].options.body, undefined);
+  assert.equal(calls[0].options.headers['Content-Type'], undefined);
+  assert.equal(calls[0].options.headers.Authorization, 'Bearer access-token');
+  assert.equal(calls[0].options.credentials, 'same-origin');
+  assert.equal(api.token, 'access-token');
+});
+
+test('um cancelamento do GET de atualização não afirma que uma presença foi enviada', async () => {
+  const api = new ReaderApi(serverUrl, async () => { throw Object.assign(new Error('cancelado'), { name: 'AbortError' }); });
+  await assert.rejects(api.status(), error => /atualizar a conexão/.test(error.message) && !/presença/.test(error.message));
+});

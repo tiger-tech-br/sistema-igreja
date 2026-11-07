@@ -4,6 +4,7 @@ const crypto = require('node:crypto');
 const express = require('express');
 const { createLeitorRouter } = require('../routes/leitorRoutes');
 const { createLeitorTokenService } = require('../services/leitorTokenService');
+const { createAppMembroTokenService } = require('../services/appMembroTokenService');
 
 const APP_ORIGIN = 'https://igreja.example';
 const NATIVE_ORIGIN = 'https://localhost';
@@ -12,12 +13,13 @@ const admin = { id: 7, nome: 'Administrador de teste', auth_version: 3, senha: '
 
 async function fixture(t, overrides = {}) {
     const calls = [];
+    const identities = [];
     const tokenService = createLeitorTokenService(secret);
     const options = {
         appUrl: APP_ORIGIN,
         tokenService,
         findAdminByEmail: async email => email === 'admin@example.test' ? { ...admin } : null,
-        findAdminById: async id => String(id) === String(admin.id) ? { ...admin } : null,
+        findAdminById: async id => { identities.push(String(id)); return String(id) === String(admin.id) ? { ...admin } : null; },
         comparePassword: async (password, hash) => password === 'test-password' && hash === admin.senha,
         registerAttendance: async (id, actor) => {
             calls.push({ id, actor });
@@ -42,8 +44,82 @@ async function fixture(t, overrides = {}) {
     async function request(path, { origin = NATIVE_ORIGIN, headers = {}, ...rest } = {}) {
         return fetch(base + path, { ...rest, headers: { ...(origin ? { Origin: origin } : {}), ...headers } });
     }
-    return { request, calls, token: tokenService.issue(admin).token };
+    const access = tokenService.issue(admin);
+    return { request, calls, identities, token: access.token, expiresAt: access.expiresAt };
 }
+
+test('reader session checks its current administrator and returns the existing minimal payload without writes', async t => {
+    const identities = [];
+    const state = await fixture(t, {
+        findAdminByEmail: async () => assert.fail('session refresh must not perform a login'),
+        findAdminById: async id => {
+            identities.push(String(id));
+            return { ...admin, email: 'private@example.invalid', refreshToken: 'private-refresh' };
+        },
+        registerAttendance: async () => assert.fail('session refresh must not register attendance or look up a member')
+    });
+    for (const origin of [NATIVE_ORIGIN, APP_ORIGIN]) {
+        const response = await state.request('/sessao?id=99', { origin, headers: { Authorization: `Bearer ${state.token}` } });
+        assert.equal(response.status, 200);
+        assert.deepEqual(await response.json(), { success: true, data: {
+            admin: { nome: admin.nome }, expiresAt: state.expiresAt
+        } });
+        assert.match(response.headers.get('content-type'), /^application\/json/);
+        assert.equal(response.headers.get('cache-control'), 'no-store');
+        assert.equal(response.headers.get('set-cookie'), null);
+    }
+    assert.deepEqual(identities, ['7', '7']);
+    assert.equal(state.calls.length, 0);
+});
+
+test('reader session rejects missing, wrong-scope, malformed and expired tokens before querying an administrator', async t => {
+    const state = await fixture(t, { registerAttendance: async () => assert.fail('session refresh cannot write attendance') });
+    const wrongScope = createAppMembroTokenService(secret).issue(admin).token;
+    const expired = createLeitorTokenService(secret, { now: () => Date.now() - 3 * 60 * 60 * 1000 }).issue(admin).token;
+    for (const headers of [{}, { Cookie: 'igreja.sid=admin-browser-session' }, { Authorization: 'Bearer invalid' },
+        { Authorization: `Bearer ${wrongScope}` }, { Authorization: `Bearer ${expired}` }]) {
+        const response = await state.request('/sessao', { headers });
+        assert.equal(response.status, 401);
+        assert.equal((await response.json()).success, false);
+    }
+    assert.equal(state.identities.length, 0);
+    assert.equal(state.calls.length, 0);
+});
+
+test('reader session checks revocation on every refresh and never confirms a disconnected identity', async t => {
+    let current = { ...admin };
+    const state = await fixture(t, {
+        findAdminById: async () => current,
+        registerAttendance: async () => assert.fail('session refresh cannot register attendance')
+    });
+    const auth = { Authorization: `Bearer ${state.token}` };
+    assert.equal((await state.request('/sessao', { headers: auth })).status, 200);
+    current = { ...admin, auth_version: admin.auth_version + 1 };
+    assert.equal((await state.request('/sessao', { headers: auth })).status, 401);
+    current = null;
+    assert.equal((await state.request('/sessao', { headers: auth })).status, 401);
+    const unavailable = await fixture(t, { findAdminById: async () => { throw new Error('database unavailable'); } });
+    const response = await unavailable.request('/sessao', { headers: { Authorization: `Bearer ${unavailable.token}` } });
+    assert.equal(response.status, 500);
+    assert.deepEqual(await response.json(), { success: false, message: 'Não foi possível concluir a operação.' });
+});
+
+test('reader session preserves origin checks and accepts same-origin GET without a request body or content type', async t => {
+    const state = await fixture(t);
+    const auth = { Authorization: `Bearer ${state.token}` };
+    for (const origin of ['https://evil.example', 'https://localhost.evil.example', 'http://localhost', 'null', null]) {
+        const response = await state.request('/sessao', { origin, headers: auth });
+        assert.equal(response.status, 403, String(origin));
+        assert.equal(response.headers.get('access-control-allow-origin'), null);
+    }
+    assert.equal(state.identities.length, 0);
+    const response = await state.request('/sessao', { origin: null,
+        headers: { ...auth, 'Sec-Fetch-Site': 'same-origin' } });
+    assert.equal(response.status, 200);
+    assert.deepEqual((await response.json()).data, { admin: { nome: admin.nome }, expiresAt: state.expiresAt });
+    assert.deepEqual(state.identities, ['7']);
+    assert.equal(state.calls.length, 0);
+});
 
 test('leitor login accepts an administrator without creating a browser session', async t => {
     const state = await fixture(t);

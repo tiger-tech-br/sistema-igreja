@@ -92,3 +92,11 @@ form label.delete-choice{margin-top:26px;border-color:#e2c9be;background:#fffaf6
 #deleteAccountForm .form-message{margin-top:21px;line-height:1.6}
 @media(min-width:700px){.registration-screen{box-shadow:0 3px 25px #24252224}.form-content{padding:26px 36px calc(36px + var(--safe-bottom))}.form-block{padding:27px 24px}.account-content{padding-top:25px}}
 @media(max-width:360px){.form-content{padding-inline:16px}.form-block{padding-inline:14px}.simple-brand strong{font-size:19px}.simple-brand{gap:12px;padding-inline:16px}.simple-brand>div{padding-left:12px}.consent-choice{gap:11px}.delete-explanation{padding:20px 16px}}
+html,body{overscroll-behavior-y:none}
+.pull-refresh{height:var(--pull-height,56px);overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;padding-inline:16px;background:#f5efdf;color:#785a1a;font-size:16px;line-height:1.4;text-align:center;border-bottom:1px solid #e9dfc5}
+.pull-refresh>svg{width:21px;height:21px;flex:none}
+.pull-refresh[data-phase=ready]>svg{transform:rotate(180deg)}
+.pull-refresh[data-phase=refreshing]{height:56px}
+.pull-refresh[data-phase=refreshing]>svg{animation:refresh-turn 1s linear infinite}
+@keyframes refresh-turn{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.pull-refresh[data-phase=refreshing]>svg{animation:none}}

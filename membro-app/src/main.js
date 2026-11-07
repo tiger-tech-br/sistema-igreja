@@ -3,6 +3,7 @@ import { App } from '@capacitor/app';
 import { SERVER_URL } from './config.js';
 import { MemberApi } from './api.js';
 import { PresenceObserver } from './presence-observer.js';
+import { PullToRefresh } from '../../mobile-shared/pull-to-refresh.js';
 import { renderCredential } from '../../js/credencial-view.js';
 import { SavedSession } from '../../mobile-shared/session.js';
 import './styles.css';
@@ -35,6 +36,7 @@ let registrationBusy = false;
 let accountReturnView = 'qr';
 let accountBusy = false;
 let accountAbort = null;
+const identificationRequests = new Set();
 
 const initials = name => {
   const parts = String(name || 'Membro').trim().split(/\s+/);
@@ -51,7 +53,10 @@ function showView(next) {
   $('credentialScreen').hidden = next !== 'credential';
   $('confirmationScreen').hidden = next !== 'confirmation';
   $('accountScreen').hidden = next !== 'account';
-  if (changed) window.scrollTo?.(0, 0);
+  if (changed) {
+    pullRefresh.reset();
+    window.scrollTo?.(0, 0);
+  }
 }
 
 function validSession() {
@@ -98,6 +103,25 @@ const observer = new PresenceObserver({
     }
   }
 });
+
+const pullRefresh = new PullToRefresh({
+  canRefresh: () => foreground && ['qr', 'credential'].includes(view) && Boolean(api.token) && Date.now() < expiresAt && !restoreTask && !observer.busy && identificationRequests.size === 0,
+  scrollTop: () => window.scrollY || document.scrollingElement?.scrollTop || 0,
+  refresh: () => view === 'qr' ? loadQrCode() : loadCredential(),
+  onState: ({ phase, distance }) => {
+    if (phase === 'pulling' || phase === 'ready') observer.pause();
+    else if (phase === 'idle' && foreground && view === 'qr' && qrReady && api.token && identificationRequests.size === 0) observer.resume();
+    $('pullRefreshIndicator').hidden = phase === 'idle' || (phase !== 'refreshing' && distance <= 10);
+    $('pullRefreshIndicator').dataset.phase = phase;
+    $('pullRefreshIndicator').style.setProperty('--pull-height', `${Math.min(distance * .7, 72)}px`);
+    const text = phase === 'refreshing' ? 'Atualizando…' : phase === 'ready' ? 'Solte para atualizar' : 'Puxe para atualizar';
+    if ($('pullRefreshText').textContent !== text) $('pullRefreshText').textContent = text;
+  }
+});
+$('memberScreen').addEventListener('touchstart', event => pullRefresh.start(event), { passive: true });
+$('memberScreen').addEventListener('touchmove', event => pullRefresh.move(event), { passive: false });
+$('memberScreen').addEventListener('touchend', () => pullRefresh.end(), { passive: true });
+$('memberScreen').addEventListener('touchcancel', () => pullRefresh.cancel(), { passive: true });
 
 function formMessage(id, message = '', state = 'error') {
   $(id).textContent = message;
@@ -355,6 +379,8 @@ async function loadQrCode() {
   readingStatus('Preparando leitura');
   qrMessage();
   showView('qr');
+  const requestTicket = {};
+  identificationRequests.add(requestTicket);
   try {
     const result = await api.qrCode();
     if (currentEpoch !== epoch || request !== qrRequest || view !== 'qr') return;
@@ -397,6 +423,8 @@ async function loadQrCode() {
     $('qrLoading').textContent = 'Seu QR Code ainda não está disponível.';
     readingStatus('QR Code indisponível', 'error');
     qrMessage(error.message || 'Não foi possível carregar seu QR Code.', true);
+  } finally {
+    identificationRequests.delete(requestTicket);
   }
 }
 
@@ -426,6 +454,8 @@ async function loadCredential() {
   $('credentialLoading').hidden = false;
   $('credentialMessage').hidden = true;
   $('retryCredentialButton').hidden = true;
+  const requestTicket = {};
+  identificationRequests.add(requestTicket);
   try {
     const credential = await api.credential();
     if (currentEpoch !== epoch || request !== credentialRequest || view !== 'credential') return;
@@ -443,6 +473,7 @@ async function loadCredential() {
     $('credentialMessage').hidden = false;
     $('retryCredentialButton').hidden = false;
   } finally {
+    identificationRequests.delete(requestTicket);
     if (currentEpoch === epoch && request === credentialRequest) $('credentialLoading').hidden = true;
   }
 }
@@ -460,6 +491,8 @@ function resetLogin(message = '') {
   confirmationFinished = false;
   loginBusy = false;
   observer.stop();
+  pullRefresh.reset();
+  identificationRequests.clear();
   clearRegistration();
   clearAccountForm();
   api.clear();
@@ -650,6 +683,7 @@ $('retryQrButton').addEventListener('click', () => {
 
 function setForeground(active) {
   foreground = active;
+  if (!active) pullRefresh.reset();
   if (active && view === 'login' && !api.token && savedRecord) { restoreSavedAccess(); return; }
   if (active && api.token && !validSession()) return;
   if (!active) observer.pause();

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { PresenceObserver } from '../src/presence-observer.js';
+import { PullToRefresh } from '../../mobile-shared/pull-to-refresh.js';
 import { SavedSession } from '../../mobile-shared/session.js';
 
 const html = fs.readFileSync(new URL('../index.html', import.meta.url),'utf8');
@@ -31,7 +32,7 @@ function fixture(options={}) {
     const handlers=new Map(), attributes=new Map();
     for(const item of match[2].matchAll(/([\w-]+)="([^"]*)"/g))attributes.set(item[1],item[2]);
     elements.set(match[3],{
-      dataset:{},hidden:/\bhidden(?:\s|>|$)/.test(match[2]),textContent:'',value:'',disabled:false,
+      dataset:{},style:{setProperty(){}},hidden:/\bhidden(?:\s|>|$)/.test(match[2]),textContent:'',value:'',disabled:false,
       checked:/\bchecked(?:\s|>|$)/.test(match[2]),
       type:attributes.get('type') || (match[1]==='button'?'submit':''),
       addEventListener:(name,callback)=>handlers.set(name,callback),
@@ -83,11 +84,11 @@ function fixture(options={}) {
   class FixtureObserver extends PresenceObserver {constructor(config){super({...config,schedule,unschedule});}}
   class ClockDate extends Date {constructor(...values){super(...(values.length?values:[clock]));}static now(){return clock;}}
   const context=vm.createContext({
-    document,window:{addEventListener:(name,callback)=>windowHandlers.set(name,callback),matchMedia:()=>({matches:Boolean(options.reducedMotion)})},
+    document,window:{scrollY:0,addEventListener:(name,callback)=>windowHandlers.set(name,callback),matchMedia:()=>({matches:Boolean(options.reducedMotion)})},
     navigator:{onLine:true},Capacitor:{isNativePlatform:()=>Boolean(options.native)},
     registerPlugin:name=>{assert.equal(name,'SecureSession');return secure;},SavedSession:FixtureSavedSession,
     App:{async addListener(name,callback){nativeHandlers.set(name,callback);return{remove(){}};},async minimizeApp(){calls.minimize++;}},
-    SERVER_URL:'https://igreja.example',MemberApi:FakeApi,PresenceObserver:FixtureObserver,
+    SERVER_URL:'https://igreja.example',MemberApi:FakeApi,PresenceObserver:FixtureObserver,PullToRefresh,
     setTimeout:schedule,clearTimeout:unschedule,Date:ClockDate,URL,console,AbortController,TextEncoder
   });
   vm.runInContext(renderer,context,{filename:'credencial-view.js'});
@@ -104,6 +105,125 @@ function fixture(options={}) {
     async event(name,event={}){windowHandlers.get(name)?.(event);await settle();}
   };
 }
+
+async function startPull(screen, distance=95, target=null) {
+  const surface=screen.elements.get('memberScreen');
+  const touch=(x,y)=>({identifier:1,clientX:x,clientY:y});
+  await surface.fire('touchstart',{target,touches:[touch(20,30)]});
+  await surface.fire('touchmove',{touches:[touch(20,30+distance)],cancelable:true});
+}
+
+async function pull(screen, distance=95) {
+  await startPull(screen,distance);
+  await screen.elements.get('memberScreen').fire('touchend');
+  await settle();
+}
+
+test('puxar no QR atualiza matrícula e cursor sem refazer login nem apagar acesso salvo',async()=>{
+  let qrCalls=0;
+  const screen=fixture({native:true,qr:async()=>({membro:{id:'42',nome:'Ana de teste',cargo:'Membro',matricula:++qrCalls===1?'AD-ANTIGA':'AD-00001'},qrDataUrl:png,cursor:qrCalls===1?'0':'12'})});
+  screen.elements.get('rememberMe').checked=true;await screen.login();await screen.loadImage();
+  const saved=screen.storage.raw;
+  const token=vm.runInContext('api.token',screen.context);
+  await startPull(screen,40);
+  assert.equal(screen.elements.get('pullRefreshText').textContent,'Puxe para atualizar');
+  await screen.elements.get('memberScreen').fire('touchcancel');
+  await pull(screen);
+  assert.equal(screen.calls.qr,2);
+  assert.equal(screen.elements.get('memberRegistration').textContent,'Matrícula AD-00001');
+  assert.equal(screen.elements.get('pullRefreshIndicator').hidden,true);
+  assert.equal(screen.calls.login,1);
+  assert.equal(screen.calls.refresh.length,0);
+  assert.equal(screen.calls.logout.length,0);
+  assert.equal(screen.storage.raw,saved);
+  assert.equal(vm.runInContext('api.token',screen.context),token);
+  assert.equal(screen.calls.credential,0);
+  await screen.loadImage();
+  assert.equal(vm.runInContext('observer.cursor',screen.context),'12');
+  assert.equal(screen.elements.get('confirmationScreen').hidden,true);
+});
+
+test('puxar na credencial busca os dados novamente e permanece na mesma tela',async()=>{
+  let reads=0;
+  const screen=fixture({credential:async()=>({id:'42',nome:++reads===1?'Nome anterior':'Nome atualizado',matricula:reads===1?'AD-ANTIGA':'AD-00001',validade:'31/12/2027'})});
+  await screen.login();await screen.loadImage();screen.confirm();await screen.tick(0);await screen.tick(1300);
+  assert.equal(screen.calls.credential,1);
+  await pull(screen);
+  assert.equal(screen.calls.credential,2);
+  assert.equal(screen.elements.get('credentialScreen').hidden,false);
+  assert.equal(screen.elements.get('credentialCard').hidden,false);
+  assert.equal(screen.elements.get('credentialName').textContent,'Nome atualizado');
+  assert.equal(screen.elements.get('credentialRegistration').textContent,'AD-00001');
+  assert.equal(screen.calls.qr,1);
+  assert.equal(screen.calls.login,1);
+  assert.equal(screen.elements.get('pullRefreshIndicator').hidden,true);
+});
+
+test('atualização por gesto não sobrepõe solicitações e falha mantém aviso sem falso sucesso',async()=>{
+  const gate=pending();let requests=0;
+  const screen=fixture({native:true,qr:async()=>{if(++requests===2)return gate.promise;return{membro:{id:'42',nome:'Ana'},qrDataUrl:png,cursor:'0'};}});
+  screen.elements.get('rememberMe').checked=true;await screen.login();await screen.loadImage();
+  const saved=screen.storage.raw;
+  await startPull(screen);
+  assert.equal(screen.elements.get('pullRefreshText').textContent,'Solte para atualizar');
+  const refreshing=screen.elements.get('memberScreen').fire('touchend');await settle();
+  assert.equal(screen.elements.get('pullRefreshText').textContent,'Atualizando…');
+  await pull(screen);
+  assert.equal(screen.calls.qr,2);
+  gate.reject(new Error('Rede indisponível agora.'));await refreshing;await settle();
+  assert.equal(screen.elements.get('pullRefreshIndicator').hidden,true);
+  assert.equal(screen.elements.get('qrMessage').hidden,false);
+  assert.match(screen.elements.get('qrMessage').textContent,/Rede indisponível/);
+  assert.equal(screen.elements.get('confirmationScreen').hidden,true);
+  assert.equal(screen.storage.raw,saved);
+  await pull(screen);await screen.loadImage();
+  assert.equal(screen.calls.qr,3,'novo gesto permite tentar depois da falha');
+  assert.equal(screen.elements.get('qrMessage').hidden,true);
+});
+
+test('fora do topo, sobre botões e na Minha conta o gesto não atualiza nem muda dados do formulário',async()=>{
+  const screen=fixture();await screen.login();await screen.loadImage();
+  screen.context.window.scrollY=50;await pull(screen);
+  assert.equal(screen.calls.qr,1);
+  screen.context.window.scrollY=0;
+  await startPull(screen,100,{closest:()=>({tagName:'BUTTON'})});
+  await screen.elements.get('memberScreen').fire('touchend');await settle();
+  assert.equal(screen.calls.qr,1);
+  await screen.click('qrAccountButton');
+  screen.elements.get('deletePassword').value='senha-pessoal';
+  await pull(screen);
+  assert.equal(screen.calls.qr,1);
+  assert.equal(screen.calls.deleteAccount.length,0);
+  assert.equal(screen.elements.get('deletePassword').value,'senha-pessoal');
+  assert.equal(screen.elements.get('pullRefreshIndicator').hidden,true);
+});
+
+test('navegação, background e Sair limpam o gesto e resultado atrasado não reabre QR',async()=>{
+  const gate=pending();let reads=0;
+  const screen=fixture({native:true,qr:async()=>++reads===1?{membro:{id:'42',nome:'Ana'},qrDataUrl:png,cursor:'0'}:gate.promise});
+  screen.elements.get('rememberMe').checked=true;await screen.login();await screen.loadImage();
+  await startPull(screen);await screen.click('qrAccountButton');
+  assert.equal(screen.elements.get('pullRefreshIndicator').hidden,true);
+  await screen.elements.get('memberScreen').fire('touchend');await settle();
+  assert.equal(screen.calls.qr,1);
+  // Return without loading a new QR so this test can keep its next request gated.
+  vm.runInContext("showView('qr')",screen.context);
+  await startPull(screen);await screen.visibility(true);
+  assert.equal(screen.elements.get('pullRefreshIndicator').hidden,true);
+  await screen.elements.get('memberScreen').fire('touchend');await settle();
+  assert.equal(screen.calls.qr,1);
+  await screen.visibility(false);
+  await startPull(screen);
+  const refreshing=screen.elements.get('memberScreen').fire('touchend');await settle();
+  assert.equal(screen.calls.qr,2);
+  await screen.click('logoutButton');
+  gate.resolve({membro:{id:'42',nome:'Resposta antiga'},qrDataUrl:png,cursor:'2'});await refreshing;await settle();
+  assert.equal(screen.elements.get('loginScreen').hidden,false);
+  assert.equal(screen.elements.get('pullRefreshIndicator').hidden,true);
+  assert.equal(screen.elements.get('memberName').textContent,'');
+  assert.equal(screen.elements.get('qrImage').src,'');
+  assert.equal(screen.storage.raw,null);
+});
 
 test('QR próprio -> nova leitura real -> tela verde animada -> credencial compartilhada',async()=>{
   const screen=fixture();

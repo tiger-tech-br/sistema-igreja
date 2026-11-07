@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { ScanController } from '../src/scan-controller.js';
+import { PullToRefresh } from '../../mobile-shared/pull-to-refresh.js';
 
 // Executa o controlador real da tela, substituindo somente câmera, rede e DOM.
 // Nenhum teste usa servidor, credenciais ou câmera de verdade.
@@ -19,7 +20,7 @@ async function settle(until = () => false) {
 }
 
 function fixture({ startGate, stopGate, native = false, storage = { record: null }, loadGate, saveError,
-  refresh, logoutGate, register = async id => ({ id, nome: 'Membro de teste', periodo: 'noite', horario: '19:42:00' }) } = {}) {
+  refresh, status, logoutGate, register = async id => ({ id, nome: 'Membro de teste', periodo: 'noite', horario: '19:42:00' }) } = {}) {
   const elements = new Map();
   const docHandlers = new Map();
   const windowHandlers = new Map();
@@ -30,6 +31,7 @@ function fixture({ startGate, stopGate, native = false, storage = { record: null
   let nextTimer = 0;
   let loginCalls = 0;
   let minimized = 0;
+  let statusCalls = 0;
   const savedCalls = { loads: 0, saves: [], clears: 0, refreshes: [], logouts: [], logins: [], events: [] };
   class FixtureDate extends Date {
     constructor(...args) { super(...(args.length ? args : [clock])); }
@@ -51,6 +53,7 @@ function fixture({ startGate, stopGate, native = false, storage = { record: null
       hidden: /\bhidden(?:\s|>|$)/.test(attributes),
       type: values.get('type') || (tag === 'button' ? 'submit' : ''),
       addEventListener(name, handler) { handlers.set(name, handler); },
+      closest() { return ['button', 'input', 'label', 'a', 'select', 'textarea'].includes(tag) ? this : null; },
       setAttribute(name, value) { values.set(name, value); },
       getAttribute(name) { return values.get(name); },
       querySelector(selector) {
@@ -65,6 +68,7 @@ function fixture({ startGate, stopGate, native = false, storage = { record: null
   for (const match of html.matchAll(/<([a-z][a-z0-9]*)\b([^>]*\bid="([^"]+)"[^>]*)>/g)) element(match[3], match[1], match[2]);
   const document = {
     hidden: false,
+    scrollingElement: { scrollTop: 0 },
     getElementById(id) { assert.ok(elements.has(id), `Elemento existente: ${id}`); return elements.get(id); },
     documentElement: { classList: { add: value => classes.add(value), remove: value => classes.delete(value) } },
     addEventListener(name, handler) { docHandlers.set(name, handler); }
@@ -92,6 +96,10 @@ function fixture({ startGate, stopGate, native = false, storage = { record: null
       return { loggedOut: true };
     }
     register(id) { return register(id); }
+    status() {
+      statusCalls++;
+      return status ? status() : Promise.resolve({ admin: { nome: 'Administrador de teste' }, expiresAt: new Date(clock + 7200000).toISOString() });
+    }
     clear() { this.token = null; savedCalls.events.push('clear-api'); }
   }
   class FakeSavedSession {
@@ -118,7 +126,7 @@ function fixture({ startGate, stopGate, native = false, storage = { record: null
       async addListener(name, handler) { appHandlers.set(name, handler); },
       async minimizeApp() { minimized++; }
     }, SERVER_URL: server,
-    ReaderApi: FakeApi, ScanController,
+    ReaderApi: FakeApi, ScanController, PullToRefresh,
     createCamera: async callbacks => { Object.assign(camera, callbacks); return camera; },
     setTimeout(callback) { const id = ++nextTimer; timers.set(id, callback); return id; },
     clearTimeout(id) { timers.delete(id); }, setInterval() { return 2; },
@@ -129,6 +137,17 @@ function fixture({ startGate, stopGate, native = false, storage = { record: null
     camera, elements, classes, storage, savedCalls,
     async ready() { await settle(); },
     get loginCalls() { return loginCalls; }, get minimized() { return minimized; },
+    get statusCalls() { return statusCalls; },
+    scrollTop(value) { document.scrollingElement.scrollTop = value; },
+    async touch(screen, type, { x = 20, y = 20, target = screen, count = 1 } = {}) {
+      const touches = Array.from({ length: count }, (_, identifier) => ({ identifier, clientX: x, clientY: y }));
+      return elements.get(screen).fire(type, { touches, target: elements.get(target), cancelable: true });
+    },
+    async pull(screen = 'homeScreen') {
+      await this.touch(screen, 'touchstart');
+      await this.touch(screen, 'touchmove', { y: 110 });
+      return this.touch(screen, 'touchend', { count: 0 });
+    },
     async login() {
       await settle();
       elements.get('email').value = 'fixture@example.invalid';
@@ -604,4 +623,223 @@ test('um novo login espera a saída anterior terminar antes de receber outro coo
   const lastClear = screen.savedCalls.events.lastIndexOf('clear-api');
   assert.ok(finish >= 0 && lastClear > finish);
   assert.equal(screen.elements.get('homeScreen').hidden, false);
+});
+
+test('puxar na tela inicial atualiza só a sessão, sem abrir câmera ou registrar presença', async () => {
+  const registrations = [];
+  const screen = fixture({ register: async id => { registrations.push(id); return { id, nome: 'Membro' }; } });
+  await screen.login();
+  await screen.pull();
+  assert.equal(screen.statusCalls, 1);
+  assert.equal(screen.camera.starts, 0);
+  assert.deepEqual(registrations, []);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.elements.get('loginScreen').hidden, true);
+  assert.equal(screen.elements.get('homeRefreshIndicator').hidden, true);
+  assert.equal(screen.elements.get('connectionText').textContent, 'Conectado');
+});
+
+test('puxar no leitor mantém câmera, lanterna e última confirmação sem reenviar o QR', async () => {
+  const registrations = [];
+  const screen = fixture({ native: true, register: async id => { registrations.push(id); return { id, nome: 'Última pessoa confirmada' }; } });
+  await screen.login();
+  await screen.openScanner();
+  screen.camera.onRead(`${server}/validar?id=42`);
+  await settle(() => !screen.elements.get('lastAttendance').hidden);
+  await screen.click('torchButton');
+  await screen.pull('scannerScreen');
+  assert.equal(screen.statusCalls, 1);
+  assert.deepEqual(registrations, ['42']);
+  assert.equal(screen.camera.starts, 1);
+  assert.equal(screen.camera.stops, 0);
+  assert.equal(screen.camera.running, true);
+  assert.equal(screen.elements.get('torchButton').getAttribute('aria-pressed'), 'true');
+  assert.equal(screen.elements.get('lastAttendance').hidden, false);
+  assert.equal(screen.elements.get('memberName').textContent, 'Última pessoa confirmada');
+});
+
+test('leituras e abertura da câmera pendentes impedem o gesto de iniciar outra consulta', async () => {
+  const registration = pending();
+  const screen = fixture({ register: () => registration.promise });
+  await screen.login();
+  await screen.openScanner();
+  screen.camera.onRead(`${server}/validar?id=42`);
+  await settle(() => screen.elements.get('scanMessage').dataset.state === 'sending');
+  await screen.pull('scannerScreen');
+  assert.equal(screen.statusCalls, 0);
+  registration.resolve({ id: '42', nome: 'Pessoa confirmada' });
+  await settle(() => !screen.elements.get('lastAttendance').hidden);
+  await screen.pull('scannerScreen');
+  assert.equal(screen.statusCalls, 1);
+  const opening = pending();
+  const waitingCamera = fixture({ startGate: opening });
+  await waitingCamera.login();
+  await waitingCamera.openScanner();
+  await waitingCamera.pull('scannerScreen');
+  assert.equal(waitingCamera.statusCalls, 0);
+  opening.resolve();
+  await settle();
+});
+
+test('rolagem, toque em botão, diagonal, gesto curto, cancelado e segundo plano não atualizam', async () => {
+  const screen = fixture();
+  await screen.pull();
+  assert.equal(screen.statusCalls, 0, 'login não aceita atualização');
+  await screen.login();
+  screen.scrollTop(40);
+  await screen.pull();
+  screen.scrollTop(0);
+  await screen.touch('homeScreen', 'touchstart', { target: 'startScannerButton' });
+  await screen.touch('homeScreen', 'touchmove', { y: 110 });
+  await screen.touch('homeScreen', 'touchend', { count: 0 });
+  await screen.touch('homeScreen', 'touchstart');
+  await screen.touch('homeScreen', 'touchmove', { x: 150, y: 70 });
+  await screen.touch('homeScreen', 'touchend', { count: 0 });
+  await screen.touch('homeScreen', 'touchstart');
+  await screen.touch('homeScreen', 'touchmove', { y: 55 });
+  await screen.touch('homeScreen', 'touchend', { count: 0 });
+  await screen.touch('homeScreen', 'touchstart');
+  await screen.touch('homeScreen', 'touchmove', { y: 110 });
+  assert.equal(screen.elements.get('homeRefreshIndicator').hidden, false);
+  await screen.touch('homeScreen', 'touchcancel');
+  assert.equal(screen.elements.get('homeRefreshIndicator').hidden, true);
+  await screen.touch('homeScreen', 'touchend', { count: 0 });
+  await screen.touch('homeScreen', 'touchstart');
+  await screen.touch('homeScreen', 'touchmove', { y: 110 });
+  await screen.visibility(true);
+  await screen.touch('homeScreen', 'touchend', { count: 0 });
+  assert.equal(screen.statusCalls, 0);
+  assert.equal(screen.elements.get('homeRefreshIndicator').hidden, true);
+});
+
+test('uma falha de atualização não encerra o login nem confirma presenças e a próxima tentativa recupera', async () => {
+  let attempts = 0;
+  const screen = fixture({ status: async () => {
+    if (++attempts === 1) throw new Error('Sem conexão com o servidor');
+    return { admin: { nome: 'Administrador' }, expiresAt: new Date(Date.now() + 7200000).toISOString() };
+  } });
+  await screen.login();
+  await screen.pull();
+  assert.match(screen.elements.get('homeRefreshMessage').textContent, /Sem conexão/);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.elements.get('lastAttendance').hidden, true);
+  await screen.pull();
+  assert.equal(screen.statusCalls, 2);
+  assert.equal(screen.elements.get('homeRefreshMessage').hidden, true);
+  assert.equal(screen.loginCalls, 1);
+});
+
+test('navegar ou sair durante a atualização invalida seu resultado e mantém solicitações serializadas', async () => {
+  const gate = pending();
+  const screen = fixture({ status: () => gate.promise });
+  await screen.login();
+  await screen.openScanner();
+  const refreshing = screen.pull('scannerScreen');
+  await settle(() => screen.statusCalls === 1);
+  await screen.click('backButton');
+  await screen.pull();
+  assert.equal(screen.statusCalls, 1, 'a navegação não permite sobrepor um GET ainda pendente');
+  assert.equal(screen.elements.get('scannerRefreshIndicator').hidden, true);
+  gate.reject(new Error('Falha antiga da tela da câmera'));
+  await refreshing;
+  assert.equal(screen.elements.get('homeRefreshMessage').hidden, true);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  const logoutGate = pending();
+  const leaving = fixture({ status: () => logoutGate.promise });
+  await leaving.login();
+  const loading = leaving.pull();
+  await settle(() => leaving.statusCalls === 1);
+  await leaving.click('homeLogoutButton');
+  logoutGate.resolve({ admin: { nome: 'Resposta antiga' }, expiresAt: new Date(Date.now() + 7200000).toISOString() });
+  await loading;
+  assert.equal(leaving.elements.get('loginScreen').hidden, false);
+  assert.equal(leaving.elements.get('homeRefreshIndicator').hidden, true);
+  assert.equal(leaving.camera.starts, 0);
+});
+
+test('uma leitura natural mais recente tem prioridade sobre erro tardio do GET de atualização', async () => {
+  const gate = pending();
+  const screen = fixture({ status: () => gate.promise });
+  await screen.login();
+  await screen.openScanner();
+  const refreshing = screen.pull('scannerScreen');
+  await settle(() => screen.statusCalls === 1);
+  screen.camera.onRead(`${server}/validar?id=42`);
+  await settle(() => !screen.elements.get('lastAttendance').hidden);
+  gate.reject(new Error('Erro tardio da atualização'));
+  await refreshing;
+  assert.equal(screen.elements.get('lastAttendance').hidden, false);
+  assert.equal(screen.elements.get('scanMessage').hidden, true);
+  assert.equal(screen.elements.get('connectionText').textContent, 'Conectado');
+});
+
+test('um 401 na atualização renova o acesso salvo sem trocar de tela nem reiniciar a câmera', async () => {
+  let attempts = 0;
+  const screen = fixture({ status: async () => {
+    if (++attempts === 1) throw Object.assign(new Error('Acesso expirado'), { status: 401 });
+    return { admin: { nome: 'Administrador' }, expiresAt: new Date(Date.now() + 7200000).toISOString() };
+  } });
+  screen.elements.get('rememberMe').checked = true;
+  await screen.login();
+  await screen.openScanner();
+  await screen.pull('scannerScreen');
+  assert.equal(screen.savedCalls.refreshes.length, 1);
+  assert.equal(screen.statusCalls, 2);
+  assert.equal(screen.elements.get('scannerScreen').hidden, false);
+  assert.equal(screen.camera.starts, 1);
+  assert.equal(screen.camera.stops, 0);
+  assert.notEqual(screen.storage.record, null);
+});
+
+test('puxar com o prazo local vencido reutiliza a renovação salva e exige login apenas sem acesso salvo', async () => {
+  const saved = fixture();
+  saved.elements.get('rememberMe').checked = true;
+  await saved.login();
+  saved.advance(7200001);
+  await saved.pull();
+  assert.equal(saved.savedCalls.refreshes.length, 1);
+  assert.equal(saved.statusCalls, 1);
+  assert.equal(saved.elements.get('homeScreen').hidden, false);
+  assert.equal(saved.camera.starts, 0);
+  const temporary = fixture();
+  await temporary.login();
+  temporary.advance(7200001);
+  await temporary.pull();
+  assert.equal(temporary.statusCalls, 0);
+  assert.equal(temporary.elements.get('loginScreen').hidden, false);
+  assert.match(temporary.elements.get('loginMessage').textContent, /expirou/);
+});
+
+test('ir para segundo plano oculta o indicador e invalida uma falha de atualização ainda pendente', async () => {
+  const gate = pending();
+  const screen = fixture({ status: () => gate.promise });
+  await screen.login();
+  const refreshing = screen.pull();
+  await settle(() => screen.statusCalls === 1);
+  assert.equal(screen.elements.get('homeRefreshIndicator').hidden, false);
+  await screen.visibility(true);
+  assert.equal(screen.elements.get('homeRefreshIndicator').hidden, true);
+  gate.reject(new Error('Aviso antigo em segundo plano'));
+  await refreshing;
+  await screen.visibility(false);
+  assert.equal(screen.elements.get('homeRefreshMessage').hidden, true);
+  assert.equal(screen.elements.get('homeScreen').hidden, false);
+  assert.equal(screen.loginCalls, 1);
+});
+
+test('atualizar pode recuperar uma câmera com falha sem apagar a última presença', async () => {
+  const screen = fixture();
+  await screen.login();
+  await screen.openScanner();
+  screen.camera.onRead(`${server}/validar?id=42`);
+  await settle(() => !screen.elements.get('lastAttendance').hidden);
+  screen.camera.onError(new Error('Falha temporária da câmera'));
+  await settle(() => !screen.camera.running);
+  await settle();
+  await screen.pull('scannerScreen');
+  assert.equal(screen.statusCalls, 1);
+  assert.equal(screen.camera.starts, 2);
+  assert.equal(screen.camera.running, true);
+  assert.equal(screen.elements.get('lastAttendance').hidden, false);
+  assert.equal(screen.elements.get('memberName').textContent, 'Membro de teste');
 });

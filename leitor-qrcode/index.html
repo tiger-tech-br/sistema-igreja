@@ -53,6 +53,8 @@
         <div class="scanner-brand"><h1>Assembléia de Deus</h1><p>Leitor de presenças</p></div>
         <button id="homeLogoutButton" class="logout-button" type="button"><svg aria-hidden="true"><use href="#logout"/></svg><span>Sair</span></button>
       </header>
+      <div id="homeRefreshIndicator" class="pull-refresh" role="status" aria-live="polite" hidden><span class="pull-refresh-spinner" aria-hidden="true"></span><span id="homeRefreshText">Puxe para atualizar</span></div>
+      <p id="homeRefreshMessage" class="refresh-message" role="status" hidden></p>
       <div class="home-content">
         <div class="home-scan-icon"><svg aria-hidden="true"><use href="#scan"/></svg></div>
         <h2>Registrar presença</h2>
@@ -68,6 +70,7 @@
         <div class="scanner-brand"><h1>Assembléia de Deus</h1><p>Leitor de presenças</p></div>
         <button id="logoutButton" class="logout-button" type="button"><svg aria-hidden="true"><use href="#logout"/></svg><span>Sair</span></button>
       </header>
+      <div id="scannerRefreshIndicator" class="pull-refresh" role="status" aria-live="polite" hidden><span class="pull-refresh-spinner" aria-hidden="true"></span><span id="scannerRefreshText">Puxe para atualizar</span></div>
       <div class="scanner-top">
         <div class="scanner-title-row"><h2>Registrar presença</h2><button id="backButton" class="back-button" type="button"><svg aria-hidden="true"><use href="#back"/></svg><span>Voltar</span></button></div>
         <div class="scanner-meta"><p class="connection" id="connectionState" data-state="neutral"><span class="connection-dot" aria-hidden="true"></span><span id="connectionText">Verificando acesso</span></p></div>

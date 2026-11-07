@@ -12,3 +12,10 @@
 - Gerar matrículas com exatamente **8 dígitos numéricos aleatórios**, sem letras, prefixos ou separadores.
 - As matrículas devem ser únicas. Se houver colisão, gerar outro número sem tratar o caso como e-mail duplicado.
 - Preservar as matrículas existentes que já seguem esse padrão.
+
+## Atualização dos APKs
+
+- Todos os APKs atuais e futuros deste projeto devem oferecer o gesto de puxar a tela de cima para baixo para atualizar.
+- O gesto deve atualizar os dados ou conferir a conexão mantendo o login, com indicação visual discreta de carregamento.
+- Não reenviar registros de presença nem executar outras gravações como efeito da atualização. Preservar ações em andamento e evitar interferência em formulários, confirmações e leitura da câmera.
+- Reutilizar o comportamento compartilhado dos aplicativos e impedir atualizações simultâneas.
