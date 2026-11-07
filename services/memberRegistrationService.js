@@ -2,6 +2,7 @@ const crypto = require('node:crypto');
 const { passwordValid, adultDate } = require('../utils/security');
 const { VERSION, privacyConfig } = require('../config/privacy');
 const gerarValidade = require('../utils/validade');
+const gerarMatricula = require('../utils/matricula');
 
 const text = (value, max = 300) => typeof value === 'string' && value.length <= max ? value.trim() : '';
 function registrationError(message, status = 400) {
@@ -12,7 +13,7 @@ function createMemberRegistrationService(options = {}) {
     const config = options.privacyConfig || privacyConfig;
     const createMember = options.createMember || (data => require('../models/membroModel').criar(data));
     const randomToken = options.randomToken || (() => crypto.randomBytes(32).toString('hex'));
-    const generateRegistration = options.generateRegistration || (() => crypto.randomBytes(12).toString('hex'));
+    const generateRegistration = options.generateRegistration || gerarMatricula;
     const generateValidity = options.generateValidity || gerarValidade;
 
     async function register(input, { immediate = false } = {}) {
@@ -35,16 +36,27 @@ function createMemberRegistrationService(options = {}) {
         if (optional.sexo && !['Masculino', 'Feminino'].includes(optional.sexo)) throw registrationError('Sexo inválido.');
         if (optional.estadoCivil && !['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)'].includes(optional.estadoCivil)) throw registrationError('Estado civil inválido.');
         const confirmationToken = immediate ? null : randomToken();
-        try {
-            const member = await createMember({
-                ...optional, nome, email, senha: d.senha, dataNascimento: birth,
-                matricula: generateRegistration(), validade: generateValidity(),
-                confirmationToken, cadastroLiberado: immediate === true
-            });
-            return { member, confirmationToken };
-        } catch (error) {
-            if (error.code === '23505') throw registrationError('Já existe um cadastro com este e-mail. Entre na sua conta ou use a recuperação de senha.', 409);
-            throw error;
+        const validade = generateValidity();
+        for (let attempt = 0; attempt < 10; attempt++) {
+            const matricula = generateRegistration();
+            if (typeof matricula !== 'string' || !/^[1-9]\d{7}$/.test(matricula)) throw registrationError('Não foi possível gerar sua matrícula. Tente novamente.', 503);
+            try {
+                const member = await createMember({
+                    ...optional, nome, email, senha: d.senha, dataNascimento: birth,
+                    matricula, validade, confirmationToken, cadastroLiberado: immediate === true
+                });
+                return { member, confirmationToken };
+            } catch (error) {
+                const constraint = typeof error.constraint === 'string' ? error.constraint.toLowerCase() : '';
+                if (error.code === '23505' && constraint.includes('matricula')) {
+                    if (attempt === 9) throw registrationError('Não foi possível gerar uma matrícula disponível. Tente novamente.', 503);
+                    continue;
+                }
+                // The normalized-email check in the model also reports 23505,
+                // without a constraint. Other unique violations remain real errors.
+                if (error.code === '23505' && (!constraint || constraint.includes('email'))) throw registrationError('Já existe um cadastro com este e-mail. Entre na sua conta ou use a recuperação de senha.', 409);
+                throw error;
+            }
         }
     }
 

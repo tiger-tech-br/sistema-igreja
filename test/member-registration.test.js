@@ -9,9 +9,61 @@ const { memberHasAccess } = require('../services/memberAccessService');
 const { memberCredentialResult } = require('../services/memberCredentialService');
 const { createRememberSessionService } = require('../services/rememberSessionService');
 const { createAppMembroRouter } = require('../routes/appMembroRoutes');
+const gerarMatricula = require('../utils/matricula');
 
 const config = () => ({ configured: true, version: VERSION, noticeText: 'Aviso de teste', consentText: 'Autorização de teste', controller: 'Igreja de teste', contact: 'privacidade@example.test' });
 const input = () => ({ nome: 'Pessoa de Teste', email: ' PESSOA@example.test ', dataNascimento: '20/05/1990', senha: 'senha-de-teste-123', cienciaPrivacidade: true, consentimento: true, privacyVersion: VERSION });
+
+test('shared registration generator always returns exactly eight numeric digits', () => {
+    for (let i = 0; i < 500; i++) assert.match(gerarMatricula(), /^[1-9]\d{7}$/);
+});
+
+test('registration retries only matricula conflicts and keeps the same password, token and validity', async () => {
+    const generated = ['12345678', '23456789', '34567890'];
+    const attempts = [];
+    let tokenCalls = 0, validityCalls = 0;
+    const service = createMemberRegistrationService({ privacyConfig: config,
+        generateRegistration: () => generated.shift(),
+        randomToken: () => { tokenCalls++; return 'confirmation-secret'; },
+        generateValidity: () => { validityCalls++; return '2028-12-31'; },
+        createMember: async data => {
+            attempts.push(data);
+            if (attempts.length < 3) throw Object.assign(new Error('unique violation'), {
+                code: '23505', constraint: attempts.length === 1 ? 'membros_matricula_key' : 'membros_matricula_unique'
+            });
+            return { id: 42, email: data.email };
+        }
+    });
+    const result = await service.register(input());
+    assert.equal(result.member.id, 42);
+    assert.deepEqual(attempts.map(data => data.matricula), ['12345678', '23456789', '34567890']);
+    assert.equal(tokenCalls, 1);
+    assert.equal(validityCalls, 1);
+    for (const data of attempts) {
+        assert.equal(data.senha, input().senha);
+        assert.equal(data.confirmationToken, 'confirmation-secret');
+        assert.equal(data.validade, '2028-12-31');
+    }
+});
+
+test('matricula retry is bounded and other unique or database errors do not become a false duplicate-email message', async () => {
+    let attempts = 0;
+    const exhausted = createMemberRegistrationService({ privacyConfig: config, generateRegistration: () => '12345678',
+        createMember: async () => { attempts++; throw Object.assign(new Error('collision'), { code: '23505', constraint: 'membros_matricula_key' }); } });
+    await assert.rejects(exhausted.register(input(), { immediate: true }), error => error.status === 503 && !error.message.includes('e-mail'));
+    assert.equal(attempts, 10);
+    for (const error of [Object.assign(new Error('other unique'), { code: '23505', constraint: 'membros_pkey' }),
+        Object.assign(new Error('connection lost'), { code: '08006' })]) {
+        const service = createMemberRegistrationService({ privacyConfig: config, createMember: async () => { throw error; } });
+        await assert.rejects(service.register(input()), actual => actual === error);
+    }
+    let emailAttempts = 0;
+    const duplicate = createMemberRegistrationService({ privacyConfig: config, createMember: async () => {
+        emailAttempts++; throw Object.assign(new Error('email unique'), { code: '23505', constraint: 'membros_email_key' });
+    } });
+    await assert.rejects(duplicate.register(input()), { status: 409 });
+    assert.equal(emailAttempts, 1);
+});
 
 test('registration shares minimal validation and server-controlled metadata without inventing verified email', async () => {
     const created = [];
@@ -19,7 +71,7 @@ test('registration shares minimal validation and server-controlled metadata with
     const service = createMemberRegistrationService({ privacyConfig: config,
         createMember: async data => { created.push(data); return { id: 42, nome: data.nome, email: data.email }; },
         randomToken: () => { tokenCount++; return 'confirmation-secret'; },
-        generateRegistration: () => 'server-registration', generateValidity: () => '2027-12-31'
+        generateRegistration: () => '12345678', generateValidity: () => '2027-12-31'
     });
     const immediate = await service.register({ ...input(), id: 99, cargo: 'Pastor', ministerio: 'Admin',
         auth_version: 100, email_verificado: true, cadastroLiberado: false, matricula: 'spoofed', validade: '2099-01-01' }, { immediate: true });
@@ -28,7 +80,7 @@ test('registration shares minimal validation and server-controlled metadata with
     assert.equal(created[0].cadastroLiberado, true);
     assert.equal(created[0].email, 'pessoa@example.test');
     assert.equal(created[0].dataNascimento, '1990-05-20');
-    assert.equal(created[0].matricula, 'server-registration');
+    assert.equal(created[0].matricula, '12345678');
     assert.equal(created[0].validade, '2027-12-31');
     for (const field of ['id', 'cargo', 'ministerio', 'auth_version', 'email_verificado']) assert.equal(field in created[0], false, field);
     for (const field of ['telefone', 'celular', 'endereco', 'sexo', 'estadoCivil']) assert.equal(created[0][field], null, field);

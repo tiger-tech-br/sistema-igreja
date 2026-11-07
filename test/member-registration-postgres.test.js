@@ -2,10 +2,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const { Client } = require('pg');
+const { VERSION } = require('../config/privacy');
+const { createMemberRegistrationService } = require('../services/memberRegistrationService');
 
 // Only an explicitly configured test database is used. TEMP tables shadow the
 // application tables for this connection and vanish when it closes.
-test('PostgreSQL executes immediate and email-confirmed registration with coherent token parameter types', {
+test('PostgreSQL registers both flows with eight-digit matriculas, recovers their collisions and preserves email/token rules', {
     skip: !process.env.REGISTRATION_TEST_DATABASE_URL
 }, async t => {
     const client = new Client({ connectionString: process.env.REGISTRATION_TEST_DATABASE_URL });
@@ -30,32 +32,42 @@ test('PostgreSQL executes immediate and email-confirmed registration with cohere
         id BIGSERIAL PRIMARY KEY, membro_id INTEGER NOT NULL REFERENCES membros(id) ON DELETE CASCADE,
         version VARCHAR(30) NOT NULL, notice_text TEXT, texto TEXT NOT NULL
     )`);
+    const generated = ['12345678', '12345678', '23456789'];
+    const collisions = [];
+    const service = createMemberRegistrationService({
+        privacyConfig: () => ({ configured: true }), generateValidity: () => '2028-12-31',
+        generateRegistration: () => generated.shift() || '34567890',
+        createMember: async data => {
+            try { return await model.criar(data); }
+            catch (error) { collisions.push({ code: error.code, constraint: error.constraint }); throw error; }
+        }
+    });
     const data = {
-        nome: 'Pessoa de Teste', dataNascimento: '1990-05-20', email: 'immediate@example.invalid',
-        senha: 'senha-de-teste-123', telefone: null, celular: null, endereco: null,
-        sexo: null, estadoCivil: null, matricula: 'TEST-IMMEDIATE', validade: '2028-12-31',
-        confirmationToken: null, cadastroLiberado: true
+        nome: 'Pessoa de Teste', dataNascimento: '20/05/1990', email: 'immediate@example.invalid',
+        senha: 'senha-de-teste-123', cienciaPrivacidade: true, consentimento: true, privacyVersion: VERSION
     };
-    const immediate = await model.criar(data);
-    const token = crypto.randomBytes(32).toString('hex');
-    const deferred = await model.criar({ ...data, email: 'email@example.invalid', matricula: 'TEST-EMAIL',
-        confirmationToken: token, cadastroLiberado: false });
+    const immediate = await service.register(data, { immediate: true });
+    const deferred = await service.register({ ...data, email: 'email@example.invalid' });
     const rows = (await client.query(`SELECT id,email_verificado,cadastro_liberado,token_confirmacao,
-        confirmation_expires_at,telefone,celular,endereco,sexo,estado_civil FROM membros ORDER BY id`)).rows;
+        confirmation_expires_at,telefone,celular,endereco,sexo,estado_civil,matricula FROM membros ORDER BY id`)).rows;
     assert.equal(rows.length, 2);
-    assert.equal(rows[0].id, immediate.id);
+    assert.equal(rows[0].id, immediate.member.id);
+    assert.equal(rows[0].matricula, '12345678');
+    assert.equal(rows[1].matricula, '23456789');
+    for (const row of rows) assert.match(row.matricula, /^[1-9]\d{7}$/);
+    assert.deepEqual(collisions, [{ code: '23505', constraint: 'membros_matricula_key' }]);
     assert.equal(rows[0].cadastro_liberado, true);
     assert.equal(rows[0].email_verificado, false);
     assert.equal(rows[0].token_confirmacao, null);
     assert.equal(rows[0].confirmation_expires_at, null);
     for (const field of ['telefone', 'celular', 'endereco', 'sexo', 'estado_civil']) assert.equal(rows[0][field], null);
-    assert.equal(rows[1].id, deferred.id);
+    assert.equal(rows[1].id, deferred.member.id);
     assert.equal(rows[1].cadastro_liberado, false);
     assert.equal(rows[1].email_verificado, false);
-    assert.equal(rows[1].token_confirmacao, crypto.createHash('sha256').update(token).digest('hex'));
+    assert.equal(rows[1].token_confirmacao, crypto.createHash('sha256').update(deferred.confirmationToken).digest('hex'));
     assert.ok(rows[1].confirmation_expires_at > new Date());
     assert.equal(Number((await client.query('SELECT COUNT(*) FROM privacy_consents')).rows[0].count), 2);
-    await assert.rejects(model.criar({ ...data, email: 'IMMEDIATE@example.invalid', matricula: 'TEST-DUPLICATE' }), { code: '23505' });
+    await assert.rejects(service.register({ ...data, email: 'IMMEDIATE@example.invalid' }, { immediate: true }), { status: 409 });
     assert.equal(Number((await client.query('SELECT COUNT(*) FROM membros')).rows[0].count), 2);
     assert.equal(Number((await client.query('SELECT COUNT(*) FROM privacy_consents')).rows[0].count), 2);
 });

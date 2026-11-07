@@ -6,3 +6,9 @@
 - Usar campo de texto no formato **DD/MM/AAAA**, com `inputmode="numeric"`, limite de 10 caracteres e barras inseridas automaticamente durante a digitação.
 - Aplicar o mesmo padrão no site, no navegador responsivo, nas versões web/PWA e nos APKs.
 - Preservar a validação de datas reais, anos bissextos e as regras de idade existentes, tanto na interface quanto no servidor.
+
+## Matrículas dos membros
+
+- Gerar matrículas com exatamente **8 dígitos numéricos aleatórios**, sem letras, prefixos ou separadores.
+- As matrículas devem ser únicas. Se houver colisão, gerar outro número sem tratar o caso como e-mail duplicado.
+- Preservar as matrículas existentes que já seguem esse padrão.
