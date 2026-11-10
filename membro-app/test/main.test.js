@@ -22,7 +22,7 @@ function keptRecord({ native = true, expiresAt = Date.now() + 30 * 86400000 } = 
 
 function fixture(options={}) {
   const elements=new Map(), docHandlers=new Map(), windowHandlers=new Map(), nativeHandlers=new Map(), timers=new Map();
-  const calls={login:0,qr:0,presence:[],credential:0,clear:0,minimize:0,refresh:[],logout:[],loginRequests:[],loads:0,saves:[],removes:0,registrationConfig:[],register:[],deleteAccount:[]};
+  const calls={login:0,qr:0,presence:[],credential:0,clear:0,minimize:0,refresh:[],logout:[],loginRequests:[],loads:0,saves:[],removes:0,registrationConfig:[],register:[],deleteAccount:[],profile:[]};
   const storage = options.storage || { raw: null };
   let sequence=0, revision=0, clock=Date.now();
   const member={id:'42',nome:'Ana de teste',cargo:'Membro',ministerio:'Louvor',matricula:'TEST-42',validade:'31/12/2027'};
@@ -64,6 +64,7 @@ function fixture(options={}) {
     async registrationConfig(config){calls.registrationConfig.push(config);return options.registrationConfig?options.registrationConfig(config):{version:'test-v1',configured:true,noticeText:'Li o aviso de privacidade.',consentText:'Autorizo o uso específico do vínculo religioso.',controller:'Igreja de demonstração',contact:'privacidade@example.invalid'};}
     async registerMember(data,config){calls.register.push({data:{...data},config});return options.register?options.register(data,config):{registered:true,email:data.email};}
     async deleteAccount(senha,config){calls.deleteAccount.push({senha,config});return options.deleteAccount?options.deleteAccount(senha,config):{deleted:true};}
+    async profile(config){calls.profile.push(config);return options.profile?options.profile(config):{id:member.id,nome:member.nome,email:'ana@example.test',data_nascimento:'01/01/1990',telefone:null,celular:null,endereco:null,sexo:null,estado_civil:null,cargo:member.cargo,ministerio:member.ministerio,matricula:'12345678',validade:member.validade};}
     clear(){calls.clear++;this.token=null;}
   }
   const secure={
@@ -118,6 +119,162 @@ async function pull(screen, distance=95) {
   await screen.elements.get('memberScreen').fire('touchend');
   await settle();
 }
+
+const personalProfile = overrides => ({id:'42',nome:'Ana de teste',email:'ana@example.test',data_nascimento:'01/01/1990',telefone:'1133334444',celular:'11999998888',endereco:'Rua da Esperança, 25',sexo:'Feminino',estado_civil:'Casado(a)',cargo:'Membro',ministerio:'Louvor',matricula:'12345678',validade:'31/12/2027',...overrides});
+const personalFields = ['accountName','accountBirth','accountEmail','accountRegistration','accountSex','accountCivilStatus','accountCellphone','accountTelephone','accountAddress','accountRole','accountMinistry','accountValidity'];
+
+test('Minha conta busca dados próprios, mostra cartões legíveis e deixa exclusão depois de todos os dados',async()=>{
+  const screen=fixture({profile:async()=>personalProfile()});
+  await screen.login();await screen.loadImage();await screen.click('qrAccountButton');
+  assert.equal(screen.calls.profile.length,1);
+  assert.equal(screen.elements.get('accountScreen').hidden,false);
+  assert.equal(screen.elements.get('accountProfileCards').hidden,false);
+  assert.equal(screen.elements.get('accountProfileLoading').hidden,true);
+  const expected={accountName:'Ana de teste',accountBirth:'01/01/1990',accountEmail:'ana@example.test',accountRegistration:'12345678',accountSex:'Feminino',accountCivilStatus:'Casado(a)',accountCellphone:'11999998888',accountTelephone:'1133334444',accountAddress:'Rua da Esperança, 25',accountRole:'Membro',accountMinistry:'Louvor',accountValidity:'31/12/2027'};
+  for(const [id,value] of Object.entries(expected))assert.equal(screen.elements.get(id).textContent,value,id);
+  for(const id of ['accountSexRow','accountCivilStatusRow','accountCellphoneRow','accountTelephoneRow','accountAddressRow','accountRoleRow','accountMinistryRow','accountValidityRow'])assert.equal(screen.elements.get(id).hidden,false,id);
+  assert.ok(html.indexOf('id="accountDeletion"')>html.indexOf('id="accountProfileCards"'));
+  assert.ok(html.indexOf('id="accountDeletion"')>html.indexOf('id="accountValidity"'));
+  assert.ok(html.indexOf('id="deleteAccountForm"')>html.indexOf('id="accountDeletion"'));
+  assert.equal(screen.calls.deleteAccount.length,0);
+});
+
+test('perfil não interpreta HTML, ignora senha e oculta somente opcionais vazios',async()=>{
+  const screen=fixture({profile:async()=>personalProfile({nome:'<img src=x onerror=alert(1)>',email:'<b>nome@example.test</b>',telefone:null,celular:'',endereco:'   ',sexo:null,estado_civil:null,cargo:null,ministerio:null,validade:null,senha:'secret-password-hash'})});
+  await screen.login();await screen.click('qrAccountButton');
+  assert.equal(screen.elements.get('accountName').textContent,'<img src=x onerror=alert(1)>');
+  assert.equal(screen.elements.get('accountEmail').textContent,'<b>nome@example.test</b>');
+  assert.equal(screen.elements.get('accountBirth').textContent,'01/01/1990');
+  assert.equal(screen.elements.get('accountRegistration').textContent,'12345678');
+  for(const id of ['accountSexRow','accountCivilStatusRow','accountCellphoneRow','accountTelephoneRow','accountAddressRow','accountRoleRow','accountMinistryRow','accountValidityRow'])assert.equal(screen.elements.get(id).hidden,true,id);
+  for(const element of screen.elements.values())assert.equal(element.textContent.includes('secret-password-hash'),false);
+  assert.equal(screen.elements.get('deletePassword').value,'');
+});
+
+test('falha ao atualizar preserva os últimos dados, mostra aviso e retry substitui campos que ficaram vazios',async()=>{
+  let fail=false;
+  const screen=fixture({profile:async()=>{if(fail)throw new Error('Rede indisponível.');return personalProfile({nome:screen.calls.profile.length===1?'Nome anterior':'Nome atualizado',celular:screen.calls.profile.length===1?'11999998888':null});}});
+  await screen.login();await screen.click('qrAccountButton');
+  fail=true;await pull(screen);
+  assert.equal(screen.elements.get('accountName').textContent,'Nome anterior');
+  assert.equal(screen.elements.get('accountProfileCards').hidden,false);
+  assert.match(screen.elements.get('accountProfileMessage').textContent,/Rede indisponível/);
+  assert.match(screen.elements.get('accountProfileMessage').textContent,/última consulta/);
+  assert.equal(screen.elements.get('retryAccountProfileButton').hidden,false);
+  fail=false;await screen.click('retryAccountProfileButton');
+  assert.equal(screen.elements.get('accountName').textContent,'Nome atualizado');
+  assert.equal(screen.elements.get('accountCellphoneRow').hidden,true);
+  assert.equal(screen.elements.get('accountCellphone').textContent,'');
+  assert.equal(screen.elements.get('accountProfileMessage').hidden,true);
+  assert.equal(screen.elements.get('retryAccountProfileButton').hidden,true);
+  await screen.click('accountBackButton');fail=true;await screen.click('qrAccountButton');
+  assert.equal(screen.elements.get('accountName').textContent,'Nome atualizado','reabrir sempre consulta sem perder dados anteriores na falha');
+  assert.equal(screen.calls.profile.length,4);
+});
+
+test('primeira falha de perfil não mostra dados fictícios e identidade incompatível nunca é renderizada',async()=>{
+  for(const profile of [async()=>{throw new Error('Sem conexão.');},async()=>personalProfile({id:'99',nome:'Outra pessoa'})]){
+    const screen=fixture({profile});await screen.login();await screen.click('qrAccountButton');
+    assert.equal(screen.elements.get('accountProfileCards').hidden,true);
+    assert.equal(screen.elements.get('accountProfileMessage').hidden,false);
+    assert.equal(screen.elements.get('retryAccountProfileButton').hidden,false);
+    for(const id of personalFields)assert.equal(screen.elements.get(id).textContent,'',id);
+    assert.equal(screen.calls.deleteAccount.length,0);
+  }
+});
+
+test('perfil 401 renova acesso lembrado uma vez; nova recusa encerra e limpa tudo sem loop',async()=>{
+  for(const repeated of [false,true]){
+    let requests=0;
+    const screen=fixture({native:true,profile:async()=>{if(++requests===1||repeated)throw Object.assign(new Error('Acesso expirado.'),{status:401});return personalProfile();}});
+    screen.elements.get('rememberMe').checked=true;await screen.login();
+    const saved=screen.storage.raw;
+    await screen.click('qrAccountButton');
+    assert.equal(screen.calls.refresh.length,1);
+    assert.equal(screen.calls.profile.length,2);
+    if(repeated){
+      assert.equal(screen.elements.get('loginScreen').hidden,false);
+      assert.equal(screen.storage.raw,null);
+      for(const id of personalFields)assert.equal(screen.elements.get(id).textContent,'',id);
+    }else{
+      assert.equal(screen.elements.get('accountScreen').hidden,false);
+      assert.equal(screen.elements.get('accountName').textContent,'Ana de teste');
+      assert.equal(screen.storage.raw,saved);
+      assert.equal(screen.calls.login,1);
+    }
+  }
+});
+
+test('Voltar cancela perfil pendente e resposta antiga não substitui a consulta de uma nova abertura',async()=>{
+  const gate=pending();let reads=0;
+  const screen=fixture({profile:config=>++reads===1?gate.promise:Promise.resolve(personalProfile({nome:'Consulta mais recente'}))});
+  await screen.login();
+  const opening=screen.elements.get('qrAccountButton').fire('click');await settle();
+  assert.equal(screen.elements.get('accountProfileLoading').hidden,false);
+  await screen.click('accountBackButton');
+  assert.equal(screen.calls.profile[0].signal.aborted,true);
+  await screen.click('qrAccountButton');
+  assert.equal(screen.elements.get('accountName').textContent,'Consulta mais recente');
+  gate.resolve(personalProfile({nome:'Resposta atrasada'}));await opening;await settle();
+  assert.equal(screen.elements.get('accountName').textContent,'Consulta mais recente');
+  assert.equal(screen.elements.get('accountProfileLoading').hidden,true);
+});
+
+test('perfil por gesto é serializado e mantém login, senha e confirmação de exclusão',async()=>{
+  const gate=pending();let reads=0;
+  const screen=fixture({native:true,profile:async()=>++reads===1?personalProfile():gate.promise});
+  screen.elements.get('rememberMe').checked=true;await screen.login();await screen.click('qrAccountButton');
+  const saved=screen.storage.raw;
+  const token=vm.runInContext('api.token',screen.context);
+  screen.elements.get('deletePassword').value='senha-pessoal';screen.elements.get('deleteConfirmation').checked=true;
+  await startPull(screen);
+  const refreshing=screen.elements.get('memberScreen').fire('touchend');await settle();
+  await pull(screen);await screen.click('retryAccountProfileButton');
+  assert.equal(screen.calls.profile.length,2);
+  assert.equal(screen.elements.get('deletePassword').value,'senha-pessoal');
+  assert.equal(screen.elements.get('deleteConfirmation').checked,true);
+  gate.resolve(personalProfile({endereco:'Endereço atualizado'}));await refreshing;await settle();
+  assert.equal(screen.elements.get('accountAddress').textContent,'Endereço atualizado');
+  assert.equal(screen.elements.get('deletePassword').value,'senha-pessoal');
+  assert.equal(screen.elements.get('deleteConfirmation').checked,true);
+  assert.equal(screen.calls.deleteAccount.length,0);
+  assert.equal(screen.calls.login,1);
+  assert.equal(screen.storage.raw,saved);
+  assert.equal(vm.runInContext('api.token',screen.context),token);
+  assert.equal(screen.elements.get('pullRefreshIndicator').hidden,true);
+});
+
+test('Sair limpa dados pessoais e ignora perfil pendente mesmo após nova conta entrar',async()=>{
+  const gate=pending();let reads=0;
+  const screen=fixture({profile:async()=>++reads===2?gate.promise:personalProfile({nome:reads===1?'Primeiro nome':'Novo login'})});
+  await screen.login();await screen.click('qrAccountButton');
+  await startPull(screen);const refreshing=screen.elements.get('memberScreen').fire('touchend');await settle();
+  await screen.click('logoutButton');
+  assert.equal(screen.calls.profile[1].signal.aborted,true);
+  assert.equal(screen.elements.get('accountProfileCards').hidden,true);
+  for(const id of personalFields)assert.equal(screen.elements.get(id).textContent,'',id);
+  await screen.login();await screen.click('qrAccountButton');
+  gate.resolve(personalProfile({nome:'Dados da sessão antiga'}));await refreshing;await settle();
+  assert.equal(screen.elements.get('accountName').textContent,'Novo login');
+});
+
+test('excluir durante leitura do perfil aborta GET e apaga dados sem resposta tardia reabrir a conta',async()=>{
+  const gate=pending();let reads=0;
+  const screen=fixture({native:true,profile:async()=>++reads===1?personalProfile():gate.promise});
+  screen.elements.get('rememberMe').checked=true;await screen.login();await screen.click('qrAccountButton');
+  await startPull(screen);const refreshing=screen.elements.get('memberScreen').fire('touchend');await settle();
+  screen.elements.get('deletePassword').value='senha-pessoal';screen.elements.get('deleteConfirmation').checked=true;
+  await screen.elements.get('deleteAccountForm').fire('submit');await settle();
+  assert.equal(screen.calls.profile[1].signal.aborted,true);
+  assert.equal(screen.storage.raw,null);
+  assert.equal(screen.elements.get('loginScreen').hidden,false);
+  assert.equal(screen.elements.get('accountProfileCards').hidden,true);
+  for(const id of personalFields)assert.equal(screen.elements.get(id).textContent,'',id);
+  gate.resolve(personalProfile({nome:'Conta excluída'}));await refreshing;await settle();
+  assert.equal(screen.elements.get('loginScreen').hidden,false);
+  assert.equal(screen.elements.get('accountName').textContent,'');
+  assert.equal(screen.calls.deleteAccount.length,1);
+});
 
 test('puxar no QR atualiza matrícula e cursor sem refazer login nem apagar acesso salvo',async()=>{
   let qrCalls=0;
@@ -181,7 +338,7 @@ test('atualização por gesto não sobrepõe solicitações e falha mantém avis
   assert.equal(screen.elements.get('qrMessage').hidden,true);
 });
 
-test('fora do topo, sobre botões e na Minha conta o gesto não atualiza nem muda dados do formulário',async()=>{
+test('fora do topo ou sobre botões gesto não atualiza; na Minha conta atualiza dados preservando formulário',async()=>{
   const screen=fixture();await screen.login();await screen.loadImage();
   screen.context.window.scrollY=50;await pull(screen);
   assert.equal(screen.calls.qr,1);
@@ -191,10 +348,13 @@ test('fora do topo, sobre botões e na Minha conta o gesto não atualiza nem mud
   assert.equal(screen.calls.qr,1);
   await screen.click('qrAccountButton');
   screen.elements.get('deletePassword').value='senha-pessoal';
+  screen.elements.get('deleteConfirmation').checked=true;
   await pull(screen);
   assert.equal(screen.calls.qr,1);
   assert.equal(screen.calls.deleteAccount.length,0);
   assert.equal(screen.elements.get('deletePassword').value,'senha-pessoal');
+  assert.equal(screen.elements.get('deleteConfirmation').checked,true);
+  assert.equal(screen.calls.profile.length,2);
   assert.equal(screen.elements.get('pullRefreshIndicator').hidden,true);
 });
 

@@ -2,6 +2,8 @@
 
 Aplicativo Android exclusivo do membro, separado do **Leitor de presenças** do administrador. Nome no aparelho: **Minha credencial**. Pacote: `br.com.assembleiadedeus.membro`. O ícone claro com cartão de identificação diferencia este aplicativo do leitor escuro. Os dois podem ser instalados juntos.
 
+**Atualização 1.4.0, código Android 8:** a página **Minha conta** exibe os dados pessoais, contatos e informações do cadastro na igreja. Campos opcionais sem preenchimento ficam ocultos; os dados principais ausentes aparecem como **Não informado**. A exclusão da própria conta fica em uma seção separada no final. Puxar a tela para atualizar consulta novamente os dados, preservando o login e o formulário de exclusão. Esta versão permite consultar os dados; alterações cadastrais continuam pelos fluxos já existentes.
+
 **Atualização 1.3.0, código Android 7:** puxe a tela de cima para baixo para atualizar o QR Code ou a credencial, mantendo a conta conectada. Os novos cadastros recebem matrículas com 8 números aleatórios. A data de nascimento continua digitável em **DD/MM/AAAA**.
 
 **Atualização 1.2.1, código Android 6:** nascimento digitado diretamente no formato **DD/MM/AAAA**, com teclado numérico e barras automáticas, no APK e no navegador. O calendário nativo foi substituído para facilitar o preenchimento. As validações de data e idade permanecem iguais. A preferência de interface está registrada no `AGENTS.md` do projeto.
@@ -56,6 +58,7 @@ As rotas próprias são:
 | `GET /api/app-membro/cadastro/config` | Obter as informações atuais de privacidade e as autorizações do formulário |
 | `POST /api/app-membro/cadastro` | Criar a conta com acesso liberado, sem iniciar sessão |
 | `POST /api/app-membro/login` | Acessar com a conta existente do membro |
+| `GET /api/app-membro/perfil` | Consultar apenas os dados cadastrais do próprio membro autenticado |
 | `POST /api/app-membro/excluir-conta` | Excluir somente o próprio cadastro autenticado, após conferir a senha atual |
 | `POST /api/app-membro/qrcode` | Preparar o QR próprio e sua referência de leitura |
 | `GET /api/app-membro/presenca?after=...` | Consultar somente a confirmação do próprio membro |
@@ -65,7 +68,7 @@ Nenhuma dessas rotas permite escolher outro membro ou alterar cadastros. O token
 
 O segredo persistente fica protegido pelo Android Keystore e AES-GCM, isolado do leitor. Na web, fica em cookie HttpOnly; o armazenamento web guarda somente um marcador. A migração adicional é `006_remembered_mobile_sessions.sql`; as rotas de renovação e saída são `POST /api/app-membro/refresh` e `POST /api/app-membro/logout`. Consulte `mobile-shared/README.md`.
 
-QR e credencial exigem e-mail confirmado, consentimento ativo e validade vigente. O cadastro e a recuperação de senha continuam pelos fluxos existentes do site. O registro de presença do leitor mantém suas regras anteriores; esta etapa não altera silenciosamente quem pode ter presença registrada.
+QR e credencial exigem acesso liberado ou e-mail confirmado, consentimento ativo e validade vigente. A consulta aos próprios dados e a exclusão da conta continuam disponíveis mesmo quando a credencial vence ou o consentimento é revogado. O cadastro pode ser feito pelo aplicativo, e a recuperação de senha continua pelo fluxo existente do site. O registro de presença do leitor mantém suas regras anteriores.
 
 O limite de consultas é por membro para permitir o uso do Wi-Fi compartilhado da igreja. O login admite oito tentativas por conta e 300 por IP em 15 minutos. As regras das outras rotas existentes continuam com seus próprios limites.
 
@@ -96,7 +99,7 @@ npm run build:apk
 
 O comando compila a interface, sincroniza o projeto Android, executa `assembleDebug` e entrega:
 
-`artifacts/minha-credencial-v1.3.0-debug.apk`
+`artifacts/minha-credencial-v1.4.0-debug.apk`
 
 Para abrir o projeto Android existente:
 

@@ -20,6 +20,7 @@ function createAppMembroRouter(options = {}) {
     const tokenService = options.tokenService || createAppMembroTokenService(options.secret || process.env.SESSION_SECRET, { now });
     const findMemberByEmail = options.findMemberByEmail || require('../models/membroModel').buscarPorEmail;
     const findMemberById = options.findMemberById || require('../models/membroModel').buscarIdentidadeApp;
+    const findMemberProfileById = options.findMemberProfileById || require('../models/membroModel').buscarPorId;
     const readScanState = options.readScanState || require('../models/membroModel').lerEstadoLeitura;
     const comparePassword = options.comparePassword || require('bcrypt').compare;
     const generateQrDataUrl = options.generateQrDataUrl || (async id => {
@@ -43,6 +44,7 @@ function createAppMembroRouter(options = {}) {
     });
     const pollLimiter = options.pollLimiter || ownLimiter('member-app-poll', 90);
     const credentialLimiter = ownLimiter('member-app-credential', 60);
+    const profileLimiter = ownLimiter('member-app-profile', 30);
 
     router.use((req, res, next) => {
         res.set('Cache-Control', 'no-store');
@@ -141,6 +143,20 @@ function createAppMembroRouter(options = {}) {
             return next();
         } catch (error) { next(error); }
     }
+
+    router.get('/perfil', authenticate, profileLimiter, async (req, res, next) => {
+        try {
+            const id = String(req.appMembro.id);
+            const profile = await findMemberProfileById(id);
+            if (!profile || String(profile.id) !== id) return fail(res, 401, 'Seu cadastro não está mais disponível. Entre novamente.');
+            const data = { id };
+            for (const field of ['nome', 'email', 'data_nascimento', 'telefone', 'celular', 'endereco',
+                'sexo', 'estado_civil', 'cargo', 'ministerio', 'matricula', 'validade']) {
+                data[field] = profile[field] ?? null;
+            }
+            return res.json({ success: true, data });
+        } catch (error) { next(error); }
+    });
 
     router.post('/excluir-conta', authenticate, limit('member-app-delete', 5, 900, { ipMax: 100 }), async (req, res, next) => {
         try {

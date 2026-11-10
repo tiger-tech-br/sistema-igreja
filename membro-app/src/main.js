@@ -36,7 +36,19 @@ let registrationBusy = false;
 let accountReturnView = 'qr';
 let accountBusy = false;
 let accountAbort = null;
+let accountProfileRequest = 0;
+let accountProfileAbort = null;
+let accountProfileBusy = false;
+let accountProfileMemberId = null;
+let accountProfileLoaded = false;
 const identificationRequests = new Set();
+const accountProfileFields = [
+  ['accountName', 'nome'], ['accountBirth', 'data_nascimento'], ['accountEmail', 'email'], ['accountRegistration', 'matricula'],
+  ['accountSex', 'sexo', 'accountSexRow'], ['accountCivilStatus', 'estado_civil', 'accountCivilStatusRow'],
+  ['accountCellphone', 'celular', 'accountCellphoneRow'], ['accountTelephone', 'telefone', 'accountTelephoneRow'],
+  ['accountAddress', 'endereco', 'accountAddressRow'], ['accountRole', 'cargo', 'accountRoleRow'],
+  ['accountMinistry', 'ministerio', 'accountMinistryRow'], ['accountValidity', 'validade', 'accountValidityRow']
+];
 
 const initials = name => {
   const parts = String(name || 'Membro').trim().split(/\s+/);
@@ -105,9 +117,9 @@ const observer = new PresenceObserver({
 });
 
 const pullRefresh = new PullToRefresh({
-  canRefresh: () => foreground && ['qr', 'credential'].includes(view) && Boolean(api.token) && Date.now() < expiresAt && !restoreTask && !observer.busy && identificationRequests.size === 0,
+  canRefresh: () => foreground && ['qr', 'credential', 'account'].includes(view) && Boolean(api.token) && Date.now() < expiresAt && !restoreTask && !observer.busy && !accountBusy && !accountProfileBusy && identificationRequests.size === 0,
   scrollTop: () => window.scrollY || document.scrollingElement?.scrollTop || 0,
-  refresh: () => view === 'qr' ? loadQrCode() : loadCredential(),
+  refresh: () => view === 'account' ? loadAccountProfile() : view === 'qr' ? loadQrCode() : loadCredential(),
   onState: ({ phase, distance }) => {
     if (phase === 'pulling' || phase === 'ready') observer.pause();
     else if (phase === 'idle' && foreground && view === 'qr' && qrReady && api.token && identificationRequests.size === 0) observer.resume();
@@ -157,8 +169,8 @@ function clearAccountForm() {
   $('deletePassword').value = '';
   $('deleteConfirmation').checked = false;
   resetPasswordToggle('deletePassword', 'toggleDeletePassword', 'Mostrar senha atual');
-  for (const id of ['deleteAccountButton', 'accountBackButton', 'cancelDeleteAccountButton']) $(id).disabled = false;
-  $('deleteAccountButton').querySelector('span').textContent = 'Excluir meu cadastro';
+  for (const id of ['deleteAccountButton', 'accountBackButton', 'cancelDeleteAccountButton', 'retryAccountProfileButton']) $(id).disabled = false;
+  $('deleteAccountButton').querySelector('span').textContent = 'Excluir minha conta';
   formMessage('deleteAccountMessage');
 }
 
@@ -317,14 +329,93 @@ function openAccount() {
   observer.pause();
   clearAccountForm();
   showView('account');
+  return loadAccountProfile();
 }
 
 function closeAccount() {
   if (view !== 'account' || accountBusy) return;
+  cancelAccountProfile();
   clearAccountForm();
   if (!validSession()) return;
   if (accountReturnView === 'credential') return loadCredential();
   return loadQrCode();
+}
+
+function cancelAccountProfile() {
+  accountProfileRequest++;
+  accountProfileAbort?.abort();
+  accountProfileAbort = null;
+  accountProfileBusy = false;
+  $('accountProfileLoading').hidden = true;
+  $('retryAccountProfileButton').disabled = false;
+}
+
+function clearAccountProfile() {
+  cancelAccountProfile();
+  accountProfileMemberId = null;
+  accountProfileLoaded = false;
+  for (const [id, , row] of accountProfileFields) {
+    $(id).textContent = '';
+    if (row) $(row).hidden = true;
+  }
+  $('accountProfileCards').hidden = true;
+  formMessage('accountProfileMessage');
+  $('retryAccountProfileButton').hidden = true;
+}
+
+function renderAccountProfile(profile) {
+  if (typeof profile?.id !== 'string' || profile.id !== memberId) throw new Error('Não foi possível conferir os dados da sua conta. Tente novamente.');
+  for (const [id, key, row] of accountProfileFields) {
+    const value = typeof profile[key] === 'string' ? profile[key].trim() : '';
+    $(id).textContent = value || (row ? '' : 'Não informado');
+    if (row) $(row).hidden = !value;
+  }
+  accountProfileMemberId = memberId;
+  accountProfileLoaded = true;
+  $('accountProfileCards').hidden = false;
+}
+
+async function loadAccountProfile({ renewed = false } = {}) {
+  if (view !== 'account' || accountBusy || accountProfileBusy || !validSession()) return;
+  if (accountProfileMemberId && accountProfileMemberId !== memberId) clearAccountProfile();
+  const currentEpoch = epoch;
+  const requestedMemberId = memberId;
+  const request = ++accountProfileRequest;
+  accountProfileAbort = new AbortController();
+  accountProfileBusy = true;
+  $('accountProfileLoading').textContent = accountProfileLoaded ? 'Atualizando seus dados...' : 'Carregando seus dados...';
+  $('accountProfileLoading').hidden = false;
+  formMessage('accountProfileMessage');
+  $('retryAccountProfileButton').hidden = true;
+  $('retryAccountProfileButton').disabled = true;
+  const current = () => currentEpoch === epoch && request === accountProfileRequest && view === 'account' && requestedMemberId === memberId;
+  try {
+    const profile = await api.profile({ signal: accountProfileAbort.signal });
+    if (!current()) return;
+    renderAccountProfile(profile);
+  } catch (error) {
+    if (!current() || error.name === 'AbortError') return;
+    if (error.status === 401) {
+      if (renewed) return logout(error.message);
+      await renewOrLogout(error.message, true);
+      if (current() && api.token) {
+        accountProfileBusy = false;
+        return loadAccountProfile({ renewed: true });
+      }
+      return;
+    }
+    if (error.status === 403) return logout(error.message);
+    const message = error.message || 'Não foi possível carregar seus dados. Confira a conexão e tente novamente.';
+    formMessage('accountProfileMessage', message + (accountProfileLoaded ? ' Os dados exibidos são da última consulta.' : ''));
+    $('retryAccountProfileButton').hidden = false;
+  } finally {
+    if (current()) {
+      accountProfileBusy = false;
+      accountProfileAbort = null;
+      $('accountProfileLoading').hidden = true;
+      $('retryAccountProfileButton').disabled = false;
+    }
+  }
 }
 
 async function submitDeleteAccount(event) {
@@ -334,9 +425,10 @@ async function submitDeleteAccount(event) {
   if (!senha || new TextEncoder().encode(senha).length > 72) return formMessage('deleteAccountMessage', 'Informe sua senha atual para confirmar a exclusão.');
   if (!$('deleteConfirmation').checked) return formMessage('deleteAccountMessage', 'Marque a confirmação de exclusão permanente para continuar.');
   const currentEpoch = epoch;
+  cancelAccountProfile();
   accountBusy = true;
   accountAbort = new AbortController();
-  for (const id of ['deleteAccountButton', 'accountBackButton', 'cancelDeleteAccountButton']) $(id).disabled = true;
+  for (const id of ['deleteAccountButton', 'accountBackButton', 'cancelDeleteAccountButton', 'retryAccountProfileButton']) $(id).disabled = true;
   $('deleteAccountButton').querySelector('span').textContent = 'Excluindo cadastro...';
   formMessage('deleteAccountMessage');
   try {
@@ -353,8 +445,9 @@ async function submitDeleteAccount(event) {
     if (currentEpoch === epoch && view === 'account') {
       accountBusy = false;
       $('deletePassword').value = '';
-      for (const id of ['deleteAccountButton', 'accountBackButton', 'cancelDeleteAccountButton']) $(id).disabled = false;
-      $('deleteAccountButton').querySelector('span').textContent = 'Excluir meu cadastro';
+      for (const id of ['deleteAccountButton', 'accountBackButton', 'cancelDeleteAccountButton', 'retryAccountProfileButton']) $(id).disabled = false;
+      if (!accountProfileLoaded) $('retryAccountProfileButton').hidden = false;
+      $('deleteAccountButton').querySelector('span').textContent = 'Excluir minha conta';
     }
   }
 }
@@ -495,6 +588,7 @@ function resetLogin(message = '') {
   identificationRequests.clear();
   clearRegistration();
   clearAccountForm();
+  clearAccountProfile();
   api.clear();
   $('senha').value = '';
   $('senha').type = 'password';
@@ -537,6 +631,7 @@ function accessDetails(access) {
 
 function useAccess(access) {
   const details = accessDetails(access);
+  if (accountProfileMemberId && accountProfileMemberId !== details.id) clearAccountProfile();
   clearTimeout(expiryTimer);
   api.token = access.token;
   expiresAt = details.expiration;
@@ -661,6 +756,7 @@ $('registrationBirth').addEventListener('input', maskBirthDate);
 $('qrAccountButton').addEventListener('click', openAccount);
 $('credentialAccountButton').addEventListener('click', openAccount);
 $('accountBackButton').addEventListener('click', closeAccount);
+$('retryAccountProfileButton').addEventListener('click', () => loadAccountProfile());
 $('cancelDeleteAccountButton').addEventListener('click', closeAccount);
 $('deleteAccountForm').addEventListener('submit', submitDeleteAccount);
 for (const [button, input, label] of [['toggleRegistrationPassword', 'registrationPassword', 'nova senha'], ['toggleDeletePassword', 'deletePassword', 'senha atual']]) {

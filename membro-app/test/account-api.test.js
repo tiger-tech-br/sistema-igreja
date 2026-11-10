@@ -59,3 +59,22 @@ test('senha recusada mantém status e mensagem para erro inline sem apagar acess
   await assert.rejects(api.deleteAccount('senha-errada'), error => error.status === 401 && /Senha incorreta/.test(error.message));
   assert.equal(api.token, 'current-access');
 });
+
+test('perfil usa GET autenticado sem ID externo, sem corpo e com cancelamento próprio', async () => {
+  let captured;
+  const api = new MemberApi('https://igreja.example', async (url, options) => {
+    captured = { url, options };
+    return { ok: true, status: 200, json: async () => ({ success: true, data: { id: '42', nome: 'Ana' } }) };
+  });
+  api.token = 'member-access';
+  const abort = new AbortController();
+  const profile = await api.profile({ signal: abort.signal });
+  assert.equal(profile.id, '42');
+  assert.equal(captured.url, 'https://igreja.example/api/app-membro/perfil');
+  assert.equal(captured.options.method, 'GET');
+  assert.equal(captured.options.body, undefined);
+  assert.equal(captured.options.headers.Authorization, 'Bearer member-access');
+  assert.equal(captured.options.cache, 'no-store');
+  assert.equal(captured.options.credentials, 'same-origin');
+  assert.equal(api.token, 'member-access');
+});

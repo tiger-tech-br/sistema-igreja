@@ -53,6 +53,7 @@ export class MemberApi {
   registrationConfig(options = {}) { return this.request('/cadastro/config', { ...options, authenticated: false }); }
   registerMember(data, options = {}) { return this.request('/cadastro', { ...options, method: 'POST', body: data, authenticated: false }); }
   deleteAccount(senha, options = {}) { return this.request('/excluir-conta', { ...options, method: 'POST', body: { senha } }); }
+  profile({ signal } = {}) { return this.request('/perfil', { signal }); }
   qrCode() { return this.request('/qrcode', { method: 'POST', body: {} }); }
   presence(cursor) { return this.request('/presenca?after=' + encodeURIComponent(cursor)); }
   credential() { return this.request('/credencial'); }
